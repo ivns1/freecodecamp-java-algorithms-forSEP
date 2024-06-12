@@ -6,47 +6,47 @@ import static com.google.common.truth.Truth.assertThat;
 public class isPrimeTest {
 
     @Test
-    public void testisPrime1() {
+    public void isPrime_1_false() {
         int x = 1;
         boolean result = IsPrime.isPrime(x);
         assertThat(result).isEqualTo(false);
-        System.out.println("testIsPrime1: \n");
+        System.out.println("\n\nisPrime_1_false: \n");
         IsPrime.branchCoverage.printCoverage();
     }
 
     @Test
-    public void testisPrime2() {
+    public void isPrime_2_true() {
         int x = 3;
         boolean result = IsPrime.isPrime(x);
         assertThat(result).isEqualTo(true);
-        System.out.println("\n\n testIsPrime2: \n");
+        System.out.println("\n\n isPrime_2_true: \n");
         IsPrime.branchCoverage.printCoverage();
     }
 
     @Test
-    public void testisPrime3() {
+    public void isPrime_12_false() {
         int x = 12;
         boolean result = IsPrime.isPrime(x);
         assertThat(result).isEqualTo(false);
-        System.out.println("\n\n testIsPrime3: \n");
+        System.out.println("\n\n isPrime_12_false: \n");
         IsPrime.branchCoverage.printCoverage();
     }
 
     @Test
-    public void testisPrime4() {
+    public void isPrime_25_false() {
         int x = 25;
         boolean result = IsPrime.isPrime(x);
         assertThat(result).isEqualTo(false);
-        System.out.println("\n\n testIsPrime4: \n");
+        System.out.println("\n\n isPrime_25_false: \n");
         IsPrime.branchCoverage.printCoverage();
     }
 
     @Test
-    public void testisPrime5() {
+    public void isPrime_7_true() {
         int x = 7;
         boolean result = IsPrime.isPrime(x);
         assertThat(result).isEqualTo(true);
-        System.out.println("\n\n testIsPrime5: \n");
+        System.out.println("\n\n isPrime_7_true: \n");
         IsPrime.branchCoverage.printCoverage();
     }
 }
