@@ -27,9 +27,23 @@ public class TernarySearch {
     while (true) {
       double mid1 = (2 * low + high) / 3, mid2 = (low + 2 * high) / 3;
       double res1 = function.apply(mid1), res2 = function.apply(mid2);
-      if (res1 > res2) low = mid1;
-      else high = mid2;
-      if (best != null && Math.abs(best - mid1) < EPS) break;
+
+      System.out.println("Before branch: res1 > res2");
+
+      if (res1 > res2) {
+        TernarySearchCoverageTool.trackBranch1Hit(); // Track branch 1 hit
+        low = mid1;
+        System.out.println("After branch: res1 > res2");
+      } else {
+        TernarySearchCoverageTool.trackBranch2Hit(); // Track branch 2 hit
+        System.out.println("Branch: res1 <= res2");
+        high = mid2;
+      }
+      if (best != null && Math.abs(best - mid1) < EPS) {
+        TernarySearchCoverageTool.trackLoopBreakHit(); // Track loop break hit
+        System.out.println("About to break the loop");
+        break;
+      }
       best = mid1;
     }
     return best;
@@ -42,5 +56,7 @@ public class TernarySearch {
     DoubleFunction<Double> function = (x) -> (x * x + 3 * x + 5);
     double root = ternarySearch(-100.0, +100.0, function);
     System.out.printf("%.4f\n", root);
+    TernarySearchCoverageTool.printCoverage(); // Print coverage after execution
+
   }
 }
