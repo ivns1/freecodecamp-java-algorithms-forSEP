@@ -23,27 +23,28 @@ public class MaximumSubarray {
     int n = ar.length, maxValue, sum;
 
     maxValue = sum = ar[0];
-    branchCoverage.markAsCovered("Initialization");
+    branchCoverage.markAsCovered(201);
 
 
     for (int i = 1; i < n; i++) {
+      branchCoverage.markAsCovered(202); // For loop entry branch
 
       // At each step consider continuing the current subarray
       // or starting a new one because adding the next element
       // doesn't acutally make the subarray sum any better.
       if (ar[i] > sum + ar[i]) {
         sum = ar[i];
-        branchCoverage.markAsCovered("StartNewSubarray");
+        branchCoverage.markAsCovered(203);
       }
 
       else {
         sum = sum + ar[i];
-        branchCoverage.markAsCovered("ContinueCurrentSubarray");
+        branchCoverage.markAsCovered(204);
       }
 
 
       if (sum > maxValue) {
-        branchCoverage.markAsCovered("UpdateMaxValue");
+        branchCoverage.markAsCovered(205);
         maxValue = sum;
       }
     }

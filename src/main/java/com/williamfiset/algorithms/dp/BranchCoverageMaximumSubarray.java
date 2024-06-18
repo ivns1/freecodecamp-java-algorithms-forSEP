@@ -3,7 +3,7 @@ package com.williamfiset.algorithms.dp;
 import java.util.HashMap;
 import java.util.Map;
 public class BranchCoverageMaximumSubarray {
-    public Map<String, Boolean> branchCoverage;
+    public Map<Integer, Boolean> branchCoverage;
 
 
     public BranchCoverageMaximumSubarray() {
@@ -13,24 +13,26 @@ public class BranchCoverageMaximumSubarray {
 
 
     private void initializeCoverageMap() {
-        branchCoverage.put("Initialization", false);
-        branchCoverage.put("StartNewSubarray", false);
-        branchCoverage.put("ContinueCurrentSubarray", false);
-        branchCoverage.put("UpdateMaxValue", false);
+        branchCoverage.put(201, false); //initialized
+        branchCoverage.put(202, false); // start new subarray
+        branchCoverage.put(203, false); //continue new subarray
+        branchCoverage.put(204, false); //update max value
+        branchCoverage.put(205, false);
     }
 
 
-    public void markAsCovered(String branchName) {
-        if (branchCoverage.containsKey(branchName)) {
-            branchCoverage.put(branchName, true);
+    public void markAsCovered(int branchID) {
+        if (branchCoverage.containsKey(branchID)) {
+            branchCoverage.put(branchID, true);
         }
     }
 
 
     public void printCoverage() {
         System.out.println("\nBranch Coverage Report:");
-        for (Map.Entry<String, Boolean> entry : branchCoverage.entrySet()) {
-            System.out.println(entry.getKey() + ": " + (entry.getValue() ? "covered" : "not covered"));
+        for (Map.Entry<Integer, Boolean> entry : branchCoverage.entrySet()) {
+            String status = entry.getValue() ? "hit" : "not hit";
+            System.out.println("branch ID " + entry.getKey() + ", " + status);
         }
     }
 
