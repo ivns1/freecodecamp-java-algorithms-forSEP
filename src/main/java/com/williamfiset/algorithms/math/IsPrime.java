@@ -16,15 +16,15 @@ public class IsPrime {
     branchCoverage.clearValuesIsPrime();
     if (n < 2) {
 
-      branchCoverage.wasCovered("IsPrime_1");
+      branchCoverage.wasCovered("301_IsPrime_1");
       return false;
     }
     if (n == 2 || n == 3){
-      branchCoverage.wasCovered("IsPrime_2");
+      branchCoverage.wasCovered("302_IsPrime_2");
       return true;
     }
     if (n % 2 == 0 || n % 3 == 0){
-      branchCoverage.wasCovered("IsPrime_3");
+      branchCoverage.wasCovered("303_IsPrime_3");
       return false;
     }
 
@@ -32,11 +32,11 @@ public class IsPrime {
 
     for (long i = 5; i <= limit; i += 6) {
       if (n % i == 0 || n % (i + 2) == 0) {
-        branchCoverage.wasCovered("IsPrime_4");
+        branchCoverage.wasCovered("304_IsPrime_4");
         return false;
       }
     }
-    branchCoverage.wasCovered("IsPrime_5");
+    branchCoverage.wasCovered("305_IsPrime_5");
     return true;
   }
 
