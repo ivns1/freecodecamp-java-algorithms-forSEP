@@ -20,8 +20,8 @@ public class TernarySearchCoverageTool {
     }
 
     public static void printCoverage() {
-        System.out.println("Branch 1 (res1 > res2) was " + (branch101Hit ? "hit" : "not hit"));
-        System.out.println("Branch 2 (res1 <= res2) was " + (branch102Hit ? "hit" : "not hit"));
-        System.out.println("Loop break was " + (branch103Hit? "hit" : "not hit"));
+        System.out.println("Branch 101 was " + (branch101Hit ? "hit" : "not hit"));
+        System.out.println("Branch 102 was " + (branch102Hit ? "hit" : "not hit"));
+        System.out.println("Branch 103 was " + (branch103Hit? "hit" : "not hit"));
     }
 }
