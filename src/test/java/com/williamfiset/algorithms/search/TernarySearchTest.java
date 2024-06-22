@@ -21,6 +21,37 @@ public class TernarySearchTest {
         assertEquals(expectedResult, result, epsilon);
 
         TernarySearchCoverageTool.printCoverage();
+    }
 
+    @Test
+    public void testTernarySearchDiscrete() {
+        int lo = 0;
+        int hi = TernarySearchDiscrete.function.length - 1;
+
+        double result = TernarySearchDiscrete.discreteTernarySearch(lo, hi);
+
+        double expectedResult = 3.0;
+
+        double epsilon = 0.0001;
+
+        assertEquals(expectedResult, TernarySearchDiscrete.f((int) result), epsilon);
+
+        TernarySearchCoverageTool.printCoverage();
+    }
+
+    @Test
+    public void testTernarySearchDiscreteWithSmallRange() {
+        int lo = 0;
+        int hi = 1;
+
+        double result = TernarySearchDiscrete.discreteTernarySearch(lo, hi);
+
+        double expectedResult = Math.min(TernarySearchDiscrete.f(lo), TernarySearchDiscrete.f(hi));
+
+        double epsilon = 0.0001;
+
+        assertEquals(expectedResult, TernarySearchDiscrete.f((int) result), epsilon);
+
+        TernarySearchCoverageTool.printCoverage();
     }
 }
