@@ -1,0 +1,523 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > HashTableOpenAddressingBase</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.datastructures.hashtable</a>
+</div>
+
+<h1>Coverage Summary for Class: HashTableOpenAddressingBase (com.williamfiset.algorithms.datastructures.hashtable)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">HashTableOpenAddressingBase</td>
+<td class="coverageStat">
+  <span class="percent">
+    90,9%
+  </span>
+  <span class="absValue">
+    (20/22)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    89,5%
+  </span>
+  <span class="absValue">
+    (119/133)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">HashTableOpenAddressingBase$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    75%
+  </span>
+  <span class="absValue">
+    (3/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    87,5%
+  </span>
+  <span class="absValue">
+    (7/8)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    88,5%
+  </span>
+  <span class="absValue">
+    (23/26)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    89,4%
+  </span>
+  <span class="absValue">
+    (126/141)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * Base class for hashtables with an open addressing collision resolution method such as linear
+&nbsp; * probing, quadratic probing and double hashing.
+&nbsp; *
+&nbsp; * @author William Fiset, william.alexandre.fiset@gmail.com
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.datastructures.hashtable;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.ConcurrentModificationException;
+&nbsp;import java.util.Iterator;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@SuppressWarnings(&quot;unchecked&quot;)
+&nbsp;public abstract class HashTableOpenAddressingBase&lt;K, V&gt; implements Iterable&lt;K&gt; {
+&nbsp;
+&nbsp;  protected double loadFactor;
+&nbsp;  protected int capacity, threshold, modificationCount;
+&nbsp;
+&nbsp;  // &#39;usedBuckets&#39; counts the total number of used buckets inside the
+&nbsp;  // hash-table (includes cells marked as deleted). While &#39;keyCount&#39;
+&nbsp;  // tracks the number of unique keys currently inside the hash-table.
+&nbsp;  protected int usedBuckets, keyCount;
+&nbsp;
+&nbsp;  // These arrays store the key-value pairs.
+&nbsp;  protected K[] keys;
+&nbsp;  protected V[] values;
+&nbsp;
+&nbsp;  // Special marker token used to indicate the deletion of a key-value pair
+<b class="fc">&nbsp;  protected final K TOMBSTONE = (K) (new Object());</b>
+&nbsp;
+&nbsp;  private static final int DEFAULT_CAPACITY = 7;
+&nbsp;  private static final double DEFAULT_LOAD_FACTOR = 0.65;
+&nbsp;
+&nbsp;  protected HashTableOpenAddressingBase() {
+<b class="fc">&nbsp;    this(DEFAULT_CAPACITY, DEFAULT_LOAD_FACTOR);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  protected HashTableOpenAddressingBase(int capacity) {
+<b class="fc">&nbsp;    this(capacity, DEFAULT_LOAD_FACTOR);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Designated constructor
+<b class="fc">&nbsp;  protected HashTableOpenAddressingBase(int capacity, double loadFactor) {</b>
+<b class="fc">&nbsp;    if (capacity &lt;= 0) throw new IllegalArgumentException(&quot;Illegal capacity: &quot; + capacity);</b>
+&nbsp;
+<b class="fc">&nbsp;    if (loadFactor &lt;= 0 || Double.isNaN(loadFactor) || Double.isInfinite(loadFactor))</b>
+<b class="fc">&nbsp;      throw new IllegalArgumentException(&quot;Illegal loadFactor: &quot; + loadFactor);</b>
+&nbsp;
+<b class="fc">&nbsp;    this.loadFactor = loadFactor;</b>
+<b class="fc">&nbsp;    this.capacity = Math.max(DEFAULT_CAPACITY, capacity);</b>
+<b class="fc">&nbsp;    adjustCapacity();</b>
+<b class="fc">&nbsp;    threshold = (int) (this.capacity * loadFactor);</b>
+&nbsp;
+<b class="fc">&nbsp;    keys = (K[]) new Object[this.capacity];</b>
+<b class="fc">&nbsp;    values = (V[]) new Object[this.capacity];</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // These three methods are used to dictate how the probing is to actually
+&nbsp;  // occur for whatever open addressing scheme you are implementing.
+&nbsp;  protected abstract void setupProbing(K key);
+&nbsp;
+&nbsp;  protected abstract int probe(int x);
+&nbsp;
+&nbsp;  // Adjusts the capacity of the hash table after it&#39;s been made larger.
+&nbsp;  // This is important to be able to override because the size of the hashtable
+&nbsp;  // controls the functionality of the probing function.
+&nbsp;  protected abstract void adjustCapacity();
+&nbsp;
+&nbsp;  // Increases the capacity of the hash table.
+&nbsp;  protected void increaseCapacity() {
+<b class="fc">&nbsp;    capacity = (2 * capacity) + 1;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public void clear() {
+<b class="fc">&nbsp;    for (int i = 0; i &lt; capacity; i++) {</b>
+<b class="fc">&nbsp;      keys[i] = null;</b>
+<b class="fc">&nbsp;      values[i] = null;</b>
+&nbsp;    }
+<b class="fc">&nbsp;    keyCount = usedBuckets = 0;</b>
+<b class="fc">&nbsp;    modificationCount++;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Returns the number of keys currently inside the hash-table
+&nbsp;  public int size() {
+<b class="fc">&nbsp;    return keyCount;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Returns the capacity of the hashtable (used mostly for testing)
+&nbsp;  public int getCapacity() {
+<b class="fc">&nbsp;    return capacity;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Returns true/false depending on whether the hash-table is empty
+&nbsp;  public boolean isEmpty() {
+<b class="fc">&nbsp;    return keyCount == 0;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public V put(K key, V value) {
+<b class="fc">&nbsp;    return insert(key, value);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public V add(K key, V value) {
+<b class="fc">&nbsp;    return insert(key, value);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Returns true/false on whether a given key exists within the hash-table.
+&nbsp;  public boolean containsKey(K key) {
+<b class="fc">&nbsp;    return hasKey(key);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Returns a list of keys found in the hash table
+&nbsp;  public List&lt;K&gt; keys() {
+<b class="fc">&nbsp;    List&lt;K&gt; hashtableKeys = new ArrayList&lt;&gt;(size());</b>
+<b class="fc">&nbsp;    for (int i = 0; i &lt; capacity; i++)</b>
+<b class="fc">&nbsp;      if (keys[i] != null &amp;&amp; keys[i] != TOMBSTONE) hashtableKeys.add(keys[i]);</b>
+<b class="fc">&nbsp;    return hashtableKeys;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Returns a list of non-unique values found in the hash table
+&nbsp;  public List&lt;V&gt; values() {
+<b class="nc">&nbsp;    List&lt;V&gt; hashtableValues = new ArrayList&lt;&gt;(size());</b>
+<b class="nc">&nbsp;    for (int i = 0; i &lt; capacity; i++)</b>
+<b class="nc">&nbsp;      if (keys[i] != null &amp;&amp; keys[i] != TOMBSTONE) hashtableValues.add(values[i]);</b>
+<b class="nc">&nbsp;    return hashtableValues;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Double the size of the hash-table
+&nbsp;  protected void resizeTable() {
+<b class="fc">&nbsp;    increaseCapacity();</b>
+<b class="fc">&nbsp;    adjustCapacity();</b>
+&nbsp;
+<b class="fc">&nbsp;    threshold = (int) (capacity * loadFactor);</b>
+&nbsp;
+<b class="fc">&nbsp;    K[] oldKeyTable = (K[]) new Object[capacity];</b>
+<b class="fc">&nbsp;    V[] oldValueTable = (V[]) new Object[capacity];</b>
+&nbsp;
+&nbsp;    // Perform key table pointer swap
+<b class="fc">&nbsp;    K[] keyTableTmp = keys;</b>
+<b class="fc">&nbsp;    keys = oldKeyTable;</b>
+<b class="fc">&nbsp;    oldKeyTable = keyTableTmp;</b>
+&nbsp;
+&nbsp;    // Perform value table pointer swap
+<b class="fc">&nbsp;    V[] valueTableTmp = values;</b>
+<b class="fc">&nbsp;    values = oldValueTable;</b>
+<b class="fc">&nbsp;    oldValueTable = valueTableTmp;</b>
+&nbsp;
+&nbsp;    // Reset the key count and buckets used since we are about to
+&nbsp;    // re-insert all the keys into the hash-table.
+<b class="fc">&nbsp;    keyCount = usedBuckets = 0;</b>
+&nbsp;
+<b class="fc">&nbsp;    for (int i = 0; i &lt; oldKeyTable.length; i++) {</b>
+<b class="fc">&nbsp;      if (oldKeyTable[i] != null &amp;&amp; oldKeyTable[i] != TOMBSTONE)</b>
+<b class="fc">&nbsp;        insert(oldKeyTable[i], oldValueTable[i]);</b>
+<b class="fc">&nbsp;      oldValueTable[i] = null;</b>
+<b class="fc">&nbsp;      oldKeyTable[i] = null;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  // Converts a hash value to an index. Essentially, this strips the
+&nbsp;  // negative sign and places the hash value in the domain [0, capacity)
+&nbsp;  protected final int normalizeIndex(int keyHash) {
+<b class="fc">&nbsp;    return (keyHash &amp; 0x7FFFFFFF) % capacity;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Finds the greatest common denominator of a and b.
+&nbsp;  protected static final int gcd(int a, int b) {
+<b class="fc">&nbsp;    if (b == 0) return a;</b>
+<b class="fc">&nbsp;    return gcd(b, a % b);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Place a key-value pair into the hash-table. If the value already
+&nbsp;  // exists inside the hash-table then the value is updated.
+&nbsp;  public V insert(K key, V val) {
+<b class="fc">&nbsp;    if (key == null) throw new IllegalArgumentException(&quot;Null key&quot;);</b>
+<b class="fc">&nbsp;    if (usedBuckets &gt;= threshold) resizeTable();</b>
+&nbsp;
+<b class="fc">&nbsp;    setupProbing(key);</b>
+<b class="fc">&nbsp;    final int offset = normalizeIndex(key.hashCode());</b>
+&nbsp;
+<b class="fc">&nbsp;    for (int i = offset, j = -1, x = 1; ; i = normalizeIndex(offset + probe(x++))) {</b>
+&nbsp;
+&nbsp;      // The current slot was previously deleted
+<b class="fc">&nbsp;      if (keys[i] == TOMBSTONE) {</b>
+<b class="fc">&nbsp;        if (j == -1) j = i;</b>
+&nbsp;
+&nbsp;        // The current cell already contains a key
+<b class="fc">&nbsp;      } else if (keys[i] != null) {</b>
+&nbsp;        // The key we&#39;re trying to insert already exists in the hash-table,
+&nbsp;        // so update its value with the most recent value
+<b class="fc">&nbsp;        if (keys[i].equals(key)) {</b>
+&nbsp;
+<b class="fc">&nbsp;          V oldValue = values[i];</b>
+<b class="fc">&nbsp;          if (j == -1) {</b>
+<b class="fc">&nbsp;            values[i] = val;</b>
+&nbsp;          } else {
+<b class="fc">&nbsp;            keys[i] = TOMBSTONE;</b>
+<b class="fc">&nbsp;            values[i] = null;</b>
+<b class="fc">&nbsp;            keys[j] = key;</b>
+<b class="fc">&nbsp;            values[j] = val;</b>
+&nbsp;          }
+<b class="fc">&nbsp;          modificationCount++;</b>
+<b class="fc">&nbsp;          return oldValue;</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Current cell is null so an insertion/update can occur
+&nbsp;      } else {
+&nbsp;        // No previously encountered deleted buckets
+<b class="fc">&nbsp;        if (j == -1) {</b>
+<b class="fc">&nbsp;          usedBuckets++;</b>
+<b class="fc">&nbsp;          keyCount++;</b>
+<b class="fc">&nbsp;          keys[i] = key;</b>
+<b class="fc">&nbsp;          values[i] = val;</b>
+&nbsp;
+&nbsp;          // Previously seen deleted bucket. Instead of inserting
+&nbsp;          // the new element at i where the null element is insert
+&nbsp;          // it where the deleted token was found.
+&nbsp;        } else {
+<b class="fc">&nbsp;          keyCount++;</b>
+<b class="fc">&nbsp;          keys[j] = key;</b>
+<b class="fc">&nbsp;          values[j] = val;</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        modificationCount++;</b>
+<b class="fc">&nbsp;        return null;</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  // Returns true/false on whether a given key exists within the hash-table
+&nbsp;  public boolean hasKey(K key) {
+<b class="fc">&nbsp;    if (key == null) throw new IllegalArgumentException(&quot;Null key&quot;);</b>
+&nbsp;
+<b class="fc">&nbsp;    setupProbing(key);</b>
+<b class="fc">&nbsp;    final int offset = normalizeIndex(key.hashCode());</b>
+&nbsp;
+&nbsp;    // Start at the original hash value and probe until we find a spot where our key
+&nbsp;    // is or hit a null element in which case our element does not exist.
+<b class="fc">&nbsp;    for (int i = offset, j = -1, x = 1; ; i = normalizeIndex(offset + probe(x++))) {</b>
+&nbsp;
+&nbsp;      // Ignore deleted cells, but record where the first index
+&nbsp;      // of a deleted cell is found to perform lazy relocation later.
+<b class="fc">&nbsp;      if (keys[i] == TOMBSTONE) {</b>
+&nbsp;
+<b class="fc">&nbsp;        if (j == -1) j = i;</b>
+&nbsp;
+&nbsp;        // We hit a non-null key, perhaps it&#39;s the one we&#39;re looking for.
+<b class="fc">&nbsp;      } else if (keys[i] != null) {</b>
+&nbsp;
+&nbsp;        // The key we want is in the hash-table!
+<b class="fc">&nbsp;        if (keys[i].equals(key)) {</b>
+&nbsp;
+&nbsp;          // If j != -1 this means we previously encountered a deleted cell.
+&nbsp;          // We can perform an optimization by swapping the entries in cells
+&nbsp;          // i and j so that the next time we search for this key it will be
+&nbsp;          // found faster. This is called lazy deletion/relocation.
+<b class="fc">&nbsp;          if (j != -1) {</b>
+&nbsp;            // Swap the key-value pairs of positions i and j.
+<b class="nc">&nbsp;            keys[j] = keys[i];</b>
+<b class="nc">&nbsp;            values[j] = values[i];</b>
+<b class="nc">&nbsp;            keys[i] = TOMBSTONE;</b>
+<b class="nc">&nbsp;            values[i] = null;</b>
+&nbsp;          }
+<b class="fc">&nbsp;          return true;</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Key was not found in the hash-table :/
+<b class="fc">&nbsp;      } else return false;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  // Get the value associated with the input key.
+&nbsp;  // NOTE: returns null if the value is null AND also returns
+&nbsp;  // null if the key does not exists.
+&nbsp;  public V get(K key) {
+<b class="fc">&nbsp;    if (key == null) throw new IllegalArgumentException(&quot;Null key&quot;);</b>
+&nbsp;
+<b class="fc">&nbsp;    setupProbing(key);</b>
+<b class="fc">&nbsp;    final int offset = normalizeIndex(key.hashCode());</b>
+&nbsp;
+&nbsp;    // Start at the original hash value and probe until we find a spot where our key
+&nbsp;    // is or we hit a null element in which case our element does not exist.
+<b class="fc">&nbsp;    for (int i = offset, j = -1, x = 1; ; i = normalizeIndex(offset + probe(x++))) {</b>
+&nbsp;
+&nbsp;      // Ignore deleted cells, but record where the first index
+&nbsp;      // of a deleted cell is found to perform lazy relocation later.
+<b class="fc">&nbsp;      if (keys[i] == TOMBSTONE) {</b>
+&nbsp;
+<b class="fc">&nbsp;        if (j == -1) j = i;</b>
+&nbsp;
+&nbsp;        // We hit a non-null key, perhaps it&#39;s the one we&#39;re looking for.
+<b class="fc">&nbsp;      } else if (keys[i] != null) {</b>
+&nbsp;
+&nbsp;        // The key we want is in the hash-table!
+<b class="fc">&nbsp;        if (keys[i].equals(key)) {</b>
+&nbsp;
+&nbsp;          // If j != -1 this means we previously encountered a deleted cell.
+&nbsp;          // We can perform an optimization by swapping the entries in cells
+&nbsp;          // i and j so that the next time we search for this key it will be
+&nbsp;          // found faster. This is called lazy deletion/relocation.
+<b class="fc">&nbsp;          if (j != -1) {</b>
+&nbsp;            // Swap key-values pairs at indexes i and j.
+<b class="fc">&nbsp;            keys[j] = keys[i];</b>
+<b class="fc">&nbsp;            values[j] = values[i];</b>
+<b class="fc">&nbsp;            keys[i] = TOMBSTONE;</b>
+<b class="fc">&nbsp;            values[i] = null;</b>
+<b class="fc">&nbsp;            return values[j];</b>
+&nbsp;          } else {
+<b class="fc">&nbsp;            return values[i];</b>
+&nbsp;          }
+&nbsp;        }
+&nbsp;
+&nbsp;        // Element was not found in the hash-table :/
+<b class="fc">&nbsp;      } else return null;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  // Removes a key from the map and returns the value.
+&nbsp;  // NOTE: returns null if the value is null AND also returns
+&nbsp;  // null if the key does not exists.
+&nbsp;  public V remove(K key) {
+<b class="fc">&nbsp;    if (key == null) throw new IllegalArgumentException(&quot;Null key&quot;);</b>
+&nbsp;
+<b class="fc">&nbsp;    setupProbing(key);</b>
+<b class="fc">&nbsp;    final int offset = normalizeIndex(key.hashCode());</b>
+&nbsp;
+&nbsp;    // Starting at the original hash probe until we find a spot where our key is
+&nbsp;    // or we hit a null element in which case our element does not exist.
+<b class="fc">&nbsp;    for (int i = offset, x = 1; ; i = normalizeIndex(offset + probe(x++))) {</b>
+&nbsp;
+&nbsp;      // Ignore deleted cells
+<b class="fc">&nbsp;      if (keys[i] == TOMBSTONE) continue;</b>
+&nbsp;
+&nbsp;      // Key was not found in hash-table.
+<b class="fc">&nbsp;      if (keys[i] == null) return null;</b>
+&nbsp;
+&nbsp;      // The key we want to remove is in the hash-table!
+<b class="fc">&nbsp;      if (keys[i].equals(key)) {</b>
+<b class="fc">&nbsp;        keyCount--;</b>
+<b class="fc">&nbsp;        modificationCount++;</b>
+<b class="fc">&nbsp;        V oldValue = values[i];</b>
+<b class="fc">&nbsp;        keys[i] = TOMBSTONE;</b>
+<b class="fc">&nbsp;        values[i] = null;</b>
+<b class="fc">&nbsp;        return oldValue;</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  // Return a String view of this hash-table.
+&nbsp;  @Override
+&nbsp;  public String toString() {
+<b class="nc">&nbsp;    StringBuilder sb = new StringBuilder();</b>
+&nbsp;
+<b class="nc">&nbsp;    sb.append(&quot;{&quot;);</b>
+<b class="nc">&nbsp;    for (int i = 0; i &lt; capacity; i++)</b>
+<b class="nc">&nbsp;      if (keys[i] != null &amp;&amp; keys[i] != TOMBSTONE) sb.append(keys[i] + &quot; =&gt; &quot; + values[i] + &quot;, &quot;);</b>
+<b class="nc">&nbsp;    sb.append(&quot;}&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;    return sb.toString();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public Iterator&lt;K&gt; iterator() {
+&nbsp;    // Before the iteration begins record the number of modifications
+&nbsp;    // done to the hash-table. This value should not change as we iterate
+&nbsp;    // otherwise a concurrent modification has occurred :0
+<b class="fc">&nbsp;    final int MODIFICATION_COUNT = modificationCount;</b>
+&nbsp;
+<b class="fc">&nbsp;    return new Iterator&lt;K&gt;() {</b>
+<b class="fc">&nbsp;      int index, keysLeft = keyCount;</b>
+&nbsp;
+&nbsp;      @Override
+&nbsp;      public boolean hasNext() {
+&nbsp;        // The contents of the table have been altered
+<b class="fc">&nbsp;        if (MODIFICATION_COUNT != modificationCount) throw new ConcurrentModificationException();</b>
+<b class="fc">&nbsp;        return keysLeft != 0;</b>
+&nbsp;      }
+&nbsp;
+&nbsp;      // Find the next element and return it
+&nbsp;      @Override
+&nbsp;      public K next() {
+<b class="fc">&nbsp;        while (keys[index] == null || keys[index] == TOMBSTONE) index++;</b>
+<b class="fc">&nbsp;        keysLeft--;</b>
+<b class="fc">&nbsp;        return keys[index++];</b>
+&nbsp;      }
+&nbsp;
+&nbsp;      @Override
+&nbsp;      public void remove() {
+<b class="nc">&nbsp;        throw new UnsupportedOperationException();</b>
+&nbsp;      }
+&nbsp;    };
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

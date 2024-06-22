@@ -1,0 +1,148 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > HashTableLinearProbing</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.datastructures.hashtable</a>
+</div>
+
+<h1>Coverage Summary for Class: HashTableLinearProbing (com.williamfiset.algorithms.datastructures.hashtable)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">HashTableLinearProbing</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * An implementation of a hash-table using open addressing with linear probing as a collision
+&nbsp; * resolution method.
+&nbsp; *
+&nbsp; * @author William Fiset, william.alexandre.fiset@gmail.com
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.datastructures.hashtable;
+&nbsp;
+&nbsp;public class HashTableLinearProbing&lt;K, V&gt; extends HashTableOpenAddressingBase&lt;K, V&gt; {
+&nbsp;
+&nbsp;  // This is the linear constant used in the linear probing, it can be
+&nbsp;  // any positive number. The table capacity will be adjusted so that
+&nbsp;  // the GCD(capacity, LINEAR_CONSTANT) = 1 so that all buckets can be probed.
+&nbsp;  private static final int LINEAR_CONSTANT = 17;
+&nbsp;
+&nbsp;  public HashTableLinearProbing() {
+<b class="fc">&nbsp;    super();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public HashTableLinearProbing(int capacity) {
+<b class="fc">&nbsp;    super(capacity);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public HashTableLinearProbing(int capacity, double loadFactor) {
+<b class="fc">&nbsp;    super(capacity, loadFactor);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+<b class="fc">&nbsp;  protected void setupProbing(K key) {}</b>
+&nbsp;
+&nbsp;  @Override
+&nbsp;  protected int probe(int x) {
+<b class="fc">&nbsp;    return LINEAR_CONSTANT * x;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Adjust the capacity so that the linear constant and
+&nbsp;  // the table capacity are relatively prime.
+&nbsp;  @Override
+&nbsp;  protected void adjustCapacity() {
+<b class="fc">&nbsp;    while (gcd(LINEAR_CONSTANT, capacity) != 1) {</b>
+<b class="fc">&nbsp;      capacity++;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

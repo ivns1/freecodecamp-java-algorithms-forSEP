@@ -1,0 +1,206 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > LineCircleIntersection</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.geometry</a>
+</div>
+
+<h1>Coverage Summary for Class: LineCircleIntersection (com.williamfiset.algorithms.geometry)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">LineCircleIntersection</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/31)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * Find the intersection of a line in general form with a circle See live demo:
+&nbsp; * http://www.williamfiset.com/circlelineintersection
+&nbsp; *
+&nbsp; * &lt;p&gt;Time Complexity: O(1)
+&nbsp; *
+&nbsp; * @author William Fiset, william.alexandre.fiset@gmail.com
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.geometry;
+&nbsp;
+&nbsp;import static java.lang.Math.*;
+&nbsp;
+&nbsp;import java.awt.geom.Point2D;
+&nbsp;
+<b class="nc">&nbsp;public class LineCircleIntersection {</b>
+&nbsp;
+&nbsp;  private static final double EPS = 1e-9;
+&nbsp;
+&nbsp;  // Given a line in the form ax + by = c (NOTE: this is not ax + by + c = 0)
+&nbsp;  // Given a circle with a center at (x,y) of radius r
+&nbsp;  // This method finds the intersection of this line and this circle
+&nbsp;  public static Point2D[] lineCircleIntersection(
+&nbsp;      double a, double b, double c, double x, double y, double r) {
+&nbsp;
+&nbsp;    // Set ax + by = c equal to (x - X)^2 + (y - Y)^2 = r^2 and expand:
+&nbsp;    // (a^2 + b^2)x^2 + (2abY - 2ac + - 2b^2X)x + b^2X^2 + b^2Y^2 - 2bcY + c^2 - b^2r^2 = 0
+&nbsp;    // Then use quadratic formula X = (-b +- sqrt(a^2 - 4ac))/2a to find the
+&nbsp;    // roots of the equation (if they exist).
+&nbsp;
+&nbsp;    // Ax^2 + Bx + C = 0;
+<b class="nc">&nbsp;    double A = a * a + b * b;</b>
+<b class="nc">&nbsp;    double B = 2 * a * b * y - 2 * a * c - 2 * b * b * x;</b>
+<b class="nc">&nbsp;    double C = b * b * x * x + b * b * y * y - 2 * b * c * y + c * c - b * b * r * r;</b>
+&nbsp;
+<b class="nc">&nbsp;    double D = B * B - 4 * A * C;</b>
+&nbsp;    double x1, y1, x2, y2;
+&nbsp;
+&nbsp;    // Vertical line case :0
+<b class="nc">&nbsp;    if (abs(b) &lt; EPS) {</b>
+&nbsp;
+&nbsp;      // ax + by = c, but b = 0, so x = c/a
+<b class="nc">&nbsp;      double vx = c / a;</b>
+&nbsp;
+&nbsp;      // No intersection
+<b class="nc">&nbsp;      if (abs(x - vx) &gt; r) return new Point2D[] {};</b>
+&nbsp;
+&nbsp;      // Vertical line is tangent to circle
+<b class="nc">&nbsp;      if (abs((vx - r) - x) &lt; EPS || abs((vx + r) - x) &lt; EPS)</b>
+<b class="nc">&nbsp;        return new Point2D[] {new Point2D.Double(vx, y)};</b>
+&nbsp;
+<b class="nc">&nbsp;      double dx = abs(vx - x);</b>
+<b class="nc">&nbsp;      double dy = sqrt(r * r - dx * dx);</b>
+&nbsp;
+<b class="nc">&nbsp;      return new Point2D[] {new Point2D.Double(vx, y + dy), new Point2D.Double(vx, y - dy)};</b>
+&nbsp;
+&nbsp;      // Line is tangent to circle
+<b class="nc">&nbsp;    } else if (abs(D) &lt; EPS) {</b>
+&nbsp;
+<b class="nc">&nbsp;      x1 = -B / (2 * A);</b>
+<b class="nc">&nbsp;      y1 = (c - a * x1) / b;</b>
+&nbsp;
+<b class="nc">&nbsp;      return new Point2D[] {new Point2D.Double(x1, y1)};</b>
+&nbsp;
+&nbsp;      // No intersection point
+<b class="nc">&nbsp;    } else if (D &lt; 0) {</b>
+<b class="nc">&nbsp;      return new Point2D[] {};</b>
+&nbsp;
+&nbsp;      // Two unique intersection points
+&nbsp;    } else {
+&nbsp;
+<b class="nc">&nbsp;      D = sqrt(D);</b>
+&nbsp;
+<b class="nc">&nbsp;      x1 = (-B + D) / (2 * A);</b>
+<b class="nc">&nbsp;      y1 = (c - a * x1) / b;</b>
+&nbsp;
+<b class="nc">&nbsp;      x2 = (-B - D) / (2 * A);</b>
+<b class="nc">&nbsp;      y2 = (c - a * x2) / b;</b>
+&nbsp;
+<b class="nc">&nbsp;      return new Point2D[] {new Point2D.Double(x1, y1), new Point2D.Double(x2, y2)};</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  public static void main(String[] args) {
+&nbsp;
+&nbsp;    // Vertical Line on passing through (1,0)
+<b class="nc">&nbsp;    display(lineCircleIntersection(1, 0, 1, 0, 0, 1));</b>
+&nbsp;
+&nbsp;    // Horizontal line passing through (0,1)
+<b class="nc">&nbsp;    display(lineCircleIntersection(0, 1, 1, 0, 0, 1));</b>
+&nbsp;
+&nbsp;    // Vertical line passing through (-1,0)
+<b class="nc">&nbsp;    display(lineCircleIntersection(1, 0, -1, 0, 0, 1));</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private static void display(Point2D[] pts) {
+<b class="nc">&nbsp;    if (pts == null) System.out.println(&quot;null&quot;);</b>
+&nbsp;    else {
+<b class="nc">&nbsp;      if (pts.length == 0) System.out.println(&quot;[]&quot;);</b>
+<b class="nc">&nbsp;      else for (Point2D p : pts) System.out.println(p);</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

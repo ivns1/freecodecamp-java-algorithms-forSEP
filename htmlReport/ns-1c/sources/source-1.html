@@ -1,0 +1,447 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > AStar_GridHeuristic</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.graphtheory</a>
+</div>
+
+<h1>Coverage Summary for Class: AStar_GridHeuristic (com.williamfiset.algorithms.graphtheory)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AStar_GridHeuristic</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/94)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">AStar_GridHeuristic$DNode</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">AStar_GridHeuristic$Edge</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">AStar_GridHeuristic$Node</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/9)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/114)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/** NOTE: This algorithm is still a work in progress! See issue #18 to track progress. */
+&nbsp;package com.williamfiset.algorithms.graphtheory;
+&nbsp;
+&nbsp;import java.util.*;
+&nbsp;
+<b class="nc">&nbsp;public class AStar_GridHeuristic {</b>
+&nbsp;
+&nbsp;  // An edge class to represent a directed edge
+&nbsp;  // between two nodes with a certain non-negative cost.
+&nbsp;  static class Edge {
+&nbsp;    double cost;
+&nbsp;    int from, to;
+&nbsp;
+<b class="nc">&nbsp;    public Edge(int from, int to, double cost) {</b>
+<b class="nc">&nbsp;      if (cost &lt; 0) throw new IllegalArgumentException(&quot;No negative edge weights&quot;);</b>
+<b class="nc">&nbsp;      this.from = from;</b>
+<b class="nc">&nbsp;      this.to = to;</b>
+<b class="nc">&nbsp;      this.cost = cost;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public String toString() {
+<b class="nc">&nbsp;      return from + &quot;:&quot; + to;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  // Node class to track the nodes to visit while running A*
+&nbsp;  private static class Node implements Comparable&lt;Node&gt; {
+&nbsp;
+&nbsp;    int id;
+&nbsp;    double f, g, h;
+&nbsp;
+&nbsp;    private static final double EPS = 1e-7;
+&nbsp;
+<b class="nc">&nbsp;    public Node(int nodeID, double gg, double hh) {</b>
+<b class="nc">&nbsp;      id = nodeID;</b>
+<b class="nc">&nbsp;      g = gg;</b>
+<b class="nc">&nbsp;      h = hh;</b>
+<b class="nc">&nbsp;      f = g + h;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Sort by f cost and break ties with h
+&nbsp;    @Override
+&nbsp;    public int compareTo(Node other) {
+<b class="nc">&nbsp;      if (Math.abs(f - other.f) &lt; EPS) {</b>
+<b class="nc">&nbsp;        if (Math.abs(h - other.h) &lt; EPS) return 0;</b>
+<b class="nc">&nbsp;        return (h - other.h) &gt; 0 ? +1 : -1;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      return (f - other.f) &gt; 0 ? +1 : -1;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  // Run A* algorithm on a directed graph to find the shortest path
+&nbsp;  // from a starting node to an ending node. If there is no path between the
+&nbsp;  // starting node and the destination node the returned value is set to be
+&nbsp;  // Double.POSITIVE_INFINITY.
+&nbsp;  public static double astar(
+&nbsp;      double[] X, double[] Y, Map&lt;Integer, List&lt;Edge&gt;&gt; graph, int start, int end, int n) {
+&nbsp;
+&nbsp;    // In the event that you wish to rebuild the shortest path
+&nbsp;    // you can do so using the prev array and starting at some node &#39;end&#39;
+&nbsp;    // and finding the previous node using prev[end] and the previous node
+&nbsp;    // after that prev[prev[end]] etc... working all the way back until
+&nbsp;    // the index of start is found. Simply uncomment where the prev array is used.
+&nbsp;    // int[] prev = new int[n];
+&nbsp;
+<b class="nc">&nbsp;    double[] G = new double[n];</b>
+<b class="nc">&nbsp;    double[] F = new double[n];</b>
+<b class="nc">&nbsp;    Arrays.fill(G, Double.POSITIVE_INFINITY);</b>
+<b class="nc">&nbsp;    Arrays.fill(F, Double.POSITIVE_INFINITY);</b>
+<b class="nc">&nbsp;    G[start] = 0;</b>
+<b class="nc">&nbsp;    F[start] = heuristic(X, Y, start, end);</b>
+&nbsp;
+<b class="nc">&nbsp;    Set&lt;Integer&gt; openSet = new HashSet&lt;&gt;();</b>
+<b class="nc">&nbsp;    Set&lt;Integer&gt; closedSet = new HashSet&lt;&gt;();</b>
+&nbsp;
+&nbsp;    // Keep a priority queue of the next most promising node to visit
+<b class="nc">&nbsp;    PriorityQueue&lt;Node&gt; pq = new PriorityQueue&lt;&gt;();</b>
+<b class="nc">&nbsp;    pq.offer(new Node(start, G[start], F[start]));</b>
+<b class="nc">&nbsp;    openSet.add(start);</b>
+&nbsp;
+<b class="nc">&nbsp;    while (!pq.isEmpty()) {</b>
+&nbsp;
+<b class="nc">&nbsp;      Node node = pq.poll();</b>
+<b class="nc">&nbsp;      openSet.remove(node.id);</b>
+<b class="nc">&nbsp;      closedSet.add(node.id);</b>
+&nbsp;
+<b class="nc">&nbsp;      if (node.id == end) return G[end];</b>
+&nbsp;
+<b class="nc">&nbsp;      List&lt;Edge&gt; edges = graph.get(node.id);</b>
+<b class="nc">&nbsp;      if (edges != null) {</b>
+<b class="nc">&nbsp;        for (int i = 0; i &lt; edges.size(); i++) {</b>
+&nbsp;
+<b class="nc">&nbsp;          Edge edge = edges.get(i);</b>
+<b class="nc">&nbsp;          if (closedSet.contains(edge.to)) continue;</b>
+&nbsp;
+<b class="nc">&nbsp;          double g = node.g + edge.cost;</b>
+<b class="nc">&nbsp;          double h = heuristic(X, Y, edge.to, end);</b>
+&nbsp;
+<b class="nc">&nbsp;          if (g &lt; G[edge.to] || !openSet.contains(edge.to)) {</b>
+&nbsp;
+<b class="nc">&nbsp;            G[edge.to] = g;</b>
+&nbsp;            // prev[edge.to] = edge.from;
+&nbsp;
+<b class="nc">&nbsp;            if (!openSet.contains(edge.to)) {</b>
+<b class="nc">&nbsp;              pq.offer(new Node(edge.to, g, h));</b>
+<b class="nc">&nbsp;              openSet.add(edge.to);</b>
+&nbsp;            }
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    // End node is unreachable
+<b class="nc">&nbsp;    return Double.POSITIVE_INFINITY;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Euclidean distance is used as a heuristic
+&nbsp;  static double heuristic(double[] X, double[] Y, int at, int end) {
+&nbsp;    // double dx = Math.abs(X[at] - X[end]);
+&nbsp;    // double dy = Math.abs(Y[at] - Y[end]);
+&nbsp;    // return dx*dx + dy*dy; // Avoid square root
+&nbsp;    // return Math.sqrt(dx*dx + dy*dy);
+<b class="nc">&nbsp;    return 0;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Run a random test between A* and Dijkstra
+&nbsp;  public static void main(String[] args) {
+&nbsp;
+<b class="nc">&nbsp;    Random RANDOM = new Random();</b>
+&nbsp;
+<b class="nc">&nbsp;    int n = 20 * 20;</b>
+<b class="nc">&nbsp;    Map&lt;Integer, List&lt;Edge&gt;&gt; graph = new HashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;    for (int i = 0; i &lt; n; i++) graph.put(i, new ArrayList&lt;&gt;());</b>
+&nbsp;
+<b class="nc">&nbsp;    double[] X = new double[n];</b>
+<b class="nc">&nbsp;    double[] Y = new double[n];</b>
+<b class="nc">&nbsp;    int N = (int) Math.sqrt(n);</b>
+&nbsp;
+<b class="nc">&nbsp;    int connections = (n * (n - 1));</b>
+<b class="nc">&nbsp;    int[] locations = new int[connections * 2];</b>
+&nbsp;
+<b class="nc">&nbsp;    boolean[][] m = new boolean[n][n];</b>
+&nbsp;
+<b class="nc">&nbsp;    for (int k = 0; k &lt; connections; k++) {</b>
+&nbsp;
+<b class="nc">&nbsp;      int i = RANDOM.nextInt(N);</b>
+<b class="nc">&nbsp;      int j = RANDOM.nextInt(N);</b>
+<b class="nc">&nbsp;      int ii = RANDOM.nextInt(N);</b>
+<b class="nc">&nbsp;      int jj = RANDOM.nextInt(N);</b>
+&nbsp;
+<b class="nc">&nbsp;      int node1 = i * N + j;</b>
+<b class="nc">&nbsp;      int node2 = ii * N + jj;</b>
+<b class="nc">&nbsp;      if (m[node1][node2]) continue;</b>
+&nbsp;
+<b class="nc">&nbsp;      locations[2 * k] = node1;</b>
+<b class="nc">&nbsp;      locations[2 * k + 1] = node2;</b>
+&nbsp;
+<b class="nc">&nbsp;      X[node1] = i;</b>
+<b class="nc">&nbsp;      Y[node1] = j;</b>
+<b class="nc">&nbsp;      X[node2] = ii;</b>
+<b class="nc">&nbsp;      Y[node2] = jj;</b>
+&nbsp;
+<b class="nc">&nbsp;      addEdge(graph, node1, node2, i, j, ii, jj);</b>
+<b class="nc">&nbsp;      m[node1][node2] = true;</b>
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    System.out.println(graph);</b>
+&nbsp;
+<b class="nc">&nbsp;    for (int i = 0; i &lt; 10 * n; i++) {</b>
+&nbsp;
+<b class="nc">&nbsp;      int s = locations[RANDOM.nextInt(2 * connections)];</b>
+<b class="nc">&nbsp;      int e = locations[RANDOM.nextInt(2 * connections)];</b>
+&nbsp;
+<b class="nc">&nbsp;      double d = dijkstra(graph, s, e, n);</b>
+<b class="nc">&nbsp;      double a = astar(X, Y, graph, s, e, n);</b>
+&nbsp;      // System.out.println(a + &quot; &quot; + d);
+<b class="nc">&nbsp;      if (a != d) {</b>
+<b class="nc">&nbsp;        System.out.println(&quot;ERROR: &quot; + a + &quot; &quot; + d + &quot; &quot; + s + &quot; &quot; + e);</b>
+&nbsp;        // System.out.println(graph);
+<b class="nc">&nbsp;        break;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      System.out.println();</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  static void addEdge(
+&nbsp;      Map&lt;Integer, List&lt;Edge&gt;&gt; graph, int f, int t, int fx, int fy, int tx, int ty) {
+<b class="nc">&nbsp;    double dx = Math.abs(fx - tx);</b>
+<b class="nc">&nbsp;    double dy = Math.abs(fy - ty);</b>
+<b class="nc">&nbsp;    graph.get(f).add(new Edge(f, t, dx + dy));</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Node class to track the nodes to visit while running Dijkstra&#39;s
+&nbsp;  private static class DNode implements Comparable&lt;DNode&gt; {
+&nbsp;    int id;
+&nbsp;    double value;
+&nbsp;    private static final double EPS = 1e-7;
+&nbsp;
+<b class="nc">&nbsp;    public DNode(int nodeID, double nodeValue) {</b>
+<b class="nc">&nbsp;      id = nodeID;</b>
+<b class="nc">&nbsp;      value = nodeValue;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public int compareTo(DNode other) {
+<b class="nc">&nbsp;      if (Math.abs(value - other.value) &lt; EPS) return 0;</b>
+<b class="nc">&nbsp;      return (value - other.value) &gt; 0 ? +1 : -1;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  // Run Dijkstra&#39;s algorithm on a directed graph to find the shortest path
+&nbsp;  // from a starting node to an ending node. If there is no path between the
+&nbsp;  // starting node and the destination node the returned value is set to be
+&nbsp;  // Double.POSITIVE_INFINITY.
+&nbsp;  public static double dijkstra(Map&lt;Integer, List&lt;Edge&gt;&gt; graph, int start, int end, int n) {
+&nbsp;
+&nbsp;    // Maintain an array of the minimum distance to each node
+<b class="nc">&nbsp;    double[] dists = new double[n];</b>
+<b class="nc">&nbsp;    Arrays.fill(dists, Double.POSITIVE_INFINITY);</b>
+<b class="nc">&nbsp;    dists[start] = 0;</b>
+&nbsp;
+&nbsp;    // Keep a priority queue of the next most promising node to visit
+<b class="nc">&nbsp;    PriorityQueue&lt;DNode&gt; pq = new PriorityQueue&lt;&gt;();</b>
+<b class="nc">&nbsp;    pq.offer(new DNode(start, 0.0));</b>
+&nbsp;
+&nbsp;    // Track which nodes have already been visited
+<b class="nc">&nbsp;    boolean[] visited = new boolean[n];</b>
+&nbsp;
+&nbsp;    // In the event that you wish to rebuild the shortest path
+&nbsp;    // you can do so using the prev array and starting at some node &#39;end&#39;
+&nbsp;    // and finding the previous node using prev[end] and the previous node
+&nbsp;    // after that prev[prev[end]] etc... working all the way back until
+&nbsp;    // the index of start is found. Simply uncomment where the prev array is used.
+&nbsp;    // int[] prev = new int[n];
+&nbsp;
+<b class="nc">&nbsp;    while (!pq.isEmpty()) {</b>
+&nbsp;
+<b class="nc">&nbsp;      DNode node = pq.poll();</b>
+<b class="nc">&nbsp;      visited[node.id] = true;</b>
+&nbsp;
+&nbsp;      // We already found a better path before we got to
+&nbsp;      // processing this node so we can ignore it.
+<b class="nc">&nbsp;      if (node.value &gt; dists[node.id]) continue;</b>
+&nbsp;
+<b class="nc">&nbsp;      List&lt;Edge&gt; edges = graph.get(node.id);</b>
+<b class="nc">&nbsp;      if (edges != null) {</b>
+<b class="nc">&nbsp;        for (int i = 0; i &lt; edges.size(); i++) {</b>
+<b class="nc">&nbsp;          Edge edge = edges.get(i);</b>
+&nbsp;
+&nbsp;          // You cannot get a shorter path by revisiting
+&nbsp;          // a node you have already visited before
+<b class="nc">&nbsp;          if (visited[edge.to]) continue;</b>
+&nbsp;
+&nbsp;          // Update minimum cost if applicable
+<b class="nc">&nbsp;          double newDist = dists[edge.from] + edge.cost;</b>
+<b class="nc">&nbsp;          if (newDist &lt; dists[edge.to]) {</b>
+&nbsp;            // prev[edge.to] = edge.from;
+<b class="nc">&nbsp;            dists[edge.to] = newDist;</b>
+<b class="nc">&nbsp;            pq.offer(new DNode(edge.to, dists[edge.to]));</b>
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+&nbsp;
+&nbsp;      // Once we&#39;ve visited all the nodes spanning from the end
+&nbsp;      // node we know we can return the minimum distance value to
+&nbsp;      // the end node because it cannot get any better after this point.
+<b class="nc">&nbsp;      if (node.id == end) {</b>
+&nbsp;        //         int v = 0;
+&nbsp;        // for (boolean b : visited) if (b) v++;
+&nbsp;        // System.out.println(&quot;V: &quot; + v);
+<b class="nc">&nbsp;        return dists[end];</b>
+&nbsp;      }
+<b class="nc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    // End node is unreachable
+<b class="nc">&nbsp;    return Double.POSITIVE_INFINITY;</b>
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

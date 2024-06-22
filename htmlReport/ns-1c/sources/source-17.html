@@ -1,0 +1,269 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > IntQueue</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.graphtheory</a>
+</div>
+
+<h1>Coverage Summary for Class: IntQueue (com.williamfiset.algorithms.graphtheory)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">IntQueue</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/12)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * An implementation of an iterative BFS with an adjacency list Time Complexity: O(V + E)
+&nbsp; *
+&nbsp; * @author William Fiset, william.alexandre.fiset@gmail.com
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.graphtheory;
+&nbsp;
+&nbsp;import java.util.*;
+&nbsp;
+&nbsp;// A custom implementation of a circular integer only queue which is
+&nbsp;// extremely quick and lightweight. In terms of performance it can outperform
+&nbsp;// java.util.ArrayDeque (Java&#39;s fastest queue implementation) by a factor of 40+!
+&nbsp;// However, the downside is you need to know an upper bound on the number of elements
+&nbsp;// that will be inside the queue at any given time for this queue to work.
+&nbsp;class IntQueue {
+&nbsp;
+&nbsp;  private int[] ar;
+&nbsp;  private int front, end, sz;
+&nbsp;
+&nbsp;  // max_sz is the maximum number of items
+&nbsp;  // that can be in the queue at any given time
+<b class="nc">&nbsp;  public IntQueue(int max_sz) {</b>
+<b class="nc">&nbsp;    front = end = 0;</b>
+<b class="nc">&nbsp;    this.sz = max_sz + 1;</b>
+<b class="nc">&nbsp;    ar = new int[sz];</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public boolean isEmpty() {
+<b class="nc">&nbsp;    return front == end;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public int peek() {
+<b class="nc">&nbsp;    return ar[front];</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Add an element to the queue
+&nbsp;  public void enqueue(int value) {
+<b class="nc">&nbsp;    ar[end] = value;</b>
+<b class="nc">&nbsp;    if (++end == sz) end = 0;</b>
+<b class="nc">&nbsp;    if (end == front) throw new RuntimeException(&quot;Queue too small!&quot;);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Make sure you check is the queue is not empty before calling dequeue!
+&nbsp;  public int dequeue() {
+<b class="nc">&nbsp;    int ret_val = ar[front];</b>
+<b class="nc">&nbsp;    if (++front == sz) front = 0;</b>
+<b class="nc">&nbsp;    return ret_val;</b>
+&nbsp;  }
+&nbsp;}
+&nbsp;
+&nbsp;public class BreadthFirstSearchAdjacencyListIterativeFastQueue {
+&nbsp;
+&nbsp;  static class Edge {
+&nbsp;    int from, to, cost;
+&nbsp;
+&nbsp;    public Edge(int from, int to, int cost) {
+&nbsp;      this.from = from;
+&nbsp;      this.to = to;
+&nbsp;      this.cost = cost;
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  // Perform a breadth first search on a graph with n nodes
+&nbsp;  // from a starting point to count the number of nodes
+&nbsp;  // in a given component.
+&nbsp;  static int bfs(Map&lt;Integer, List&lt;Edge&gt;&gt; graph, int start, int n) {
+&nbsp;
+&nbsp;    int count = 0;
+&nbsp;    boolean[] visited = new boolean[n];
+&nbsp;    IntQueue queue = new IntQueue(n + 1);
+&nbsp;
+&nbsp;    // For each breadth first search layer gets separated by a DEPTH_TOKEN
+&nbsp;    // to easily augment this method for additional functionality
+&nbsp;    int DEPTH_TOKEN = -1;
+&nbsp;
+&nbsp;    // Start by visiting the starting node
+&nbsp;    queue.enqueue(start);
+&nbsp;    queue.enqueue(DEPTH_TOKEN);
+&nbsp;    visited[start] = true;
+&nbsp;
+&nbsp;    // Continue until the BFS is done
+&nbsp;    while (true) {
+&nbsp;
+&nbsp;      Integer node = queue.dequeue();
+&nbsp;
+&nbsp;      // If we encounter a depth token this means that we
+&nbsp;      // have finished the current frontier and are about
+&nbsp;      // to start the new layer (some of which may already
+&nbsp;      // be in the queue) or have reached the end.
+&nbsp;      if (node == DEPTH_TOKEN) {
+&nbsp;
+&nbsp;        // No more nodes to process
+&nbsp;        if (queue.isEmpty()) break;
+&nbsp;
+&nbsp;        // Add another DEPTH_TOKEN
+&nbsp;        queue.enqueue(DEPTH_TOKEN);
+&nbsp;
+&nbsp;      } else {
+&nbsp;
+&nbsp;        count++;
+&nbsp;
+&nbsp;        List&lt;Edge&gt; edges = graph.get(node);
+&nbsp;        if (edges != null) {
+&nbsp;
+&nbsp;          // Loop through all edges attached to this node. Mark nodes as
+&nbsp;          // visited once they&#39;re in the queue. This will prevent having
+&nbsp;          // duplicate nodes in the queue and speedup the BFS.
+&nbsp;          for (Edge edge : edges) {
+&nbsp;            if (!visited[edge.to]) {
+&nbsp;              visited[edge.to] = true;
+&nbsp;              queue.enqueue(edge.to);
+&nbsp;            }
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+&nbsp;    return count;
+&nbsp;  }
+&nbsp;
+&nbsp;  // Example usage of DFS
+&nbsp;  public static void main(String[] args) {
+&nbsp;
+&nbsp;    // Create a fully connected graph
+&nbsp;    int numNodes = 8;
+&nbsp;    Map&lt;Integer, List&lt;Edge&gt;&gt; graph = new HashMap&lt;&gt;();
+&nbsp;    addDirectedEdge(graph, 1, 2, 1);
+&nbsp;    addDirectedEdge(graph, 1, 2, 1); // Double edge
+&nbsp;    addDirectedEdge(graph, 1, 3, 1);
+&nbsp;    addDirectedEdge(graph, 2, 4, 1);
+&nbsp;    addDirectedEdge(graph, 2, 5, 1);
+&nbsp;    addDirectedEdge(graph, 3, 6, 1);
+&nbsp;    addDirectedEdge(graph, 3, 7, 1);
+&nbsp;    addDirectedEdge(graph, 2, 2, 1); // Self loop
+&nbsp;    addDirectedEdge(graph, 2, 3, 1);
+&nbsp;    addDirectedEdge(graph, 6, 2, 1);
+&nbsp;    addDirectedEdge(graph, 1, 6, 1);
+&nbsp;
+&nbsp;    long nodeCount = bfs(graph, 0, numNodes);
+&nbsp;    System.out.println(&quot;DFS node count starting at node 0: &quot; + nodeCount);
+&nbsp;
+&nbsp;    nodeCount = bfs(graph, 2, numNodes);
+&nbsp;    System.out.println(&quot;DFS node count starting at node 4: &quot; + nodeCount);
+&nbsp;
+&nbsp;    // Complete graph with self loops
+&nbsp;    graph.clear();
+&nbsp;    numNodes = 100;
+&nbsp;    for (int i = 0; i &lt; numNodes; i++)
+&nbsp;      for (int j = 0; j &lt; numNodes; j++) addDirectedEdge(graph, i, j, 1);
+&nbsp;
+&nbsp;    nodeCount = bfs(graph, 6, numNodes);
+&nbsp;    System.out.println(&quot;BFS node count starting at node 6: &quot; + nodeCount);
+&nbsp;    if (nodeCount != 100) System.err.println(&quot;Error with BFS&quot;);
+&nbsp;  }
+&nbsp;
+&nbsp;  // Helper method to setup graph
+&nbsp;  private static void addDirectedEdge(Map&lt;Integer, List&lt;Edge&gt;&gt; graph, int from, int to, int cost) {
+&nbsp;    List&lt;Edge&gt; list = graph.get(from);
+&nbsp;    if (list == null) {
+&nbsp;      list = new ArrayList&lt;Edge&gt;();
+&nbsp;      graph.put(from, list);
+&nbsp;    }
+&nbsp;    list.add(new Edge(from, to, cost));
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

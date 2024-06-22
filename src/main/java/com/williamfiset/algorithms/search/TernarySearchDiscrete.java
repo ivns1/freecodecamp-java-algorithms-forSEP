@@ -55,6 +55,7 @@ public class TernarySearchDiscrete {
         hi = mid2;
       }
     }
+    TernarySearchCoverageTool.trackBranch110Hit(); // Track branch res1 <= res2
     return lo;
   }
 

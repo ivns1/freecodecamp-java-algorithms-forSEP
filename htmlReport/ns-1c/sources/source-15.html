@@ -1,0 +1,311 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > FloydWarshallSolver</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.graphtheory</a>
+</div>
+
+<h1>Coverage Summary for Class: FloydWarshallSolver (com.williamfiset.algorithms.graphtheory)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">FloydWarshallSolver</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    66,7%
+  </span>
+  <span class="absValue">
+    (4/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    48,6%
+  </span>
+  <span class="absValue">
+    (34/70)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * This file contains an implementation of the Floyd-Warshall algorithm to find all pairs of
+&nbsp; * shortest paths between nodes in a graph. We also demonstrate how to detect negative cycles and
+&nbsp; * reconstruct the shortest path.
+&nbsp; *
+&nbsp; * &lt;p&gt;Time Complexity: O(V^3)
+&nbsp; *
+&nbsp; * @author Micah Stairs, William Fiset
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.graphtheory;
+&nbsp;
+&nbsp;// Import Java&#39;s special constants ? and -? which behave
+&nbsp;// as you expect them to when you do arithmetic. For example,
+&nbsp;// ? + ? = ?, ? + x = ?, -? + x = -? and ? + -? = Nan
+&nbsp;import static java.lang.Double.NEGATIVE_INFINITY;
+&nbsp;import static java.lang.Double.POSITIVE_INFINITY;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;public class FloydWarshallSolver {
+&nbsp;
+&nbsp;  private int n;
+&nbsp;  private boolean solved;
+&nbsp;  private double[][] dp;
+&nbsp;  private Integer[][] next;
+&nbsp;
+&nbsp;  private static final int REACHES_NEGATIVE_CYCLE = -1;
+&nbsp;
+&nbsp;  /**
+&nbsp;   * As input, this class takes an adjacency matrix with edge weights between nodes, where
+&nbsp;   * POSITIVE_INFINITY is used to indicate that two nodes are not connected.
+&nbsp;   *
+&nbsp;   * &lt;p&gt;NOTE: Usually the diagonal of the adjacency matrix is all zeros (i.e. matrix[i][i] = 0 for
+&nbsp;   * all i) since there is typically no cost to go from a node to itself, but this may depend on
+&nbsp;   * your graph and the problem you are trying to solve.
+&nbsp;   */
+<b class="fc">&nbsp;  public FloydWarshallSolver(double[][] matrix) {</b>
+<b class="fc">&nbsp;    n = matrix.length;</b>
+<b class="fc">&nbsp;    dp = new double[n][n];</b>
+<b class="fc">&nbsp;    next = new Integer[n][n];</b>
+&nbsp;
+&nbsp;    // Copy input matrix and setup &#39;next&#39; matrix for path reconstruction.
+<b class="fc">&nbsp;    for (int i = 0; i &lt; n; i++) {</b>
+<b class="fc">&nbsp;      for (int j = 0; j &lt; n; j++) {</b>
+<b class="fc">&nbsp;        if (matrix[i][j] != POSITIVE_INFINITY) next[i][j] = j;</b>
+<b class="fc">&nbsp;        dp[i][j] = matrix[i][j];</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Runs Floyd-Warshall to compute the shortest distance between every pair of nodes.
+&nbsp;   *
+&nbsp;   * @return The solved All Pairs Shortest Path (APSP) matrix.
+&nbsp;   */
+&nbsp;  public double[][] getApspMatrix() {
+<b class="fc">&nbsp;    solve();</b>
+<b class="fc">&nbsp;    return dp;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Executes the Floyd-Warshall algorithm.
+&nbsp;  public void solve() {
+<b class="fc">&nbsp;    if (solved) return;</b>
+&nbsp;
+&nbsp;    // Compute all pairs shortest paths.
+<b class="fc">&nbsp;    for (int k = 0; k &lt; n; k++) {</b>
+<b class="fc">&nbsp;      for (int i = 0; i &lt; n; i++) {</b>
+<b class="fc">&nbsp;        for (int j = 0; j &lt; n; j++) {</b>
+<b class="fc">&nbsp;          if (dp[i][k] + dp[k][j] &lt; dp[i][j]) {</b>
+<b class="fc">&nbsp;            dp[i][j] = dp[i][k] + dp[k][j];</b>
+<b class="fc">&nbsp;            next[i][j] = next[i][k];</b>
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+&nbsp;    // Identify negative cycles by propagating the value &#39;NEGATIVE_INFINITY&#39;
+&nbsp;    // to every edge that is part of or reaches into a negative cycle.
+<b class="fc">&nbsp;    for (int k = 0; k &lt; n; k++)</b>
+<b class="fc">&nbsp;      for (int i = 0; i &lt; n; i++)</b>
+<b class="fc">&nbsp;        for (int j = 0; j &lt; n; j++)</b>
+<b class="fc">&nbsp;          if (dp[i][k] != POSITIVE_INFINITY &amp;&amp; dp[k][j] != POSITIVE_INFINITY &amp;&amp; dp[k][k] &lt; 0) {</b>
+<b class="fc">&nbsp;            dp[i][j] = NEGATIVE_INFINITY;</b>
+<b class="fc">&nbsp;            next[i][j] = REACHES_NEGATIVE_CYCLE;</b>
+&nbsp;          }
+&nbsp;
+<b class="fc">&nbsp;    solved = true;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Reconstructs the shortest path (of nodes) from &#39;start&#39; to &#39;end&#39; inclusive.
+&nbsp;   *
+&nbsp;   * @return An array of nodes indexes of the shortest path from &#39;start&#39; to &#39;end&#39;. If &#39;start&#39; and
+&nbsp;   *     &#39;end&#39; are not connected return an empty array. If the shortest path from &#39;start&#39; to &#39;end&#39;
+&nbsp;   *     are reachable by a negative cycle return -1.
+&nbsp;   */
+&nbsp;  public List&lt;Integer&gt; reconstructShortestPath(int start, int end) {
+<b class="fc">&nbsp;    solve();</b>
+<b class="fc">&nbsp;    List&lt;Integer&gt; path = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;    if (dp[start][end] == POSITIVE_INFINITY) return path;</b>
+<b class="fc">&nbsp;    int at = start;</b>
+<b class="fc">&nbsp;    for (; at != end; at = next[at][end]) {</b>
+&nbsp;      // Return null since there are an infinite number of shortest paths.
+<b class="fc">&nbsp;      if (at == REACHES_NEGATIVE_CYCLE) return null;</b>
+<b class="fc">&nbsp;      path.add(at);</b>
+&nbsp;    }
+&nbsp;    // Return null since there are an infinite number of shortest paths.
+<b class="fc">&nbsp;    if (next[at][end] == REACHES_NEGATIVE_CYCLE) return null;</b>
+<b class="fc">&nbsp;    path.add(end);</b>
+<b class="fc">&nbsp;    return path;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /* Example usage. */
+&nbsp;
+&nbsp;  // Creates a graph with n nodes. The adjacency matrix is constructed
+&nbsp;  // such that the value of going from a node to itself is 0.
+&nbsp;  public static double[][] createGraph(int n) {
+<b class="nc">&nbsp;    double[][] matrix = new double[n][n];</b>
+<b class="nc">&nbsp;    for (int i = 0; i &lt; n; i++) {</b>
+<b class="nc">&nbsp;      java.util.Arrays.fill(matrix[i], POSITIVE_INFINITY);</b>
+<b class="nc">&nbsp;      matrix[i][i] = 0;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return matrix;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public static void main(String[] args) {
+&nbsp;    // Construct graph.
+<b class="nc">&nbsp;    int n = 7;</b>
+<b class="nc">&nbsp;    double[][] m = createGraph(n);</b>
+&nbsp;
+&nbsp;    // Add some edge values.
+<b class="nc">&nbsp;    m[0][1] = 2;</b>
+<b class="nc">&nbsp;    m[0][2] = 5;</b>
+<b class="nc">&nbsp;    m[0][6] = 10;</b>
+<b class="nc">&nbsp;    m[1][2] = 2;</b>
+<b class="nc">&nbsp;    m[1][4] = 11;</b>
+<b class="nc">&nbsp;    m[2][6] = 2;</b>
+<b class="nc">&nbsp;    m[6][5] = 11;</b>
+<b class="nc">&nbsp;    m[4][5] = 1;</b>
+<b class="nc">&nbsp;    m[5][4] = -2;</b>
+&nbsp;
+<b class="nc">&nbsp;    FloydWarshallSolver solver = new FloydWarshallSolver(m);</b>
+<b class="nc">&nbsp;    double[][] dist = solver.getApspMatrix();</b>
+&nbsp;
+<b class="nc">&nbsp;    for (int i = 0; i &lt; n; i++)</b>
+<b class="nc">&nbsp;      for (int j = 0; j &lt; n; j++)</b>
+<b class="nc">&nbsp;        System.out.printf(&quot;This shortest path from node %d to node %d is %.3f\n&quot;, i, j, dist[i][j]);</b>
+&nbsp;
+&nbsp;    // Prints:
+&nbsp;    // This shortest path from node 0 to node 0 is 0.000
+&nbsp;    // This shortest path from node 0 to node 1 is 2.000
+&nbsp;    // This shortest path from node 0 to node 2 is 4.000
+&nbsp;    // This shortest path from node 0 to node 3 is Infinity
+&nbsp;    // This shortest path from node 0 to node 4 is -Infinity
+&nbsp;    // This shortest path from node 0 to node 5 is -Infinity
+&nbsp;    // This shortest path from node 0 to node 6 is 6.000
+&nbsp;    // This shortest path from node 1 to node 0 is Infinity
+&nbsp;    // This shortest path from node 1 to node 1 is 0.000
+&nbsp;    // This shortest path from node 1 to node 2 is 2.000
+&nbsp;    // This shortest path from node 1 to node 3 is Infinity
+&nbsp;    // ...
+&nbsp;
+<b class="nc">&nbsp;    System.out.println();</b>
+&nbsp;
+&nbsp;    // Reconstructs the shortest paths from all nodes to every other nodes.
+<b class="nc">&nbsp;    for (int i = 0; i &lt; n; i++) {</b>
+<b class="nc">&nbsp;      for (int j = 0; j &lt; n; j++) {</b>
+<b class="nc">&nbsp;        List&lt;Integer&gt; path = solver.reconstructShortestPath(i, j);</b>
+&nbsp;        String str;
+<b class="nc">&nbsp;        if (path == null) {</b>
+<b class="nc">&nbsp;          str = &quot;HAS AN ? NUMBER OF SOLUTIONS! (negative cycle case)&quot;;</b>
+<b class="nc">&nbsp;        } else if (path.size() == 0) {</b>
+<b class="nc">&nbsp;          str = String.format(&quot;DOES NOT EXIST (node %d doesn&#39;t reach node %d)&quot;, i, j);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;          str =</b>
+<b class="nc">&nbsp;              String.join(</b>
+&nbsp;                  &quot; -&gt; &quot;,
+<b class="nc">&nbsp;                  path.stream()</b>
+<b class="nc">&nbsp;                      .map(Object::toString)</b>
+<b class="nc">&nbsp;                      .collect(java.util.stream.Collectors.toList()));</b>
+<b class="nc">&nbsp;          str = &quot;is: [&quot; + str + &quot;]&quot;;</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        System.out.printf(&quot;The shortest path from node %d to node %d %s\n&quot;, i, j, str);</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+&nbsp;    // Prints:
+&nbsp;    // The shortest path from node 0 to node 0 is: [0]
+&nbsp;    // The shortest path from node 0 to node 1 is: [0 -&gt; 1]
+&nbsp;    // The shortest path from node 0 to node 2 is: [0 -&gt; 1 -&gt; 2]
+&nbsp;    // The shortest path from node 0 to node 3 DOES NOT EXIST (node 0 doesn&#39;t reach node 3)
+&nbsp;    // The shortest path from node 0 to node 4 HAS AN ? NUMBER OF SOLUTIONS! (negative cycle case)
+&nbsp;    // The shortest path from node 0 to node 5 HAS AN ? NUMBER OF SOLUTIONS! (negative cycle case)
+&nbsp;    // The shortest path from node 0 to node 6 is: [0 -&gt; 1 -&gt; 2 -&gt; 6]
+&nbsp;    // The shortest path from node 1 to node 0 DOES NOT EXIST (node 1 doesn&#39;t reach node 0)
+&nbsp;    // The shortest path from node 1 to node 1 is: [1]
+&nbsp;    // The shortest path from node 1 to node 2 is: [1 -&gt; 2]
+&nbsp;    // The shortest path from node 1 to node 3 DOES NOT EXIST (node 1 doesn&#39;t reach node 3)
+&nbsp;    // The shortest path from node 1 to node 4 HAS AN ? NUMBER OF SOLUTIONS! (negative cycle case)
+&nbsp;    // The shortest path from node 1 to node 5 HAS AN ? NUMBER OF SOLUTIONS! (negative cycle case)
+&nbsp;    // The shortest path from node 1 to node 6 is: [1 -&gt; 2 -&gt; 6]
+&nbsp;    // The shortest path from node 2 to node 0 DOES NOT EXIST (node 2 doesn&#39;t reach node 0)
+&nbsp;    // ...
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

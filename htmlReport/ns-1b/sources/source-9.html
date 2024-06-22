@@ -1,0 +1,185 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > ConvexPolygonArea</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.geometry</a>
+</div>
+
+<h1>Coverage Summary for Class: ConvexPolygonArea (com.williamfiset.algorithms.geometry)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ConvexPolygonArea</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/31)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * This file contains code that can find the area of a convex polygon if the points are given in CW
+&nbsp; * or CCW order.
+&nbsp; *
+&nbsp; * &lt;p&gt;Time Complexity: O(n)
+&nbsp; *
+&nbsp; * @author William Fiset, william.alexandre.fiset@gmail.com
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.geometry;
+&nbsp;
+&nbsp;import java.awt.geom.Point2D;
+&nbsp;
+<b class="nc">&nbsp;public class ConvexPolygonArea {</b>
+&nbsp;
+&nbsp;  // Given a set of points in CW of CCW order this method finds the area
+&nbsp;  // of the convex polygon defined by those points. The input to this
+&nbsp;  // method is an array of N+1 points where points[0] = points[N]
+&nbsp;  public static double convexPolygonArea(Point2D[] points) {
+&nbsp;
+<b class="nc">&nbsp;    int N = points.length - 1;</b>
+&nbsp;
+<b class="nc">&nbsp;    if (N &lt; 3 || points[0] != points[N])</b>
+<b class="nc">&nbsp;      throw new IllegalArgumentException(</b>
+&nbsp;          &quot;Make sure N &gt;= 3 and that the points array has n+1 points and points[0] = points[N]&quot;);
+&nbsp;
+&nbsp;    // Let the first point be the fixed point
+<b class="nc">&nbsp;    Point2D fp = points[0];</b>
+<b class="nc">&nbsp;    double area = 0, fpx = fp.getX(), fpy = fp.getY();</b>
+&nbsp;
+<b class="nc">&nbsp;    for (int i = 1; i &lt; N; i++) {</b>
+&nbsp;
+<b class="nc">&nbsp;      Point2D pt1 = points[i];</b>
+<b class="nc">&nbsp;      Point2D pt2 = points[i + 1];</b>
+&nbsp;
+&nbsp;      // Find the components of the vectors &lt;a, c&gt;
+&nbsp;      // and &lt;b, d&gt; which are the vectors from the
+&nbsp;      // fixed point to the points &#39;pt1&#39; and &#39;pt2&#39;
+<b class="nc">&nbsp;      double a = pt1.getX() - fpx;</b>
+<b class="nc">&nbsp;      double b = pt2.getX() - fpx;</b>
+<b class="nc">&nbsp;      double c = pt1.getY() - fpy;</b>
+<b class="nc">&nbsp;      double d = pt2.getY() - fpy;</b>
+&nbsp;
+&nbsp;      // Sum the signed area of the parallelograms formed by
+&nbsp;      // the vectors using formula for the determinant of
+&nbsp;      // two vectors in R2 which is: ad - bc.
+<b class="nc">&nbsp;      area += a * d - b * c;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Return half the area (since we were summing parallelograms)
+<b class="nc">&nbsp;    return Math.abs(area) / 2.0;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Example of finding polygon area
+&nbsp;  public static void main(String[] args) {
+&nbsp;
+<b class="nc">&nbsp;    int N = 5;</b>
+&nbsp;
+&nbsp;    // Make sure you allocate n+1 elements!
+<b class="nc">&nbsp;    Point2D[] points = new Point2D[N + 1];</b>
+&nbsp;
+&nbsp;    // Clockwise order
+<b class="nc">&nbsp;    points[0] = new Point2D.Double(0, 0);</b>
+<b class="nc">&nbsp;    points[1] = new Point2D.Double(0, 2);</b>
+<b class="nc">&nbsp;    points[2] = new Point2D.Double(1, 3);</b>
+<b class="nc">&nbsp;    points[3] = new Point2D.Double(2, 2);</b>
+<b class="nc">&nbsp;    points[4] = new Point2D.Double(2, 0);</b>
+<b class="nc">&nbsp;    points[N] = points[0];</b>
+&nbsp;
+<b class="nc">&nbsp;    System.out.println(convexPolygonArea(points));</b>
+&nbsp;
+&nbsp;    // Counterclockwise
+<b class="nc">&nbsp;    points[0] = new Point2D.Double(0, 0);</b>
+<b class="nc">&nbsp;    points[1] = new Point2D.Double(2, 0);</b>
+<b class="nc">&nbsp;    points[2] = new Point2D.Double(2, 2);</b>
+<b class="nc">&nbsp;    points[3] = new Point2D.Double(1, 3);</b>
+<b class="nc">&nbsp;    points[4] = new Point2D.Double(0, 2);</b>
+<b class="nc">&nbsp;    points[N] = points[0];</b>
+&nbsp;
+<b class="nc">&nbsp;    System.out.println(convexPolygonArea(points));</b>
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

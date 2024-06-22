@@ -1,0 +1,164 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > ListStack</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.datastructures.stack</a>
+</div>
+
+<h1>Coverage Summary for Class: ListStack (com.williamfiset.algorithms.datastructures.stack)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ListStack</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    66,7%
+  </span>
+  <span class="absValue">
+    (6/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    69,2%
+  </span>
+  <span class="absValue">
+    (9/13)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * A linked list implementation of a stack
+&nbsp; *
+&nbsp; * @author William Fiset, william.alexandre.fiset@gmail.com
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.datastructures.stack;
+&nbsp;
+&nbsp;public class ListStack&lt;T&gt; implements Iterable&lt;T&gt;, Stack&lt;T&gt; {
+&nbsp;
+<b class="fc">&nbsp;  private java.util.LinkedList&lt;T&gt; list = new java.util.LinkedList&lt;T&gt;();</b>
+&nbsp;
+&nbsp;  // Create an empty stack
+<b class="fc">&nbsp;  public ListStack() {}</b>
+&nbsp;
+&nbsp;  // Create a Stack with an initial element
+<b class="nc">&nbsp;  public ListStack(T firstElem) {</b>
+<b class="nc">&nbsp;    push(firstElem);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Return the number of elements in the stack
+&nbsp;  public int size() {
+<b class="fc">&nbsp;    return list.size();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Check if the stack is empty
+&nbsp;  public boolean isEmpty() {
+<b class="fc">&nbsp;    return size() == 0;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Push an element on the stack
+&nbsp;  public void push(T elem) {
+<b class="fc">&nbsp;    list.addLast(elem);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Pop an element off the stack
+&nbsp;  // Throws an error is the stack is empty
+&nbsp;  public T pop() {
+<b class="fc">&nbsp;    if (isEmpty()) throw new java.util.EmptyStackException();</b>
+<b class="fc">&nbsp;    return list.removeLast();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Peek the top of the stack without removing an element
+&nbsp;  // Throws an exception if the stack is empty
+&nbsp;  public T peek() {
+<b class="fc">&nbsp;    if (isEmpty()) throw new java.util.EmptyStackException();</b>
+<b class="fc">&nbsp;    return list.peekLast();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Searches for the element starting from top of the stack
+&nbsp;  // Returns -1 if the element is not present in the stack
+&nbsp;  public int search(T elem) {
+<b class="nc">&nbsp;    return list.lastIndexOf(elem);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Allow users to iterate through the stack using an iterator
+&nbsp;  @Override
+&nbsp;  public java.util.Iterator&lt;T&gt; iterator() {
+<b class="nc">&nbsp;    return list.iterator();</b>
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

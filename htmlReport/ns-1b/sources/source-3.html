@@ -1,0 +1,271 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > CircleCircleIntersectionArea</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.geometry</a>
+</div>
+
+<h1>Coverage Summary for Class: CircleCircleIntersectionArea (com.williamfiset.algorithms.geometry)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CircleCircleIntersectionArea</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/62)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * This file shows you how to find the area of intersection of two circles
+&nbsp; *
+&nbsp; * &lt;p&gt;Time Complexity: O(1)
+&nbsp; *
+&nbsp; * &lt;p&gt;NOTE: This file could use some formal testing.
+&nbsp; *
+&nbsp; * @author William Fiset, william.alexandre.fiset@gmail.com
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.geometry;
+&nbsp;
+&nbsp;import static java.lang.Math.*;
+&nbsp;
+&nbsp;import java.awt.geom.*;
+&nbsp;
+<b class="nc">&nbsp;public class CircleCircleIntersectionArea {</b>
+&nbsp;
+&nbsp;  private static final double EPS = 1e-6;
+&nbsp;
+&nbsp;  // Due to double rounding precision the value passed into the acos
+&nbsp;  // function may be outside its domain of [-1, +1] which would return
+&nbsp;  // the value Double.NaN which we do not want.
+&nbsp;  private static double arccosSafe(double x) {
+<b class="nc">&nbsp;    if (x &gt;= +1.0) return 0;</b>
+<b class="nc">&nbsp;    if (x &lt;= -1.0) return PI;</b>
+<b class="nc">&nbsp;    return acos(x);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public static double circleCircleIntersectionArea(Point2D c1, double r1, Point2D c2, double r2) {
+&nbsp;
+<b class="nc">&nbsp;    double r = r1, R = r2;</b>
+<b class="nc">&nbsp;    Point2D c = c1, C = c2;</b>
+&nbsp;
+<b class="nc">&nbsp;    if (r1 &gt; r2) {</b>
+<b class="nc">&nbsp;      r = r2;</b>
+<b class="nc">&nbsp;      R = r1;</b>
+<b class="nc">&nbsp;      c = c2;</b>
+<b class="nc">&nbsp;      C = c1;</b>
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    double dist = c1.distance(c2);</b>
+<b class="nc">&nbsp;    Point2D[] intersections = circleCircleIntersection(c1, r1, c2, r2);</b>
+&nbsp;
+&nbsp;    // Smaller circle is contained within larger circle
+<b class="nc">&nbsp;    if (intersections == null) {</b>
+<b class="nc">&nbsp;      return PI * r * r;</b>
+&nbsp;
+&nbsp;      // Circles do not intersect
+<b class="nc">&nbsp;    } else if (intersections.length == 0) {</b>
+<b class="nc">&nbsp;      return 0;</b>
+&nbsp;
+&nbsp;      // One intersection point
+<b class="nc">&nbsp;    } else if (intersections.length == 1) {</b>
+&nbsp;
+&nbsp;      // Check if the smaller circle is inside larger circle
+<b class="nc">&nbsp;      if (dist &lt; R) {</b>
+<b class="nc">&nbsp;        return PI * r * r;</b>
+&nbsp;      } else {
+<b class="nc">&nbsp;        return 0;</b>
+&nbsp;      }
+&nbsp;
+&nbsp;      // Circles intersect at two distinct points
+&nbsp;    } else {
+&nbsp;
+&nbsp;      // http://stackoverflow.com/questions/4247889/area-of-intersection-between-two-circles
+<b class="nc">&nbsp;      double d = dist;</b>
+<b class="nc">&nbsp;      Double part1 = r * r * arccosSafe((d * d + r * r - R * R) / (2 * d * r));</b>
+<b class="nc">&nbsp;      Double part2 = R * R * arccosSafe((d * d + R * R - r * r) / (2 * d * R));</b>
+<b class="nc">&nbsp;      Double part3 = 0.5 * sqrt((-d + r + R) * (d + r - R) * (d - r + R) * (d + r + R));</b>
+&nbsp;
+<b class="nc">&nbsp;      return part1 + part2 - part3;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  // Finds the intersection points of two circles. If the smaller circle is contained
+&nbsp;  // within the larger one this method returns null. If there is no intersection point
+&nbsp;  // an empty array is returned. If there is a unique intersection point that point alone
+&nbsp;  // is returned, otherwise two distinct points are returned where the intersection is.
+&nbsp;  public static Point2D[] circleCircleIntersection(Point2D c1, double r1, Point2D c2, double r2) {
+&nbsp;
+&nbsp;    // r is the smaller radius and R is bigger radius
+&nbsp;    double r, R;
+&nbsp;
+&nbsp;    // c is the center of the small circle
+&nbsp;    // C is the center of the big circle
+&nbsp;    Point2D c, C;
+&nbsp;
+&nbsp;    // Determine which is the bigger/smaller circle
+<b class="nc">&nbsp;    if (r1 &lt; r2) {</b>
+<b class="nc">&nbsp;      r = r1;</b>
+<b class="nc">&nbsp;      R = r2;</b>
+<b class="nc">&nbsp;      c = c1;</b>
+<b class="nc">&nbsp;      C = c2;</b>
+&nbsp;    } else {
+<b class="nc">&nbsp;      r = r2;</b>
+<b class="nc">&nbsp;      R = r1;</b>
+<b class="nc">&nbsp;      c = c2;</b>
+<b class="nc">&nbsp;      C = c1;</b>
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    double dist = c1.distance(c2);</b>
+&nbsp;
+&nbsp;    // There are an infinite number of solutions
+<b class="nc">&nbsp;    if (dist &lt; EPS &amp;&amp; abs(r - R) &lt; EPS) return null;</b>
+&nbsp;
+&nbsp;    // No intersection (small circle contained within big circle)
+<b class="nc">&nbsp;    if (r + dist &lt; R) return null;</b>
+&nbsp;
+&nbsp;    // No intersection (circles are disjoint)
+<b class="nc">&nbsp;    if (r + R &lt; dist) return new Point2D[] {};</b>
+&nbsp;
+&nbsp;    // Let (cx, cy) be the center of the small circle
+&nbsp;    // Let (Cx, Cy) be the center of the larger circle
+<b class="nc">&nbsp;    double cx = c.getX();</b>
+<b class="nc">&nbsp;    double Cx = C.getX();</b>
+<b class="nc">&nbsp;    double cy = c.getY();</b>
+<b class="nc">&nbsp;    double Cy = C.getY();</b>
+&nbsp;
+&nbsp;    // Compute the vector from the big circle to the little circle
+<b class="nc">&nbsp;    double vx = cx - Cx;</b>
+<b class="nc">&nbsp;    double vy = cy - Cy;</b>
+&nbsp;
+&nbsp;    // Scale the vector by R and offset the vector so that the head of the vector
+&nbsp;    // is positioned on the circumference of the big circle ready to be rotated
+<b class="nc">&nbsp;    double x = (vx / dist) * R + Cx;</b>
+<b class="nc">&nbsp;    double y = (vy / dist) * R + Cy;</b>
+<b class="nc">&nbsp;    Point2D point = new Point2D.Double(x, y);</b>
+&nbsp;
+&nbsp;    // Unique intersection point on circumference of both circles
+<b class="nc">&nbsp;    if (abs(r + R - dist) &lt; EPS || abs(R - (r + dist)) &lt; EPS) return new Point2D[] {point};</b>
+&nbsp;
+&nbsp;    // Find the angle via cos law
+<b class="nc">&nbsp;    double angle = arccosSafe((r * r - dist * dist - R * R) / (-2.0 * dist * R));</b>
+&nbsp;
+&nbsp;    // Two unique intersection points
+<b class="nc">&nbsp;    Point2D pt1 = rotatePoint(C, point, angle);</b>
+<b class="nc">&nbsp;    Point2D pt2 = rotatePoint(C, point, -angle);</b>
+&nbsp;
+<b class="nc">&nbsp;    return new Point2D[] {pt1, pt2};</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Rotate point &#39;pt&#39; a certain number of radians clockwise
+&nbsp;  // relative to some fixed point &#39;fp&#39;. Note that the angle
+&nbsp;  // should be specified in radians, not degrees.
+&nbsp;  private static Point2D rotatePoint(Point2D fp, Point2D pt, double angle) {
+&nbsp;
+<b class="nc">&nbsp;    double fpx = fp.getX();</b>
+<b class="nc">&nbsp;    double fpy = fp.getY();</b>
+<b class="nc">&nbsp;    double ptx = pt.getX();</b>
+<b class="nc">&nbsp;    double pty = pt.getY();</b>
+&nbsp;
+&nbsp;    // Compute the vector &lt;x, y&gt; from the fixed point
+&nbsp;    // to the point of rotation.
+<b class="nc">&nbsp;    double x = ptx - fpx;</b>
+<b class="nc">&nbsp;    double y = pty - fpy;</b>
+&nbsp;
+&nbsp;    // Apply the clockwise rotation matrix to the vector &lt;x, y&gt;
+&nbsp;    // |  cos(theta) sin(theta) ||x|   |  xcos(theta) + ysin(theta) |
+&nbsp;    // | -sin(theta) cos(theta) ||y| = | -xsin(theta) + ycos(theta) |
+<b class="nc">&nbsp;    double xRotated = x * cos(angle) + y * sin(angle);</b>
+<b class="nc">&nbsp;    double yRotated = y * cos(angle) - x * sin(angle);</b>
+&nbsp;
+&nbsp;    // The rotation matrix rotated the vector about the origin, so we
+&nbsp;    // need to offset it by the point (fpx, fpy) to get the right answer
+<b class="nc">&nbsp;    return new Point2D.Double(fpx + xRotated, fpy + yRotated);</b>
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

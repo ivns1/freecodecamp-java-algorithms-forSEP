@@ -1,0 +1,404 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > BinaryHeapQuickRemovals</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.datastructures.priorityqueue</a>
+</div>
+
+<h1>Coverage Summary for Class: BinaryHeapQuickRemovals (com.williamfiset.algorithms.datastructures.priorityqueue)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BinaryHeapQuickRemovals</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    91,3%
+  </span>
+  <span class="absValue">
+    (21/23)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    95,6%
+  </span>
+  <span class="absValue">
+    (87/91)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * A min priority queue implementation using a binary heap. This implementation tracks each element
+&nbsp; * inside the binary heap with a hashtable for quick removals.
+&nbsp; *
+&nbsp; * @author William Fiset, william.alexandre.fiset@gmail.com
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.datastructures.priorityqueue;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.Collection;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.Set;
+&nbsp;import java.util.TreeSet;
+&nbsp;
+&nbsp;public class BinaryHeapQuickRemovals&lt;T extends Comparable&lt;T&gt;&gt; {
+&nbsp;
+&nbsp;  // A dynamic list to track the elements inside the heap
+<b class="fc">&nbsp;  private List&lt;T&gt; heap = null;</b>
+&nbsp;
+&nbsp;  // This map keeps track of the possible indices a particular
+&nbsp;  // node value is found in the heap. Having this mapping lets
+&nbsp;  // us have O(log(n)) removals and O(1) element containment check
+&nbsp;  // at the cost of some additional space and minor overhead
+<b class="fc">&nbsp;  private Map&lt;T, TreeSet&lt;Integer&gt;&gt; map = new HashMap&lt;&gt;();</b>
+&nbsp;
+&nbsp;  // Construct and initially empty priority queue
+&nbsp;  public BinaryHeapQuickRemovals() {
+<b class="fc">&nbsp;    this(1);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Construct a priority queue with an initial capacity
+<b class="fc">&nbsp;  public BinaryHeapQuickRemovals(int sz) {</b>
+<b class="fc">&nbsp;    heap = new ArrayList&lt;&gt;(sz);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Construct a priority queue using heapify in O(n) time, a great explanation can be found at:
+&nbsp;  // http://www.cs.umd.edu/~meesh/351/mount/lectures/lect14-heapsort-analysis-part.pdf
+<b class="fc">&nbsp;  public BinaryHeapQuickRemovals(T[] elems) {</b>
+&nbsp;
+<b class="fc">&nbsp;    int heapSize = elems.length;</b>
+<b class="fc">&nbsp;    heap = new ArrayList&lt;T&gt;(heapSize);</b>
+&nbsp;
+&nbsp;    // Place all element in heap
+<b class="fc">&nbsp;    for (int i = 0; i &lt; heapSize; i++) {</b>
+<b class="fc">&nbsp;      mapAdd(elems[i], i);</b>
+<b class="fc">&nbsp;      heap.add(elems[i]);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Heapify process, O(n)
+<b class="fc">&nbsp;    for (int i = Math.max(0, (heapSize / 2) - 1); i &gt;= 0; i--) sink(i);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Priority queue construction, O(nlog(n))
+&nbsp;  public BinaryHeapQuickRemovals(Collection&lt;T&gt; elems) {
+<b class="nc">&nbsp;    this(elems.size());</b>
+<b class="nc">&nbsp;    for (T elem : elems) add(elem);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Returns true/false depending on if the priority queue is empty
+&nbsp;  public boolean isEmpty() {
+<b class="fc">&nbsp;    return size() == 0;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Clears everything inside the heap, O(n)
+&nbsp;  public void clear() {
+<b class="fc">&nbsp;    heap.clear();</b>
+<b class="fc">&nbsp;    map.clear();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Return the size of the heap
+&nbsp;  public int size() {
+<b class="fc">&nbsp;    return heap.size();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Returns the value of the element with the lowest
+&nbsp;  // priority in this priority queue. If the priority
+&nbsp;  // queue is empty null is returned.
+&nbsp;  public T peek() {
+<b class="fc">&nbsp;    if (isEmpty()) return null;</b>
+<b class="fc">&nbsp;    return heap.get(0);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Removes the root of the heap, O(log(n))
+&nbsp;  public T poll() {
+<b class="fc">&nbsp;    return removeAt(0);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Test if an element is in heap, O(1)
+&nbsp;  public boolean contains(T elem) {
+&nbsp;
+&nbsp;    // Map lookup to check containment, O(1)
+<b class="fc">&nbsp;    if (elem == null) return false;</b>
+<b class="fc">&nbsp;    return map.containsKey(elem);</b>
+&nbsp;
+&nbsp;    // Linear scan to check containment, O(n)
+&nbsp;    // for(int i = 0; i &lt; heapSize; i++)
+&nbsp;    //   if (heap.get(i).equals(elem))
+&nbsp;    //     return true;
+&nbsp;    // return false;
+&nbsp;
+&nbsp;  }
+&nbsp;
+&nbsp;  // Adds an element to the priority queue, the
+&nbsp;  // element must not be null, O(log(n))
+&nbsp;  public void add(T elem) {
+&nbsp;
+<b class="fc">&nbsp;    if (elem == null) throw new IllegalArgumentException();</b>
+&nbsp;
+<b class="fc">&nbsp;    heap.add(elem);</b>
+<b class="fc">&nbsp;    int indexOfLastElem = size() - 1;</b>
+<b class="fc">&nbsp;    mapAdd(elem, indexOfLastElem);</b>
+&nbsp;
+<b class="fc">&nbsp;    swim(indexOfLastElem);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Tests if the value of node i &lt;= node j
+&nbsp;  // This method assumes i &amp; j are valid indices, O(1)
+&nbsp;  private boolean less(int i, int j) {
+&nbsp;
+<b class="fc">&nbsp;    T node1 = heap.get(i);</b>
+<b class="fc">&nbsp;    T node2 = heap.get(j);</b>
+<b class="fc">&nbsp;    return node1.compareTo(node2) &lt;= 0;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Perform bottom up node swim, O(log(n))
+&nbsp;  private void swim(int k) {
+&nbsp;
+&nbsp;    // Grab the index of the next parent node WRT to k
+<b class="fc">&nbsp;    int parent = (k - 1) / 2;</b>
+&nbsp;
+&nbsp;    // Keep swimming while we have not reached the
+&nbsp;    // root and while we&#39;re less than our parent.
+<b class="fc">&nbsp;    while (k &gt; 0 &amp;&amp; less(k, parent)) {</b>
+&nbsp;
+&nbsp;      // Exchange k with the parent
+<b class="fc">&nbsp;      swap(parent, k);</b>
+<b class="fc">&nbsp;      k = parent;</b>
+&nbsp;
+&nbsp;      // Grab the index of the next parent node WRT to k
+<b class="fc">&nbsp;      parent = (k - 1) / 2;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  // Top down node sink, O(log(n))
+&nbsp;  private void sink(int k) {
+<b class="fc">&nbsp;    int heapSize = size();</b>
+&nbsp;
+&nbsp;    while (true) {
+&nbsp;
+<b class="fc">&nbsp;      int left = 2 * k + 1; // Left  node</b>
+<b class="fc">&nbsp;      int right = 2 * k + 2; // Right node</b>
+<b class="fc">&nbsp;      int smallest = left; // Assume left is the smallest node of the two children</b>
+&nbsp;
+&nbsp;      // Find which is smaller left or right
+&nbsp;      // If right is smaller set smallest to be right
+<b class="fc">&nbsp;      if (right &lt; heapSize &amp;&amp; less(right, left)) smallest = right;</b>
+&nbsp;
+&nbsp;      // Stop if we&#39;re outside the bounds of the tree
+&nbsp;      // or stop early if we cannot sink k anymore
+<b class="fc">&nbsp;      if (left &gt;= heapSize || less(k, smallest)) break;</b>
+&nbsp;
+&nbsp;      // Move down the tree following the smallest node
+<b class="fc">&nbsp;      swap(smallest, k);</b>
+<b class="fc">&nbsp;      k = smallest;</b>
+<b class="fc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Swap two nodes. Assumes i &amp; j are valid, O(1)
+&nbsp;  private void swap(int i, int j) {
+&nbsp;
+<b class="fc">&nbsp;    T i_elem = heap.get(i);</b>
+<b class="fc">&nbsp;    T j_elem = heap.get(j);</b>
+&nbsp;
+<b class="fc">&nbsp;    heap.set(i, j_elem);</b>
+<b class="fc">&nbsp;    heap.set(j, i_elem);</b>
+&nbsp;
+<b class="fc">&nbsp;    mapSwap(i_elem, j_elem, i, j);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Removes a particular element in the heap, O(log(n))
+&nbsp;  public boolean remove(T element) {
+&nbsp;
+<b class="fc">&nbsp;    if (element == null) return false;</b>
+&nbsp;
+&nbsp;    // Linear removal via search, O(n)
+&nbsp;    // for (int i = 0; i &lt; heapSize; i++) {
+&nbsp;    //   if (element.equals(heap.get(i))) {
+&nbsp;    //     removeAt(i);
+&nbsp;    //     return true;
+&nbsp;    //   }
+&nbsp;    // }
+&nbsp;
+&nbsp;    // Logarithmic removal with map, O(log(n))
+<b class="fc">&nbsp;    Integer index = mapGet(element);</b>
+<b class="fc">&nbsp;    if (index != null) removeAt(index);</b>
+<b class="fc">&nbsp;    return index != null;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Removes a node at particular index, O(log(n))
+&nbsp;  private T removeAt(int i) {
+&nbsp;
+<b class="fc">&nbsp;    if (isEmpty()) return null;</b>
+&nbsp;
+<b class="fc">&nbsp;    int indexOfLastElem = size() - 1;</b>
+<b class="fc">&nbsp;    T removed_data = heap.get(i);</b>
+<b class="fc">&nbsp;    swap(i, indexOfLastElem);</b>
+&nbsp;
+&nbsp;    // Obliterate the value
+<b class="fc">&nbsp;    heap.remove(indexOfLastElem);</b>
+<b class="fc">&nbsp;    mapRemove(removed_data, indexOfLastElem);</b>
+&nbsp;
+&nbsp;    // Removed last element
+<b class="fc">&nbsp;    if (i == indexOfLastElem) return removed_data;</b>
+&nbsp;
+<b class="fc">&nbsp;    T elem = heap.get(i);</b>
+&nbsp;
+&nbsp;    // Try sinking element
+<b class="fc">&nbsp;    sink(i);</b>
+&nbsp;
+&nbsp;    // If sinking did not work try swimming
+<b class="fc">&nbsp;    if (heap.get(i).equals(elem)) swim(i);</b>
+&nbsp;
+<b class="fc">&nbsp;    return removed_data;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Recursively checks if this heap is a min heap
+&nbsp;  // This method is just for testing purposes to make
+&nbsp;  // sure the heap invariant is still being maintained
+&nbsp;  // Called this method with k=0 to start at the root
+&nbsp;  public boolean isMinHeap(int k) {
+&nbsp;
+&nbsp;    // If we are outside the bounds of the heap return true
+<b class="fc">&nbsp;    int heapSize = size();</b>
+<b class="fc">&nbsp;    if (k &gt;= heapSize) return true;</b>
+&nbsp;
+<b class="fc">&nbsp;    int left = 2 * k + 1;</b>
+<b class="fc">&nbsp;    int right = 2 * k + 2;</b>
+&nbsp;
+&nbsp;    // Make sure that the current node k is less than
+&nbsp;    // both of its children left, and right if they exist
+&nbsp;    // return false otherwise to indicate an invalid heap
+<b class="fc">&nbsp;    if (left &lt; heapSize &amp;&amp; !less(k, left)) return false;</b>
+<b class="fc">&nbsp;    if (right &lt; heapSize &amp;&amp; !less(k, right)) return false;</b>
+&nbsp;
+&nbsp;    // Recurse on both children to make sure they&#39;re also valid heaps
+<b class="fc">&nbsp;    return isMinHeap(left) &amp;&amp; isMinHeap(right);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Add a node value and its index to the map
+&nbsp;  private void mapAdd(T value, int index) {
+&nbsp;
+<b class="fc">&nbsp;    TreeSet&lt;Integer&gt; set = map.get(value);</b>
+&nbsp;
+&nbsp;    // New value being inserted in map
+<b class="fc">&nbsp;    if (set == null) {</b>
+&nbsp;
+<b class="fc">&nbsp;      set = new TreeSet&lt;&gt;();</b>
+<b class="fc">&nbsp;      set.add(index);</b>
+<b class="fc">&nbsp;      map.put(value, set);</b>
+&nbsp;
+&nbsp;      // Value already exists in map
+<b class="fc">&nbsp;    } else set.add(index);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Removes the index at a given value, O(log(n))
+&nbsp;  private void mapRemove(T value, int index) {
+<b class="fc">&nbsp;    TreeSet&lt;Integer&gt; set = map.get(value);</b>
+<b class="fc">&nbsp;    set.remove(index); // TreeSets take O(log(n)) removal time</b>
+<b class="fc">&nbsp;    if (set.size() == 0) map.remove(value);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Extract an index position for the given value
+&nbsp;  // NOTE: If a value exists multiple times in the heap the highest
+&nbsp;  // index is returned (this has arbitrarily been chosen)
+&nbsp;  private Integer mapGet(T value) {
+<b class="fc">&nbsp;    TreeSet&lt;Integer&gt; set = map.get(value);</b>
+<b class="fc">&nbsp;    if (set != null) return set.last();</b>
+<b class="nc">&nbsp;    return null;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Exchange the index of two nodes internally within the map
+&nbsp;  private void mapSwap(T val1, T val2, int val1Index, int val2Index) {
+&nbsp;
+<b class="fc">&nbsp;    Set&lt;Integer&gt; set1 = map.get(val1);</b>
+<b class="fc">&nbsp;    Set&lt;Integer&gt; set2 = map.get(val2);</b>
+&nbsp;
+<b class="fc">&nbsp;    set1.remove(val1Index);</b>
+<b class="fc">&nbsp;    set2.remove(val2Index);</b>
+&nbsp;
+<b class="fc">&nbsp;    set1.add(val2Index);</b>
+<b class="fc">&nbsp;    set2.add(val1Index);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public String toString() {
+<b class="nc">&nbsp;    return heap.toString();</b>
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

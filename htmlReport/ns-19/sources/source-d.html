@@ -1,0 +1,437 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > WeightedMaximumCardinalityMatchingRecursive</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.dp</a>
+</div>
+
+<h1>Coverage Summary for Class: WeightedMaximumCardinalityMatchingRecursive (com.williamfiset.algorithms.dp)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">WeightedMaximumCardinalityMatchingRecursive</td>
+<td class="coverageStat">
+  <span class="percent">
+    80%
+  </span>
+  <span class="absValue">
+    (8/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    81,8%
+  </span>
+  <span class="absValue">
+    (81/99)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">WeightedMaximumCardinalityMatchingRecursive$MatchingCost</td>
+<td class="coverageStat">
+  <span class="percent">
+    85,7%
+  </span>
+  <span class="absValue">
+    (6/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    94,7%
+  </span>
+  <span class="absValue">
+    (18/19)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    82,4%
+  </span>
+  <span class="absValue">
+    (14/17)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    83,9%
+  </span>
+  <span class="absValue">
+    (99/118)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * Implementation of the Minimum Weight Perfect Matching (MWPM) problem. In this problem you are
+&nbsp; * given a distance matrix which gives the distance from each node to every other node, and you want
+&nbsp; * to pair up all the nodes to one another minimizing the overall cost.
+&nbsp; *
+&nbsp; * &lt;p&gt;Tested against: UVA 10911 - Forming Quiz Teams
+&nbsp; *
+&nbsp; * &lt;p&gt;To Run: ./gradlew run -Palgorithm=dp.WeightedMaximumCardinalityMatchingRecursive
+&nbsp; *
+&nbsp; * &lt;p&gt;Time Complexity: O(n * 2^n)
+&nbsp; *
+&nbsp; * @author William Fiset
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.dp;
+&nbsp;
+&nbsp;import java.awt.geom.*;
+&nbsp;import java.util.*;
+&nbsp;
+&nbsp;public class WeightedMaximumCardinalityMatchingRecursive implements MwpmInterface {
+&nbsp;
+&nbsp;  // A `MatchingCost` object captures the cost of a matching. Because we allow matching nodes which
+&nbsp;  // do not have edges between them we define `impossibleEdgeMatches` to track the number of times
+&nbsp;  // this happens. When comparing two MatchingCost objects, the one with the fewest number of
+&nbsp;  // impossible edges matches is ranked higher and ties broken based on cost, see the
+&nbsp;  // `isBetterMatchingCost` method below.
+&nbsp;  private static class MatchingCost {
+<b class="fc">&nbsp;    double cost = 0;</b>
+<b class="fc">&nbsp;    int impossibleEdgeMatches = 0;</b>
+&nbsp;
+<b class="fc">&nbsp;    public MatchingCost() {}</b>
+&nbsp;
+<b class="fc">&nbsp;    public MatchingCost(double cost, int iem) {</b>
+<b class="fc">&nbsp;      this.cost = cost;</b>
+<b class="fc">&nbsp;      this.impossibleEdgeMatches = iem;</b>
+&nbsp;    }
+&nbsp;
+<b class="fc">&nbsp;    public MatchingCost(MatchingCost mc) {</b>
+<b class="fc">&nbsp;      this.cost = mc.cost;</b>
+<b class="fc">&nbsp;      this.impossibleEdgeMatches = mc.impossibleEdgeMatches;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public static MatchingCost createInfiniteValueMatchingCost() {
+<b class="fc">&nbsp;      return new MatchingCost(Double.MAX_VALUE, Integer.MAX_VALUE / 2);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Updates the MatchingCost with the value of a particular edge. If the specified edge value is
+&nbsp;    // `null`, then the edge doesn&#39;t actually exist in the graph.
+&nbsp;    public void updateMatchingCost(Double edgeCost) {
+<b class="fc">&nbsp;      if (edgeCost == null) {</b>
+<b class="fc">&nbsp;        impossibleEdgeMatches++;</b>
+&nbsp;      } else {
+<b class="fc">&nbsp;        cost += edgeCost;</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+&nbsp;    // Checks if the current matching cost is better than `mc`
+&nbsp;    public boolean isBetterMatchingCost(MatchingCost mc) {
+<b class="fc">&nbsp;      if (impossibleEdgeMatches &lt; mc.impossibleEdgeMatches) {</b>
+<b class="fc">&nbsp;        return true;</b>
+&nbsp;      }
+<b class="fc">&nbsp;      if (impossibleEdgeMatches == mc.impossibleEdgeMatches) {</b>
+<b class="fc">&nbsp;        return cost &lt; mc.cost;</b>
+&nbsp;      }
+<b class="fc">&nbsp;      return false;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public String toString() {
+<b class="nc">&nbsp;      return cost + &quot; &quot; + impossibleEdgeMatches;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  // Inputs
+&nbsp;  private int n;
+&nbsp;  private Double[][] cost;
+&nbsp;
+&nbsp;  // Internal
+&nbsp;  private final int FULL_STATE;
+<b class="fc">&nbsp;  private int artificialNodeId = -1;</b>
+&nbsp;  private boolean isOdd;
+&nbsp;  private boolean solved;
+&nbsp;
+&nbsp;  // Outputs
+&nbsp;  private double minWeightCost;
+&nbsp;  private int[] matching;
+&nbsp;
+&nbsp;  // The cost matrix should be a symmetric (i.e cost[i][j] = cost[j][i]) and have a cost of `null`
+&nbsp;  // between nodes i and j if no edge exists between those two nodes.
+<b class="fc">&nbsp;  public WeightedMaximumCardinalityMatchingRecursive(Double[][] cost) {</b>
+<b class="fc">&nbsp;    if (cost == null) throw new IllegalArgumentException(&quot;Input cannot be null&quot;);</b>
+<b class="fc">&nbsp;    n = cost.length;</b>
+<b class="fc">&nbsp;    if (n &lt;= 1) throw new IllegalArgumentException(&quot;Invalid matrix size: &quot; + n);</b>
+<b class="fc">&nbsp;    setCostMatrix(cost);</b>
+<b class="fc">&nbsp;    FULL_STATE = (1 &lt;&lt; n) - 1;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Sets the cost matrix. If the number of nodes in the graph is odd, add an artificial
+&nbsp;  // node that connects to every other node with a cost of infinity. This will make it easy
+&nbsp;  // to find a perfect matching and remove in the artificial node in the end.
+&nbsp;  private void setCostMatrix(Double[][] inputMatrix) {
+<b class="fc">&nbsp;    isOdd = (n % 2 == 0) ? false : true;</b>
+<b class="fc">&nbsp;    Double[][] newCostMatrix = null;</b>
+&nbsp;
+<b class="fc">&nbsp;    if (isOdd) {</b>
+<b class="fc">&nbsp;      newCostMatrix = new Double[n + 1][n + 1];</b>
+&nbsp;    } else {
+<b class="fc">&nbsp;      newCostMatrix = new Double[n][n];</b>
+&nbsp;    }
+&nbsp;
+<b class="fc">&nbsp;    for (int i = 0; i &lt; n; ++i) {</b>
+<b class="fc">&nbsp;      for (int j = 0; j &lt; n; ++j) {</b>
+<b class="fc">&nbsp;        newCostMatrix[i][j] = inputMatrix[i][j];</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+<b class="fc">&nbsp;    if (isOdd) {</b>
+<b class="fc">&nbsp;      for (int i = 0; i &lt; n; i++) {</b>
+<b class="fc">&nbsp;        newCostMatrix[n][i] = null;</b>
+<b class="fc">&nbsp;        newCostMatrix[i][n] = null;</b>
+&nbsp;      }
+<b class="fc">&nbsp;      newCostMatrix[n][n] = 0.0;</b>
+<b class="fc">&nbsp;      artificialNodeId = n;</b>
+<b class="fc">&nbsp;      n++;</b>
+&nbsp;    }
+&nbsp;
+<b class="fc">&nbsp;    this.cost = newCostMatrix;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public double getMinWeightCost() {
+<b class="fc">&nbsp;    solve();</b>
+<b class="fc">&nbsp;    return minWeightCost;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Get the minimum weight cost matching. The matching is returned as an array where the nodes at
+&nbsp;   * index 2*i and 2*i+1 form a matched pair. For example, nodes at indexes (0, 1) are a pair, (2,
+&nbsp;   * 3) are another pair, etc...
+&nbsp;   *
+&nbsp;   * &lt;p&gt;How to iterate over the pairs:
+&nbsp;   *
+&nbsp;   * &lt;pre&gt;{@code
+&nbsp;   * WeightedMaximumCardinalityMatchingRecursive mwpm = ...
+&nbsp;   * int[] matching = mwpm.getMatching();
+&nbsp;   * for (int i = 0; i &lt; matching.length / 2; i++) {
+&nbsp;   *   int node1 = matching[2*i];
+&nbsp;   *   int node2 = matching[2*i+1];
+&nbsp;   *   // Do something with the matched pair (node1, node2)
+&nbsp;   * }
+&nbsp;   * }&lt;/pre&gt;
+&nbsp;   */
+&nbsp;  public int[] getMatching() {
+<b class="fc">&nbsp;    solve();</b>
+<b class="fc">&nbsp;    return matching;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private void solve() {
+<b class="fc">&nbsp;    if (solved) return;</b>
+<b class="fc">&nbsp;    MatchingCost[] dp = new MatchingCost[1 &lt;&lt; n];</b>
+<b class="fc">&nbsp;    int[] history = new int[1 &lt;&lt; n];</b>
+&nbsp;
+<b class="fc">&nbsp;    MatchingCost matchingCost = f(FULL_STATE, dp, history);</b>
+<b class="fc">&nbsp;    minWeightCost = matchingCost.cost;</b>
+&nbsp;
+<b class="fc">&nbsp;    reconstructMatching(history);</b>
+<b class="fc">&nbsp;    solved = true;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private MatchingCost f(int state, MatchingCost[] dp, int[] history) {
+<b class="fc">&nbsp;    if (dp[state] != null) {</b>
+<b class="fc">&nbsp;      return dp[state];</b>
+&nbsp;    }
+<b class="fc">&nbsp;    if (state == 0) {</b>
+<b class="fc">&nbsp;      return new MatchingCost();</b>
+&nbsp;    }
+&nbsp;    int p1, p2;
+&nbsp;    // Seek to find active bit position (p1)
+<b class="fc">&nbsp;    for (p1 = 0; p1 &lt; n; p1++) {</b>
+<b class="fc">&nbsp;      if ((state &amp; (1 &lt;&lt; p1)) &gt; 0) {</b>
+<b class="fc">&nbsp;        break;</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+<b class="fc">&nbsp;    int bestState = -1;</b>
+<b class="fc">&nbsp;    MatchingCost bestMatchingCost = MatchingCost.createInfiniteValueMatchingCost();</b>
+&nbsp;
+<b class="fc">&nbsp;    for (p2 = p1 + 1; p2 &lt; n; p2++) {</b>
+&nbsp;      // Position `p2` is on. Try matching the pair (p1, p2) together.
+<b class="fc">&nbsp;      if ((state &amp; (1 &lt;&lt; p2)) &gt; 0) {</b>
+<b class="fc">&nbsp;        int reducedState = state ^ (1 &lt;&lt; p1) ^ (1 &lt;&lt; p2);</b>
+&nbsp;
+<b class="fc">&nbsp;        MatchingCost matchCost = new MatchingCost(f(reducedState, dp, history));</b>
+<b class="fc">&nbsp;        matchCost.updateMatchingCost(cost[p1][p2]);</b>
+&nbsp;
+<b class="fc">&nbsp;        if (matchCost.isBetterMatchingCost(bestMatchingCost)) {</b>
+<b class="fc">&nbsp;          bestMatchingCost = matchCost;</b>
+<b class="fc">&nbsp;          bestState = reducedState;</b>
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+<b class="fc">&nbsp;    history[state] = bestState;</b>
+<b class="fc">&nbsp;    return dp[state] = bestMatchingCost;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Populates the `matching` array with a sorted deterministic matching sorted by lowest node
+&nbsp;  // index. For example, if the perfect matching consists of the pairs (3, 4), (1, 5), (0, 2).
+&nbsp;  // The matching is sorted such that the pairs appear in the ordering: (0, 2), (1, 5), (3, 4).
+&nbsp;  // Furthermore, it is guaranteed that for any pair (a, b) that a &lt; b.
+&nbsp;  private void reconstructMatching(int[] history) {
+&nbsp;    // A map between pairs of nodes that were matched together.
+<b class="fc">&nbsp;    int[] map = new int[n];</b>
+<b class="fc">&nbsp;    int[] leftNodes = new int[n / 2];</b>
+&nbsp;
+<b class="fc">&nbsp;    int matchingSize = 0;</b>
+&nbsp;
+&nbsp;    // Reconstruct the matching of pairs of nodes working backwards through computed states.
+<b class="fc">&nbsp;    for (int i = 0, state = FULL_STATE; state != 0; state = history[state]) {</b>
+&nbsp;      // Isolate the pair used by xoring the state with the state used to generate it.
+<b class="fc">&nbsp;      int pairUsed = state ^ history[state];</b>
+&nbsp;
+<b class="fc">&nbsp;      int leftNode = getBitPosition(Integer.lowestOneBit(pairUsed));</b>
+<b class="fc">&nbsp;      int rightNode = getBitPosition(Integer.highestOneBit(pairUsed));</b>
+&nbsp;
+<b class="fc">&nbsp;      leftNodes[i++] = leftNode;</b>
+<b class="fc">&nbsp;      map[leftNode] = rightNode;</b>
+&nbsp;
+<b class="fc">&nbsp;      if (cost[leftNode][rightNode] != null) {</b>
+<b class="fc">&nbsp;        matchingSize++;</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+&nbsp;    // Sort the left nodes in ascending order.
+<b class="fc">&nbsp;    java.util.Arrays.sort(leftNodes);</b>
+&nbsp;
+<b class="fc">&nbsp;    matchingSize = matchingSize * 2;</b>
+<b class="fc">&nbsp;    matching = new int[matchingSize];</b>
+&nbsp;
+<b class="fc">&nbsp;    for (int i = 0, j = 0; i &lt; n / 2; i++) {</b>
+<b class="fc">&nbsp;      int leftNode = leftNodes[i];</b>
+<b class="fc">&nbsp;      int rightNode = map[leftNodes[i]];</b>
+&nbsp;      // Ignore the artificial node when there is an odd number of nodes.
+<b class="fc">&nbsp;      if (isOdd &amp;&amp; (leftNode == artificialNodeId || rightNode == artificialNodeId)) {</b>
+<b class="fc">&nbsp;        continue;</b>
+&nbsp;      }
+&nbsp;      // Only match edges which actually exist
+<b class="fc">&nbsp;      if (cost[leftNode][rightNode] != null) {</b>
+<b class="fc">&nbsp;        matching[2 * j] = leftNode;</b>
+<b class="fc">&nbsp;        matching[2 * j + 1] = rightNode;</b>
+<b class="fc">&nbsp;        j++;</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  // Gets the zero base index position of the 1 bit in `k`. `k` must be a power of 2, so there is
+&nbsp;  // only ever 1 bit in the binary representation of k.
+&nbsp;  private int getBitPosition(int k) {
+<b class="fc">&nbsp;    int count = -1;</b>
+<b class="fc">&nbsp;    while (k &gt; 0) {</b>
+<b class="fc">&nbsp;      count++;</b>
+<b class="fc">&nbsp;      k &gt;&gt;= 1;</b>
+&nbsp;    }
+<b class="fc">&nbsp;    return count;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /* Example */
+&nbsp;
+&nbsp;  public static void main(String[] args) {
+<b class="nc">&nbsp;    test();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private static void test() {
+&nbsp;    // mwpm is expected to be between nodes: 0 &amp; 5, 1 &amp; 2, 3 &amp; 4
+<b class="nc">&nbsp;    Double[][] costMatrix = {</b>
+<b class="nc">&nbsp;      {0.0, 9.0, 9.0, 9.0, 9.0, 1.0},</b>
+<b class="nc">&nbsp;      {9.0, 0.0, 1.0, 9.0, 9.0, 9.0},</b>
+<b class="nc">&nbsp;      {9.0, 1.0, 0.0, 9.0, 9.0, 9.0},</b>
+<b class="nc">&nbsp;      {9.0, 9.0, 9.0, 0.0, 1.0, 9.0},</b>
+<b class="nc">&nbsp;      {9.0, 9.0, 9.0, 1.0, 0.0, 9.0},</b>
+<b class="nc">&nbsp;      {1.0, 9.0, 9.0, 9.0, 9.0, 0.0},</b>
+&nbsp;    };
+&nbsp;
+<b class="nc">&nbsp;    WeightedMaximumCardinalityMatchingRecursive mwpm =</b>
+&nbsp;        new WeightedMaximumCardinalityMatchingRecursive(costMatrix);
+&nbsp;
+&nbsp;    // Print minimum weight perfect matching cost
+<b class="nc">&nbsp;    double cost = mwpm.getMinWeightCost();</b>
+<b class="nc">&nbsp;    if (cost != 3.0) {</b>
+<b class="nc">&nbsp;      System.out.println(&quot;error cost not 3&quot;);</b>
+&nbsp;    } else {
+<b class="nc">&nbsp;      System.out.printf(&quot;Found MWPM of: %.3f\n&quot;, cost);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Print matching
+<b class="nc">&nbsp;    int[] matching = mwpm.getMatching();</b>
+<b class="nc">&nbsp;    for (int i = 0; i &lt; matching.length / 2; i++) {</b>
+<b class="nc">&nbsp;      int node1 = matching[2 * i];</b>
+<b class="nc">&nbsp;      int node2 = matching[2 * i + 1];</b>
+<b class="nc">&nbsp;      System.out.printf(&quot;Matched node %d with node %d\n&quot;, node1, node2);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Prints:
+&nbsp;    // Found MWPM of: 3.000
+&nbsp;    // Matched node 0 with node 5
+&nbsp;    // Matched node 1 with node 2
+&nbsp;    // Matched node 3 with node 4
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

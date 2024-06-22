@@ -54,4 +54,19 @@ public class TernarySearchTest {
 
         TernarySearchCoverageTool.printCoverage();
     }
+
+    @Test
+    public void testTernarySearchDiscreteWithReturnLo() {
+        int lo = 5;
+        int hi = 5;
+
+        double result = TernarySearchDiscrete.discreteTernarySearch(lo, hi);
+
+        double expectedResult = lo;
+
+        assertEquals(expectedResult, TernarySearchDiscrete.f((int) result), 0.0); // Exact comparison since result should be integer
+
+        TernarySearchCoverageTool.printCoverage();
+    }
+
 }

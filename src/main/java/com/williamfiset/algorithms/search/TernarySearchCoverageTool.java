@@ -14,6 +14,7 @@ public class TernarySearchCoverageTool {
     private static boolean branch107Hit = false;
     private static boolean branch108Hit = false;
     private static boolean branch109Hit = false;
+    private static boolean branch110Hit = false;
 
 
     // Methods to track TernarySearch branches
@@ -54,6 +55,10 @@ public class TernarySearchCoverageTool {
         branch109Hit = true;
     }
 
+    public static void trackBranch110Hit() {
+        branch110Hit = true;
+    }
+
 
     // Method to print coverage
     public static void printCoverage() {
@@ -66,5 +71,6 @@ public class TernarySearchCoverageTool {
         System.out.println("Branch 107 was " + (branch107Hit ? "hit" : "not hit"));
         System.out.println("Branch 108 was " + (branch108Hit ? "hit" : "not hit"));
         System.out.println("Branch 109 was " + (branch109Hit ? "hit" : "not hit"));
+        System.out.println("Branch 110 was " + (branch110Hit ? "hit" : "not hit"));
     }
 }

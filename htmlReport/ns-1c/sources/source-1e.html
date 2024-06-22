@@ -1,0 +1,271 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > SteinerTree</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.graphtheory</a>
+</div>
+
+<h1>Coverage Summary for Class: SteinerTree (com.williamfiset.algorithms.graphtheory)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">SteinerTree</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (2/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    54,7%
+  </span>
+  <span class="absValue">
+    (29/53)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * This file contains an implementation of a Steiner Tree algorithm, which finds the cheapest cost
+&nbsp; * to connect a given subset of nodes (which we will refer to as terminal nodes) in an undirected
+&nbsp; * graph. These nodes may be either directly or indirectly connected, possibly connecting to
+&nbsp; * intermediate nodes which are not terminal nodes.
+&nbsp; *
+&nbsp; * &lt;p&gt;Time Complexity: O(V^3 + V^2 * 2^T + V * 3^T)
+&nbsp; *
+&nbsp; * @author Matt Fontaine, Micah Stairs Source: https://www.youtube.com/watch?v=BG4vAoV5kWw
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.graphtheory;
+&nbsp;
+&nbsp;import java.util.*;
+&nbsp;
+<b class="nc">&nbsp;public class SteinerTree {</b>
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Finds the cheapest cost to connect a given subset of nodes (which we will refer to as terminal
+&nbsp;   * nodes). These nodes may be either directly or indirectly connected, possibly connecting to
+&nbsp;   * intermediate nodes which are not terminal nodes.
+&nbsp;   *
+&nbsp;   * @param distances - The adjacency matrix for the undirected graph
+&nbsp;   * @param subsetToConnect - The 0-based indices of the terminal nodes
+&nbsp;   * @return the minimum cost required to connect the terminal nodes
+&nbsp;   */
+&nbsp;  public static double minLengthSteinerTree(double[][] distances, int[] subsetToConnect) {
+&nbsp;
+<b class="fc">&nbsp;    int v = distances.length;</b>
+<b class="fc">&nbsp;    int t = subsetToConnect.length;</b>
+&nbsp;
+&nbsp;    // Already implicitly connected
+<b class="fc">&nbsp;    if (t &lt;= 1) {</b>
+<b class="fc">&nbsp;      return 0;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Find the shortest distance between all pairs of nodes
+<b class="fc">&nbsp;    floydWarshall(distances);</b>
+&nbsp;
+&nbsp;    // This array is indexed using a mask (which says which terminal nodes are
+&nbsp;    // connected so far) and node we are currently at (our root)
+<b class="fc">&nbsp;    double[][] dp = new double[1 &lt;&lt; t][v];</b>
+<b class="fc">&nbsp;    for (int i = 0; i &lt; dp.length; i++) {</b>
+<b class="fc">&nbsp;      Arrays.fill(dp[i], Double.POSITIVE_INFINITY);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Initialize the dynamic programming array with our base cases (starting with
+&nbsp;    // each terminal node and going to all other nodes)
+<b class="fc">&nbsp;    for (int mask = 0; mask &lt; t; mask++) {</b>
+<b class="fc">&nbsp;      for (int j = 0; j &lt; v; j++) {</b>
+<b class="fc">&nbsp;        dp[1 &lt;&lt; mask][j] = distances[subsetToConnect[mask]][j];</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+&nbsp;    // Iterate over all of the sets of terminal nodes
+<b class="fc">&nbsp;    for (int mask = 1; mask &lt; 1 &lt;&lt; t; mask++) {</b>
+&nbsp;
+&nbsp;      // Iterate over all of the nodes
+<b class="fc">&nbsp;      for (int j = 0; j &lt; v; j++) {</b>
+&nbsp;
+&nbsp;        // Effeciently iterate over all subsets of the mask
+<b class="fc">&nbsp;        for (int subMask = (mask - 1) &amp; mask; subMask &gt; 0; subMask = (subMask - 1) &amp; mask) {</b>
+&nbsp;
+&nbsp;          // Find the distance between the mask and the submask and see if we
+&nbsp;          // can use it to get a better answer
+<b class="fc">&nbsp;          dp[mask][j] = Math.min(dp[mask][j], dp[subMask][j] + dp[mask ^ subMask][j]);</b>
+&nbsp;        }
+&nbsp;      }
+&nbsp;
+&nbsp;      // Try moving our roots to see if we can get a better answer
+<b class="fc">&nbsp;      for (int j = 0; j &lt; v; j++) {</b>
+<b class="fc">&nbsp;        for (int k = 0; k &lt; v; k++) {</b>
+<b class="fc">&nbsp;          dp[mask][j] = Math.min(dp[mask][j], dp[mask][k] + distances[k][j]);</b>
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+&nbsp;    // Return answer by looking up the mask with all of the bits set (which
+&nbsp;    // represents that all terminal nodes are connected)
+<b class="fc">&nbsp;    return dp[(1 &lt;&lt; t) - 1][subsetToConnect[0]];</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Given an adjacency matrix with edge weights between nodes, where Double.POSITIVE_INFINITY is
+&nbsp;   * used to indicate that two nodes are not, connected, this method mutates the given matrix in
+&nbsp;   * order to give the shortest distance between all pairs of nodes. Double.NEGATIVE_INFINITY is
+&nbsp;   * used to indicate that the edge between node i and node j is part of a negative cycle.
+&nbsp;   *
+&nbsp;   * &lt;p&gt;NOTE: Usually the diagonal of the adjacency matrix is all zeros (i.e. distance[i][i] = 0 for
+&nbsp;   * all i) since there is typically no cost to go from a node to itself, but this may depend on
+&nbsp;   * your graph and the problem you are trying to solve.
+&nbsp;   */
+&nbsp;  public static void floydWarshall(double[][] distance) {
+&nbsp;
+<b class="fc">&nbsp;    int n = distance.length;</b>
+&nbsp;
+&nbsp;    // Compute all pairs shortest paths
+<b class="fc">&nbsp;    for (int k = 0; k &lt; n; k++)</b>
+<b class="fc">&nbsp;      for (int i = 0; i &lt; n; i++)</b>
+<b class="fc">&nbsp;        for (int j = 0; j &lt; n; j++)</b>
+<b class="fc">&nbsp;          if (distance[i][k] + distance[k][j] &lt; distance[i][j])</b>
+<b class="fc">&nbsp;            distance[i][j] = distance[i][k] + distance[k][j];</b>
+&nbsp;
+&nbsp;    // Identify negative cycles (you can comment this
+&nbsp;    // out if you know that no negative cycles exist)
+<b class="fc">&nbsp;    for (int k = 0; k &lt; n; k++)</b>
+<b class="fc">&nbsp;      for (int i = 0; i &lt; n; i++)</b>
+<b class="fc">&nbsp;        for (int j = 0; j &lt; n; j++)</b>
+<b class="fc">&nbsp;          if (distance[i][k] + distance[k][j] &lt; distance[i][j])</b>
+<b class="nc">&nbsp;            distance[i][j] = Double.NEGATIVE_INFINITY;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Examples
+&nbsp;  public static void main(String[] args) {
+&nbsp;
+<b class="nc">&nbsp;    final double INF = Double.POSITIVE_INFINITY;</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Visualization of the graph:
+&nbsp;     *
+&nbsp;     * &lt;p&gt;[O] / \ 3 4 / \ [1] [2] | | 5 6 | | [3] [4]
+&nbsp;     */
+<b class="nc">&nbsp;    double[][] matrix1 =</b>
+&nbsp;        new double[][] {
+&nbsp;          {0, 3, 4, INF, INF},
+&nbsp;          {3, 0, INF, 5, INF},
+&nbsp;          {4, INF, 0, INF, 6},
+&nbsp;          {INF, 5, INF, 0, INF},
+&nbsp;          {INF, INF, 6, INF, 0}
+&nbsp;        };
+&nbsp;
+<b class="nc">&nbsp;    System.out.println(minLengthSteinerTree(matrix1, new int[] {})); // Expected answer: 0.0</b>
+<b class="nc">&nbsp;    System.out.println(minLengthSteinerTree(matrix1, new int[] {2})); // Expected answer: 0.0</b>
+<b class="nc">&nbsp;    System.out.println(minLengthSteinerTree(matrix1, new int[] {2, 4})); // Expected answer: 6.0</b>
+<b class="nc">&nbsp;    System.out.println(minLengthSteinerTree(matrix1, new int[] {0, 3})); // Expected answer: 8.0</b>
+<b class="nc">&nbsp;    System.out.println(minLengthSteinerTree(matrix1, new int[] {1, 2, 4})); // Expected answer: 13.0</b>
+<b class="nc">&nbsp;    System.out.println(minLengthSteinerTree(matrix1, new int[] {4, 1, 2})); // Expected answer: 13.0</b>
+<b class="nc">&nbsp;    System.out.println(minLengthSteinerTree(matrix1, new int[] {3, 0, 4})); // Expected answer: 18.0</b>
+<b class="nc">&nbsp;    System.out.println(</b>
+<b class="nc">&nbsp;        minLengthSteinerTree(matrix1, new int[] {0, 1, 2, 3, 4})); // Expected answer: 18.0</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Visualization of the graph:
+&nbsp;     *
+&nbsp;     * &lt;p&gt;[0]-3-[1] | | 5 4 | | [2] [3] | \ | 7 8 1 | \ | [4]-2-[5]
+&nbsp;     */
+<b class="nc">&nbsp;    double[][] matrix2 =</b>
+&nbsp;        new double[][] {
+&nbsp;          {0, 3, 5, INF, INF, INF},
+&nbsp;          {3, 0, INF, 4, INF, INF},
+&nbsp;          {5, INF, 0, INF, 7, 8},
+&nbsp;          {INF, 4, INF, 0, INF, 1},
+&nbsp;          {INF, INF, 7, INF, 0, 2},
+&nbsp;          {INF, INF, 8, 1, 2, 0}
+&nbsp;        };
+&nbsp;
+<b class="nc">&nbsp;    System.out.println(minLengthSteinerTree(matrix2, new int[] {})); // Expected answer: 0.0</b>
+<b class="nc">&nbsp;    System.out.println(minLengthSteinerTree(matrix2, new int[] {4})); // Expected answer: 0.0</b>
+<b class="nc">&nbsp;    System.out.println(minLengthSteinerTree(matrix2, new int[] {0, 5})); // Expected answer: 8.0</b>
+<b class="nc">&nbsp;    System.out.println(minLengthSteinerTree(matrix2, new int[] {5, 0})); // Expected answer: 8.0</b>
+<b class="nc">&nbsp;    System.out.println(minLengthSteinerTree(matrix2, new int[] {4, 0})); // Expected answer: 10.0</b>
+<b class="nc">&nbsp;    System.out.println(minLengthSteinerTree(matrix2, new int[] {2, 4, 5})); // Expected answer: 9.0</b>
+<b class="nc">&nbsp;    System.out.println(minLengthSteinerTree(matrix2, new int[] {3, 1, 0})); // Expected answer: 7.0</b>
+<b class="nc">&nbsp;    System.out.println(minLengthSteinerTree(matrix2, new int[] {3, 0})); // Expected answer: 7.0</b>
+<b class="nc">&nbsp;    System.out.println(minLengthSteinerTree(matrix2, new int[] {3, 0, 5})); // Expected answer: 8.0</b>
+<b class="nc">&nbsp;    System.out.println(minLengthSteinerTree(matrix2, new int[] {0, 4, 5})); // Expected answer: 10.0</b>
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

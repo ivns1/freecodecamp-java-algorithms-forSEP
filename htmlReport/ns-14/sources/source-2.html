@@ -1,0 +1,219 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > IntStack</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.datastructures.stack</a>
+</div>
+
+<h1>Coverage Summary for Class: IntStack (com.williamfiset.algorithms.datastructures.stack)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">IntStack</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    75%
+  </span>
+  <span class="absValue">
+    (6/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    17%
+  </span>
+  <span class="absValue">
+    (8/47)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * This file contains an implementation of an integer only stack which is extremely quick and
+&nbsp; * lightweight. In terms of performance it can outperform java.util.ArrayDeque (Java&#39;s fastest stack
+&nbsp; * implementation) by a factor of 50! See the benchmark test below for proof. However, the downside
+&nbsp; * is you need to know an upper bound on the number of elements that will be inside the stack at any
+&nbsp; * given time for it to work correctly.
+&nbsp; *
+&nbsp; * @author William Fiset, william.alexandre.fiset@gmail.com
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.datastructures.stack;
+&nbsp;
+&nbsp;public class IntStack implements Stack&lt;Integer&gt; {
+&nbsp;
+&nbsp;  private int[] ar;
+<b class="fc">&nbsp;  private int pos = 0;</b>
+&nbsp;
+&nbsp;  // maxSize is the maximum number of items
+&nbsp;  // that can be in the queue at any given time
+<b class="fc">&nbsp;  public IntStack(int maxSize) {</b>
+<b class="fc">&nbsp;    ar = new int[maxSize];</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Returns the number of elements insize the stack
+&nbsp;  public int size() {
+<b class="fc">&nbsp;    return pos;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Returns true/false on whether the stack is empty
+&nbsp;  public boolean isEmpty() {
+<b class="fc">&nbsp;    return pos == 0;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Returns the element at the top of the stack
+&nbsp;  @Override
+&nbsp;  public Integer peek() {
+<b class="fc">&nbsp;    return ar[pos - 1];</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Add an element to the top of the stack
+&nbsp;  @Override
+&nbsp;  public void push(Integer value) {
+<b class="fc">&nbsp;    ar[pos++] = value;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Make sure you check that the stack is not empty before calling pop!
+&nbsp;  @Override
+&nbsp;  public Integer pop() {
+<b class="fc">&nbsp;    return ar[--pos];</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Example usage
+&nbsp;  public static void main(String[] args) {
+&nbsp;
+<b class="nc">&nbsp;    IntStack s = new IntStack(5);</b>
+&nbsp;
+<b class="nc">&nbsp;    s.push(1);</b>
+<b class="nc">&nbsp;    s.push(2);</b>
+<b class="nc">&nbsp;    s.push(3);</b>
+<b class="nc">&nbsp;    s.push(4);</b>
+<b class="nc">&nbsp;    s.push(5);</b>
+&nbsp;
+<b class="nc">&nbsp;    System.out.println(s.pop()); // 5</b>
+<b class="nc">&nbsp;    System.out.println(s.pop()); // 4</b>
+<b class="nc">&nbsp;    System.out.println(s.pop()); // 3</b>
+&nbsp;
+<b class="nc">&nbsp;    s.push(3);</b>
+<b class="nc">&nbsp;    s.push(4);</b>
+<b class="nc">&nbsp;    s.push(5);</b>
+&nbsp;
+<b class="nc">&nbsp;    while (!s.isEmpty()) System.out.println(s.pop());</b>
+&nbsp;
+<b class="nc">&nbsp;    benchMarkTest();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // BenchMark IntStack vs ArrayDeque.
+&nbsp;  private static void benchMarkTest() {
+&nbsp;
+<b class="nc">&nbsp;    int n = 10000000;</b>
+<b class="nc">&nbsp;    IntStack intStack = new IntStack(n);</b>
+&nbsp;
+&nbsp;    // IntStack times at around 0.0324 seconds
+<b class="nc">&nbsp;    long start = System.nanoTime();</b>
+<b class="nc">&nbsp;    for (int i = 0; i &lt; n; i++) intStack.push(i);</b>
+<b class="nc">&nbsp;    for (int i = 0; i &lt; n; i++) intStack.pop();</b>
+<b class="nc">&nbsp;    long end = System.nanoTime();</b>
+<b class="nc">&nbsp;    System.out.println(&quot;IntStack Time: &quot; + (end - start) / 1e9);</b>
+&nbsp;
+&nbsp;    // ArrayDeque times at around 1.438 seconds
+&nbsp;    //    java.util.ArrayDeque&lt;Integer&gt; arrayDeque = new java.util.ArrayDeque&lt;&gt;();
+&nbsp;    //    java.util.Stack&lt;Integer&gt; arrayDeque = new java.util.Stack&lt;&gt;();
+<b class="nc">&nbsp;    java.util.ArrayDeque&lt;Integer&gt; arrayDeque = new java.util.ArrayDeque&lt;&gt;(n); // strangely the</b>
+&nbsp;    // ArrayQueue is slower when you give it an initial capacity.
+<b class="nc">&nbsp;    start = System.nanoTime();</b>
+<b class="nc">&nbsp;    for (int i = 0; i &lt; n; i++) arrayDeque.push(i);</b>
+<b class="nc">&nbsp;    for (int i = 0; i &lt; n; i++) arrayDeque.pop();</b>
+<b class="nc">&nbsp;    end = System.nanoTime();</b>
+<b class="nc">&nbsp;    System.out.println(&quot;ArrayDeque Time: &quot; + (end - start) / 1e9);</b>
+&nbsp;
+<b class="nc">&nbsp;    Stack&lt;Integer&gt; listStack = new ListStack&lt;&gt;();</b>
+&nbsp;
+<b class="nc">&nbsp;    start = System.nanoTime();</b>
+<b class="nc">&nbsp;    for (int i = 0; i &lt; n; i++) listStack.push(i);</b>
+<b class="nc">&nbsp;    for (int i = 0; i &lt; n; i++) listStack.pop();</b>
+<b class="nc">&nbsp;    end = System.nanoTime();</b>
+<b class="nc">&nbsp;    System.out.println(&quot;ListStack Time: &quot; + (end - start) / 1e9);</b>
+&nbsp;
+<b class="nc">&nbsp;    Stack&lt;Integer&gt; arrayStack = new ArrayStack&lt;&gt;();</b>
+&nbsp;
+<b class="nc">&nbsp;    start = System.nanoTime();</b>
+<b class="nc">&nbsp;    for (int i = 0; i &lt; n; i++) arrayStack.push(i);</b>
+<b class="nc">&nbsp;    for (int i = 0; i &lt; n; i++) arrayStack.pop();</b>
+<b class="nc">&nbsp;    end = System.nanoTime();</b>
+<b class="nc">&nbsp;    System.out.println(&quot;ArrayStack Time: &quot; + (end - start) / 1e9);</b>
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>
