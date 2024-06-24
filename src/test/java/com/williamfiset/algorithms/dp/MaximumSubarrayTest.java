@@ -2,6 +2,27 @@ package com.williamfiset.algorithms.dp;
 import org.junit.Test;
 import static org.junit.Assert.*;
 public class MaximumSubarrayTest {
+
+    @Test
+    public void testMaximumSubarrayClassInitialization() {
+        // Simply instantiate the MaximumSubarray class
+        MaximumSubarray instance = new MaximumSubarray();
+        assertNotNull(instance); // Assert that instantiation was successful
+    }
+    @Test
+    public void testMainMethod() {
+        // Simulate running the main method with specific inputs
+        String[] args = new String[] { "-5", "-4", "-10", "-3", "-1", "-12", "-6" };
+        MaximumSubarray.main(args);
+
+    }
+    @Test
+    public void testMaximumSubarrayValue_EmptyArray() {
+        int[] array = {};
+        long result = MaximumSubarray.maximumSubarrayValue(array);
+        assertEquals(0, result);
+        MaximumSubarray.branchCoverage.printCoverage();
+    }
         @Test
         public void testMaximumSubarrayValue_SingleElement() {
             int[] array = {-5};
