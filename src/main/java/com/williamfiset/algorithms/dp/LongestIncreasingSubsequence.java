@@ -23,7 +23,7 @@ public class LongestIncreasingSubsequence {
   public static int lis(int[] ar) {
 
     if (ar == null || ar.length == 0) {
-      branchCoverage.markAsCovered(201);
+      branchCoverage.markAsCovered(201); //first branch
       return 0;
     }
     int n = ar.length, len = 0;
