@@ -1,0 +1,219 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > EdmondsKarpAdjacencyList</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.graphtheory.networkflow</a>
+</div>
+
+<h1>Coverage Summary for Class: EdmondsKarpAdjacencyList (com.williamfiset.algorithms.graphtheory.networkflow)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">EdmondsKarpAdjacencyList</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    60%
+  </span>
+  <span class="absValue">
+    (3/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    64,3%
+  </span>
+  <span class="absValue">
+    (27/42)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * An implementation of the Edmonds-Karp algorithm which is essentially Ford-Fulkerson with a BFS as
+&nbsp; * a method of finding augmenting paths. This Edmonds-Karp algorithm will allow you to find the max
+&nbsp; * flow through a directed graph and the min cut as a byproduct.
+&nbsp; *
+&nbsp; * &lt;p&gt;Time Complexity: O(VE^2)
+&nbsp; *
+&nbsp; * @author William Fiset, william.alexandre.fiset@gmail.com
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.graphtheory.networkflow;
+&nbsp;
+&nbsp;import static java.lang.Math.min;
+&nbsp;
+&nbsp;import java.util.*;
+&nbsp;
+&nbsp;public class EdmondsKarpAdjacencyList extends NetworkFlowSolverBase {
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Creates an instance of a flow network solver. Use the {@link #addEdge(int, int, int)} method to
+&nbsp;   * add edges to the graph.
+&nbsp;   *
+&nbsp;   * @param n - The number of nodes in the graph including source and sink nodes.
+&nbsp;   * @param s - The index of the source node, 0 &lt;= s &lt; n
+&nbsp;   * @param t - The index of the sink node, 0 &lt;= t &lt; n, t != s
+&nbsp;   */
+&nbsp;  public EdmondsKarpAdjacencyList(int n, int s, int t) {
+<b class="fc">&nbsp;    super(n, s, t);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Run Edmonds-Karp and compute the max flow from the source to the sink node.
+&nbsp;  @Override
+&nbsp;  public void solve() {
+&nbsp;    long flow;
+&nbsp;    do {
+<b class="fc">&nbsp;      markAllNodesAsUnvisited();</b>
+<b class="fc">&nbsp;      flow = bfs();</b>
+<b class="fc">&nbsp;      maxFlow += flow;</b>
+<b class="fc">&nbsp;    } while (flow != 0);</b>
+&nbsp;
+<b class="fc">&nbsp;    for (int i = 0; i &lt; n; i++) if (visited(i)) minCut[i] = true;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private long bfs() {
+<b class="fc">&nbsp;    Edge[] prev = new Edge[n];</b>
+&nbsp;
+&nbsp;    // The queue can be optimized to use a faster queue
+<b class="fc">&nbsp;    Queue&lt;Integer&gt; q = new ArrayDeque&lt;&gt;(n);</b>
+<b class="fc">&nbsp;    visit(s);</b>
+<b class="fc">&nbsp;    q.offer(s);</b>
+&nbsp;
+&nbsp;    // Perform BFS from source to sink
+<b class="fc">&nbsp;    while (!q.isEmpty()) {</b>
+<b class="fc">&nbsp;      int node = q.poll();</b>
+<b class="fc">&nbsp;      if (node == t) break;</b>
+&nbsp;
+<b class="fc">&nbsp;      for (Edge edge : graph[node]) {</b>
+<b class="fc">&nbsp;        long cap = edge.remainingCapacity();</b>
+<b class="fc">&nbsp;        if (cap &gt; 0 &amp;&amp; !visited(edge.to)) {</b>
+<b class="fc">&nbsp;          visit(edge.to);</b>
+<b class="fc">&nbsp;          prev[edge.to] = edge;</b>
+<b class="fc">&nbsp;          q.offer(edge.to);</b>
+&nbsp;        }
+<b class="fc">&nbsp;      }</b>
+<b class="fc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    // Sink not reachable!
+<b class="fc">&nbsp;    if (prev[t] == null) return 0;</b>
+&nbsp;
+<b class="fc">&nbsp;    long bottleNeck = Long.MAX_VALUE;</b>
+&nbsp;
+&nbsp;    // Find augmented path and bottle neck
+<b class="fc">&nbsp;    for (Edge edge = prev[t]; edge != null; edge = prev[edge.from])</b>
+<b class="fc">&nbsp;      bottleNeck = min(bottleNeck, edge.remainingCapacity());</b>
+&nbsp;
+&nbsp;    // Retrace augmented path and update flow values.
+<b class="fc">&nbsp;    for (Edge edge = prev[t]; edge != null; edge = prev[edge.from]) edge.augment(bottleNeck);</b>
+&nbsp;
+&nbsp;    // Return bottleneck flow
+<b class="fc">&nbsp;    return bottleNeck;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /* Example */
+&nbsp;
+&nbsp;  public static void main(String[] args) {
+<b class="nc">&nbsp;    testSmallFlowGraph();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Testing graph from:
+&nbsp;  // http://crypto.cs.mcgill.ca/~crepeau/COMP251/KeyNoteSlides/07demo-maxflowCS-C.pdf
+&nbsp;  private static void testSmallFlowGraph() {
+<b class="nc">&nbsp;    int n = 6;</b>
+<b class="nc">&nbsp;    int s = n - 1;</b>
+<b class="nc">&nbsp;    int t = n - 2;</b>
+&nbsp;
+&nbsp;    EdmondsKarpAdjacencyList solver;
+<b class="nc">&nbsp;    solver = new EdmondsKarpAdjacencyList(n, s, t);</b>
+&nbsp;
+&nbsp;    // Source edges
+<b class="nc">&nbsp;    solver.addEdge(s, 0, 10);</b>
+<b class="nc">&nbsp;    solver.addEdge(s, 1, 10);</b>
+&nbsp;
+&nbsp;    // Sink edges
+<b class="nc">&nbsp;    solver.addEdge(2, t, 10);</b>
+<b class="nc">&nbsp;    solver.addEdge(3, t, 10);</b>
+&nbsp;
+&nbsp;    // Middle edges
+<b class="nc">&nbsp;    solver.addEdge(0, 1, 2);</b>
+<b class="nc">&nbsp;    solver.addEdge(0, 2, 4);</b>
+<b class="nc">&nbsp;    solver.addEdge(0, 3, 8);</b>
+<b class="nc">&nbsp;    solver.addEdge(1, 3, 9);</b>
+<b class="nc">&nbsp;    solver.addEdge(3, 2, 6);</b>
+&nbsp;
+<b class="nc">&nbsp;    System.out.println(solver.getMaxFlow()); // 19</b>
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,271 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > UnionFind</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.graphtheory</a>
+</div>
+
+<h1>Coverage Summary for Class: UnionFind (com.williamfiset.algorithms.graphtheory)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UnionFind</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/29)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * This file contains an algorithm to find all the connected components of an undirected graph. If
+&nbsp; * the graph you&#39;re dealing with is directed have a look at Tarjan&#39;s algorithm to find strongly
+&nbsp; * connected components.
+&nbsp; *
+&nbsp; * &lt;p&gt;The approach I will use to find all the strongly connected components is to use a union find
+&nbsp; * data structure to merge together nodes connected by an edge. An alternative approach would be to
+&nbsp; * do a breadth first search from each node (except the ones already visited of course) to determine
+&nbsp; * the individual components.
+&nbsp; *
+&nbsp; * @author William Fiset, william.alexandre.fiset@gmail.com
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.graphtheory;
+&nbsp;
+&nbsp;import java.util.*;
+&nbsp;
+&nbsp;public class ConnectedComponentsAdjacencyList {
+&nbsp;
+&nbsp;  static class Edge {
+&nbsp;    int from, to, cost;
+&nbsp;
+&nbsp;    public Edge(int from, int to, int cost) {
+&nbsp;      this.from = from;
+&nbsp;      this.to = to;
+&nbsp;      this.cost = cost;
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  static int countConnectedComponents(Map&lt;Integer, List&lt;Edge&gt;&gt; graph, int n) {
+&nbsp;
+&nbsp;    UnionFind uf = new UnionFind(n);
+&nbsp;
+&nbsp;    for (int i = 0; i &lt; n; i++) {
+&nbsp;      List&lt;Edge&gt; edges = graph.get(i);
+&nbsp;      if (edges != null) {
+&nbsp;        for (Edge edge : edges) {
+&nbsp;          uf.unify(edge.from, edge.to);
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+&nbsp;    return uf.components();
+&nbsp;  }
+&nbsp;
+&nbsp;  // Finding connected components example
+&nbsp;  public static void main(String[] args) {
+&nbsp;
+&nbsp;    final int numNodes = 7;
+&nbsp;    Map&lt;Integer, List&lt;Edge&gt;&gt; graph = new HashMap&lt;&gt;();
+&nbsp;
+&nbsp;    // Setup a graph with four connected components
+&nbsp;    // namely: {0,1,2}, {3,4}, {5}, {6}
+&nbsp;    addUndirectedEdge(graph, 0, 1, 1);
+&nbsp;    addUndirectedEdge(graph, 1, 2, 1);
+&nbsp;    addUndirectedEdge(graph, 2, 0, 1);
+&nbsp;    addUndirectedEdge(graph, 3, 4, 1);
+&nbsp;    addUndirectedEdge(graph, 5, 5, 1); // Self loop
+&nbsp;
+&nbsp;    int components = countConnectedComponents(graph, numNodes);
+&nbsp;    System.out.printf(&quot;Number of components: %d\n&quot;, components);
+&nbsp;  }
+&nbsp;
+&nbsp;  // Helper method to setup graph
+&nbsp;  private static void addUndirectedEdge(
+&nbsp;      Map&lt;Integer, List&lt;Edge&gt;&gt; graph, int from, int to, int cost) {
+&nbsp;    List&lt;Edge&gt; list = graph.get(from);
+&nbsp;    if (list == null) {
+&nbsp;      list = new ArrayList&lt;Edge&gt;();
+&nbsp;      graph.put(from, list);
+&nbsp;    }
+&nbsp;    list.add(new Edge(from, to, cost));
+&nbsp;    list.add(new Edge(to, from, cost));
+&nbsp;  }
+&nbsp;}
+&nbsp;
+&nbsp;// Union find data structure
+&nbsp;class UnionFind {
+&nbsp;
+&nbsp;  // The number of elements in this union find
+&nbsp;  private int size;
+&nbsp;
+&nbsp;  // Used to track the sizes of each of the components
+&nbsp;  private int[] sz;
+&nbsp;
+&nbsp;  // id[i] points to the parent of i, if id[i] = i then i is a root node
+&nbsp;  private int[] id;
+&nbsp;
+&nbsp;  // Tracks the number of components in the union find
+&nbsp;  private int numComponents;
+&nbsp;
+<b class="nc">&nbsp;  public UnionFind(int size) {</b>
+&nbsp;
+<b class="nc">&nbsp;    if (size &lt;= 0) throw new IllegalArgumentException(&quot;Size &lt;= 0 is not allowed&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;    this.size = numComponents = size;</b>
+<b class="nc">&nbsp;    sz = new int[size];</b>
+<b class="nc">&nbsp;    id = new int[size];</b>
+&nbsp;
+<b class="nc">&nbsp;    for (int i = 0; i &lt; size; i++) {</b>
+<b class="nc">&nbsp;      id[i] = i; // Link to itself (self root)</b>
+<b class="nc">&nbsp;      sz[i] = 1; // Each component is originally of size one</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  // Find which component/set &#39;p&#39; belongs to, takes amortized constant time.
+&nbsp;  public int find(int p) {
+&nbsp;
+&nbsp;    // Find the root of the component/set
+<b class="nc">&nbsp;    int root = p;</b>
+<b class="nc">&nbsp;    while (root != id[root]) root = id[root];</b>
+&nbsp;
+&nbsp;    // Compress the path leading back to the root.
+&nbsp;    // Doing this operation is called &quot;path compression&quot;
+&nbsp;    // and is what gives us amortized constant time complexity.
+<b class="nc">&nbsp;    while (p != root) {</b>
+<b class="nc">&nbsp;      int next = id[p];</b>
+<b class="nc">&nbsp;      id[p] = root;</b>
+<b class="nc">&nbsp;      p = next;</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;
+<b class="nc">&nbsp;    return root;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Return whether or not the elements &#39;p&#39; and
+&nbsp;  // &#39;q&#39; are in the same components/set.
+&nbsp;  public boolean connected(int p, int q) {
+<b class="nc">&nbsp;    return find(p) == find(q);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Return the size of the components/set &#39;p&#39; belongs to
+&nbsp;  public int componentSize(int p) {
+<b class="nc">&nbsp;    return sz[find(p)];</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Return the number of elements in this UnionFind/Disjoint set
+&nbsp;  public int size() {
+<b class="nc">&nbsp;    return size;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Returns the number of remaining components/sets
+&nbsp;  public int components() {
+<b class="nc">&nbsp;    return numComponents;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Unify the components/sets containing elements &#39;p&#39; and &#39;q&#39;
+&nbsp;  public void unify(int p, int q) {
+&nbsp;
+<b class="nc">&nbsp;    int root1 = find(p);</b>
+<b class="nc">&nbsp;    int root2 = find(q);</b>
+&nbsp;
+&nbsp;    // These elements are already in the same group!
+<b class="nc">&nbsp;    if (root1 == root2) return;</b>
+&nbsp;
+&nbsp;    // Merge smaller component/set into the larger one.
+<b class="nc">&nbsp;    if (sz[root1] &lt; sz[root2]) {</b>
+<b class="nc">&nbsp;      sz[root2] += sz[root1];</b>
+<b class="nc">&nbsp;      id[root1] = root2;</b>
+&nbsp;    } else {
+<b class="nc">&nbsp;      sz[root1] += sz[root2];</b>
+<b class="nc">&nbsp;      id[root2] = root1;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Since the roots found are different we know that the
+&nbsp;    // number of components/sets has decreased by one
+<b class="nc">&nbsp;    numComponents--;</b>
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

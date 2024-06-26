@@ -1,0 +1,299 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > SumQueryMultiplicationUpdateSegmentTree</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.datastructures.segmenttree</a>
+</div>
+
+<h1>Coverage Summary for Class: SumQueryMultiplicationUpdateSegmentTree (com.williamfiset.algorithms.datastructures.segmenttree)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">SumQueryMultiplicationUpdateSegmentTree</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    78,6%
+  </span>
+  <span class="absValue">
+    (11/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    83,1%
+  </span>
+  <span class="absValue">
+    (49/59)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * Run with: ./gradlew run -Palgorithm=datastructures.segmenttree.SumQuerySumUpdateSegmentTree
+&nbsp; *
+&nbsp; * &lt;p&gt;Several thanks to cp-algorithms for their great article on segment trees:
+&nbsp; * https://cp-algorithms.com/data_structures/segment_tree.html
+&nbsp; *
+&nbsp; * &lt;p&gt;NOTE: This file is still a WIP
+&nbsp; *
+&nbsp; * @author William Fiset, william.alexandre.fiset@gmail.com
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.datastructures.segmenttree;
+&nbsp;
+&nbsp;public class SumQueryMultiplicationUpdateSegmentTree {
+&nbsp;
+&nbsp;  // The number of elements in the original input values array.
+&nbsp;  private final int n;
+&nbsp;
+&nbsp;  // The segment tree represented as a binary tree of ranges where t[0] is the
+&nbsp;  // root node and the left and right children of node i are i*2+1 and i*2+2.
+&nbsp;  private Long[] t;
+&nbsp;
+&nbsp;  // The delta values associates with each segment. Used for lazy propagation
+&nbsp;  // when doing range updates.
+&nbsp;  private Long[] lazy;
+&nbsp;
+&nbsp;  // Sum sumFunction
+&nbsp;  private Long sumFunction(Long a, Long b) {
+<b class="fc">&nbsp;    if (a == null) a = 0L;</b>
+<b class="fc">&nbsp;    if (b == null) b = 0L;</b>
+<b class="fc">&nbsp;    return a + b;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Multiplication range update function
+&nbsp;  private Long multRuf(Long base, int tl, int tr, Long delta) {
+&nbsp;    // When we hit a null value, multiply by 1 since this is the
+&nbsp;    // multiplication identity, i.e: 1*x = x
+<b class="fc">&nbsp;    if (base == null) base = 1L;</b>
+<b class="fc">&nbsp;    if (delta == null) delta = 1L;</b>
+<b class="fc">&nbsp;    return base * delta;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Lazy multiplication range update function
+&nbsp;  private long multLruf(Long delta1, Long delta2) {
+&nbsp;    // When we hit a null value, multiply by 1 since this is the
+&nbsp;    // multiplication identity, i.e: 1*x = x
+<b class="fc">&nbsp;    if (delta1 == null) delta1 = 1L;</b>
+<b class="fc">&nbsp;    if (delta2 == null) delta2 = 1L;</b>
+&nbsp;    // Multiply together the existing delta and the new delta to properly
+&nbsp;    // propagate the changes.
+<b class="fc">&nbsp;    return delta1 * delta2;</b>
+&nbsp;  }
+&nbsp;
+<b class="fc">&nbsp;  public SumQueryMultiplicationUpdateSegmentTree(long[] values) {</b>
+<b class="fc">&nbsp;    if (values == null) {</b>
+<b class="nc">&nbsp;      throw new IllegalArgumentException(&quot;Segment tree values cannot be null.&quot;);</b>
+&nbsp;    }
+<b class="fc">&nbsp;    n = values.length;</b>
+&nbsp;
+&nbsp;    // The size of the segment tree `t`
+&nbsp;    //
+&nbsp;    // TODO(william): Investigate to reduce this space. There are only 2n-1 segments, so we should
+&nbsp;    // be able to reduce the space, but may need to reorganize the tree/queries. One idea is to use
+&nbsp;    // the Eulerian tour structure of the tree to densely pack the segments.
+<b class="fc">&nbsp;    int N = 4 * n;</b>
+&nbsp;
+<b class="fc">&nbsp;    t = new Long[N];</b>
+<b class="fc">&nbsp;    lazy = new Long[N];</b>
+&nbsp;
+<b class="fc">&nbsp;    buildSegmentTree(0, 0, n - 1, values);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Builds a segment tree by starting with the leaf nodes and combining segment values on callback.
+&nbsp;   *
+&nbsp;   * @param i the index of the segment in the segment tree
+&nbsp;   * @param tl the left index (inclusive) of the segment range
+&nbsp;   * @param tr the right index (inclusive) of the segment range
+&nbsp;   * @param values the initial values array
+&nbsp;   */
+&nbsp;  private void buildSegmentTree(int i, int tl, int tr, long[] values) {
+<b class="fc">&nbsp;    if (tl == tr) {</b>
+<b class="fc">&nbsp;      t[i] = values[tl];</b>
+&nbsp;      return;
+&nbsp;    }
+<b class="fc">&nbsp;    int tm = (tl + tr) / 2;</b>
+<b class="fc">&nbsp;    buildSegmentTree(2 * i + 1, tl, tm, values);</b>
+<b class="fc">&nbsp;    buildSegmentTree(2 * i + 2, tm + 1, tr, values);</b>
+&nbsp;
+<b class="fc">&nbsp;    t[i] = sumFunction(t[2 * i + 1], t[2 * i + 2]);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Returns the query of the range [l, r] on the original `values` array (+ any updates made to it)
+&nbsp;   *
+&nbsp;   * @param l the left endpoint of the range query (inclusive)
+&nbsp;   * @param r the right endpoint of the range query (inclusive)
+&nbsp;   */
+&nbsp;  public Long rangeQuery1(int l, int r) {
+<b class="fc">&nbsp;    return rangeQuery1(0, 0, n - 1, l, r);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Returns the range query value of the range [l, r]
+&nbsp;   *
+&nbsp;   * @param i the index of the current segment in the tree
+&nbsp;   * @param tl the left endpoint (inclusive) of the current segment
+&nbsp;   * @param tr the right endpoint (inclusive) of the current segment
+&nbsp;   * @param l the target left endpoint (inclusive) for the range query
+&nbsp;   * @param r the target right endpoint (inclusive) for the range query
+&nbsp;   */
+&nbsp;  private Long rangeQuery1(int i, int tl, int tr, int l, int r) {
+<b class="fc">&nbsp;    if (l &gt; r) {</b>
+<b class="fc">&nbsp;      return null;</b>
+&nbsp;    }
+<b class="fc">&nbsp;    propagate1(i, tl, tr);</b>
+<b class="fc">&nbsp;    if (tl == l &amp;&amp; tr == r) {</b>
+<b class="fc">&nbsp;      return t[i];</b>
+&nbsp;    }
+<b class="fc">&nbsp;    int tm = (tl + tr) / 2;</b>
+&nbsp;    // Instead of checking if [tl, tm] overlaps [l, r] and [tm+1, tr] overlaps
+&nbsp;    // [l, r], simply recurse on both segments and let the base case return the
+&nbsp;    // default value for invalid intervals.
+<b class="fc">&nbsp;    return sumFunction(</b>
+<b class="fc">&nbsp;        rangeQuery1(2 * i + 1, tl, tm, l, Math.min(tm, r)),</b>
+<b class="fc">&nbsp;        rangeQuery1(2 * i + 2, tm + 1, tr, Math.max(l, tm + 1), r));</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public void rangeUpdate1(int l, int r, long x) {
+<b class="fc">&nbsp;    rangeUpdate1(0, 0, n - 1, l, r, x);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private void propagateLazy(int i, int tl, int tr, long val) {
+&nbsp;    // Ignore leaf segments
+<b class="fc">&nbsp;    if (tl == tr) return;</b>
+<b class="fc">&nbsp;    lazy[2 * i + 1] = multLruf(lazy[2 * i + 1], val);</b>
+<b class="fc">&nbsp;    lazy[2 * i + 2] = multLruf(lazy[2 * i + 2], val);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private void propagate1(int i, int tl, int tr) {
+&nbsp;    // Check for default value because you don&#39;t want to assign to the lazy
+&nbsp;    // value if it&#39;s the default value.
+<b class="fc">&nbsp;    if (lazy[i] != null) {</b>
+<b class="fc">&nbsp;      t[i] = multRuf(t[i], /*unused*/ 0, /*unused*/ 0, lazy[i]);</b>
+&nbsp;      // Push delta to left/right segments for non-leaf nodes
+<b class="fc">&nbsp;      propagateLazy(i, tl, tr, lazy[i]);</b>
+<b class="fc">&nbsp;      lazy[i] = null;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  private void rangeUpdate1(int i, int tl, int tr, int l, int r, long x) {
+<b class="fc">&nbsp;    propagate1(i, tl, tr);</b>
+<b class="fc">&nbsp;    if (l &gt; r) {</b>
+&nbsp;      return;
+&nbsp;    }
+&nbsp;
+<b class="fc">&nbsp;    if (tl == l &amp;&amp; tr == r) {</b>
+<b class="fc">&nbsp;      t[i] = multRuf(t[i], /*unused*/ 0, /*unused*/ 0, x);</b>
+<b class="fc">&nbsp;      propagateLazy(i, tl, tr, x);</b>
+&nbsp;    } else {
+<b class="fc">&nbsp;      int tm = (tl + tr) / 2;</b>
+&nbsp;      // Instead of checking if [tl, tm] overlaps [l, r] and [tm+1, tr] overlaps
+&nbsp;      // [l, r], simply recurse on both segments and let the base case disregard
+&nbsp;      // invalid intervals.
+<b class="fc">&nbsp;      rangeUpdate1(2 * i + 1, tl, tm, l, Math.min(tm, r), x);</b>
+<b class="fc">&nbsp;      rangeUpdate1(2 * i + 2, tm + 1, tr, Math.max(l, tm + 1), r, x);</b>
+&nbsp;
+<b class="fc">&nbsp;      t[i] = sumFunction(t[2 * i + 1], t[2 * i + 2]);</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  public void printDebugInfo() {
+<b class="nc">&nbsp;    printDebugInfo(0, 0, n - 1);</b>
+<b class="nc">&nbsp;    System.out.println();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private void printDebugInfo(int i, int tl, int tr) {
+<b class="nc">&nbsp;    System.out.printf(&quot;[%d, %d], t[i] = %d, lazy[i] = %d\n&quot;, tl, tr, t[i], lazy[i]);</b>
+<b class="nc">&nbsp;    if (tl == tr) {</b>
+&nbsp;      return;
+&nbsp;    }
+<b class="nc">&nbsp;    int tm = (tl + tr) / 2;</b>
+<b class="nc">&nbsp;    printDebugInfo(2 * i + 1, tl, tm);</b>
+<b class="nc">&nbsp;    printDebugInfo(2 * i + 2, tm + 1, tr);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  ////////////////////////////////////////////////////
+&nbsp;  //              Example usage:                    //
+&nbsp;  ////////////////////////////////////////////////////
+&nbsp;
+&nbsp;  public static void main(String[] args) {
+&nbsp;    //          0, 1, 2, 3,  4
+<b class="nc">&nbsp;    long[] v = {2, 1, 3, 4, -1};</b>
+<b class="nc">&nbsp;    SumQuerySumUpdateSegmentTree st = new SumQuerySumUpdateSegmentTree(v);</b>
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

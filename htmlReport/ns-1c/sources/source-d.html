@@ -1,0 +1,215 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > ConnectedComponentsDfsSolverAdjacencyList</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.graphtheory</a>
+</div>
+
+<h1>Coverage Summary for Class: ConnectedComponentsDfsSolverAdjacencyList (com.williamfiset.algorithms.graphtheory)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ConnectedComponentsDfsSolverAdjacencyList</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/39)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * This file contains an algorithm to find all the connected components of an undirected graph. If
+&nbsp; * the graph you&#39;re dealing with is directed have a look at Tarjan&#39;s algorithm to find strongly
+&nbsp; * connected components.
+&nbsp; *
+&nbsp; * @author William Fiset, william.alexandre.fiset@gmail.com
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.graphtheory;
+&nbsp;
+&nbsp;import java.util.*;
+&nbsp;
+&nbsp;public class ConnectedComponentsDfsSolverAdjacencyList {
+&nbsp;
+&nbsp;  private final int n;
+&nbsp;
+&nbsp;  private int componentCount;
+&nbsp;  private int[] components;
+&nbsp;  private boolean solved;
+&nbsp;  private boolean[] visited;
+&nbsp;  private List&lt;List&lt;Integer&gt;&gt; graph;
+&nbsp;
+&nbsp;  /** @param graph - An undirected graph as an adjacency list. */
+<b class="nc">&nbsp;  public ConnectedComponentsDfsSolverAdjacencyList(List&lt;List&lt;Integer&gt;&gt; graph) {</b>
+<b class="nc">&nbsp;    if (graph == null) throw new NullPointerException();</b>
+<b class="nc">&nbsp;    this.n = graph.size();</b>
+<b class="nc">&nbsp;    this.graph = graph;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public int[] getComponents() {
+<b class="nc">&nbsp;    solve();</b>
+<b class="nc">&nbsp;    return components;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public int countComponents() {
+<b class="nc">&nbsp;    solve();</b>
+<b class="nc">&nbsp;    return componentCount;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public void solve() {
+<b class="nc">&nbsp;    if (solved) return;</b>
+&nbsp;
+<b class="nc">&nbsp;    visited = new boolean[n];</b>
+<b class="nc">&nbsp;    components = new int[n];</b>
+<b class="nc">&nbsp;    for (int i = 0; i &lt; n; i++) {</b>
+<b class="nc">&nbsp;      if (!visited[i]) {</b>
+<b class="nc">&nbsp;        componentCount++;</b>
+<b class="nc">&nbsp;        dfs(i);</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    solved = true;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private void dfs(int at) {
+<b class="nc">&nbsp;    visited[at] = true;</b>
+<b class="nc">&nbsp;    components[at] = componentCount;</b>
+<b class="nc">&nbsp;    for (int to : graph.get(at)) if (!visited[to]) dfs(to);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /* Finding connected components example */
+&nbsp;
+&nbsp;  public static List&lt;List&lt;Integer&gt;&gt; createGraph(int n) {
+<b class="nc">&nbsp;    List&lt;List&lt;Integer&gt;&gt; graph = new ArrayList&lt;&gt;(n);</b>
+<b class="nc">&nbsp;    for (int i = 0; i &lt; n; i++) graph.add(new ArrayList&lt;&gt;());</b>
+<b class="nc">&nbsp;    return graph;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public static void addUndirectedEdge(List&lt;List&lt;Integer&gt;&gt; graph, int from, int to) {
+<b class="nc">&nbsp;    graph.get(from).add(to);</b>
+<b class="nc">&nbsp;    graph.get(to).add(from);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public static void main(String[] args) {
+&nbsp;
+<b class="nc">&nbsp;    final int n = 11;</b>
+<b class="nc">&nbsp;    List&lt;List&lt;Integer&gt;&gt; graph = createGraph(n);</b>
+&nbsp;
+&nbsp;    // Setup a graph with five connected components:
+&nbsp;    // {0,1,7}, {2,5}, {4,8}, {3,6,9}, {10}
+<b class="nc">&nbsp;    addUndirectedEdge(graph, 0, 1);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(graph, 1, 7);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(graph, 7, 0);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(graph, 2, 5);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(graph, 4, 8);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(graph, 3, 6);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(graph, 6, 9);</b>
+&nbsp;
+&nbsp;    ConnectedComponentsDfsSolverAdjacencyList solver;
+<b class="nc">&nbsp;    solver = new ConnectedComponentsDfsSolverAdjacencyList(graph);</b>
+<b class="nc">&nbsp;    int count = solver.countComponents();</b>
+<b class="nc">&nbsp;    System.out.printf(&quot;Number of components: %d\n&quot;, count);</b>
+&nbsp;
+<b class="nc">&nbsp;    int[] components = solver.getComponents();</b>
+<b class="nc">&nbsp;    for (int i = 0; i &lt; n; i++)</b>
+<b class="nc">&nbsp;      System.out.printf(&quot;Node %d is part of component %d\n&quot;, i, components[i]);</b>
+&nbsp;
+&nbsp;    // Prints:
+&nbsp;    // Number of components: 5
+&nbsp;    // Node 0 is part of component 1
+&nbsp;    // Node 1 is part of component 1
+&nbsp;    // Node 2 is part of component 2
+&nbsp;    // Node 3 is part of component 3
+&nbsp;    // Node 4 is part of component 4
+&nbsp;    // Node 5 is part of component 2
+&nbsp;    // Node 6 is part of component 3
+&nbsp;    // Node 7 is part of component 1
+&nbsp;    // Node 8 is part of component 4
+&nbsp;    // Node 9 is part of component 3
+&nbsp;    // Node 10 is part of component 5
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

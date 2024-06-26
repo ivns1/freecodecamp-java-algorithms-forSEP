@@ -1,0 +1,125 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > ExtendedEuclideanAlgorithm</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.math</a>
+</div>
+
+<h1>Coverage Summary for Class: ExtendedEuclideanAlgorithm (com.williamfiset.algorithms.math)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ExtendedEuclideanAlgorithm</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (1/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    85,7%
+  </span>
+  <span class="absValue">
+    (6/7)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/** Time Complexity ~O(log(a + b)) */
+&nbsp;package com.williamfiset.algorithms.math;
+&nbsp;
+<b class="nc">&nbsp;public class ExtendedEuclideanAlgorithm {</b>
+&nbsp;
+&nbsp;  // This function performs the extended euclidean algorithm on two numbers a and b.
+&nbsp;  // The function returns the gcd(a,b) as well as the numbers x and y such
+&nbsp;  // that ax + by = gcd(a,b). This calculation is important in number theory
+&nbsp;  // and can be used for several things such as finding modular inverses and
+&nbsp;  // solutions to linear Diophantine equations.
+&nbsp;  public static long[] egcd(long a, long b) {
+<b class="fc">&nbsp;    if (b == 0) return new long[] {a, 1, 0};</b>
+&nbsp;    else {
+<b class="fc">&nbsp;      long[] ret = egcd(b, a % b);</b>
+<b class="fc">&nbsp;      long tmp = ret[1] - ret[2] * (a / b);</b>
+<b class="fc">&nbsp;      ret[1] = ret[2];</b>
+<b class="fc">&nbsp;      ret[2] = tmp;</b>
+<b class="fc">&nbsp;      return ret;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

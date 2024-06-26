@@ -1,0 +1,447 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > LowestCommonAncestorEulerTour</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.graphtheory.treealgorithms</a>
+</div>
+
+<h1>Coverage Summary for Class: LowestCommonAncestorEulerTour (com.williamfiset.algorithms.graphtheory.treealgorithms)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">LowestCommonAncestorEulerTour</td>
+<td class="coverageStat">
+  <span class="percent">
+    77,8%
+  </span>
+  <span class="absValue">
+    (7/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    46,8%
+  </span>
+  <span class="absValue">
+    (29/62)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">LowestCommonAncestorEulerTour$MinSparseTable</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (27/27)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">LowestCommonAncestorEulerTour$TreeNode</td>
+<td class="coverageStat">
+  <span class="percent">
+    90,9%
+  </span>
+  <span class="absValue">
+    (10/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    93,1%
+  </span>
+  <span class="absValue">
+    (27/29)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    87%
+  </span>
+  <span class="absValue">
+    (20/23)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    70,3%
+  </span>
+  <span class="absValue">
+    (83/118)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * Implementation of finding the Lowest Common Ancestor (LCA) of a tree. This impl first finds an
+&nbsp; * Euler tour from the root node which visits all the nodes in the tree. The node height values
+&nbsp; * obtained from the Euler tour can then be used in combination with a sparse table to find the LCA
+&nbsp; * in O(1).
+&nbsp; *
+&nbsp; * &lt;p&gt;Time Complexity: O(1) queries, O(n*log2(n)) pre-processing.
+&nbsp; *
+&nbsp; * &lt;p&gt;Space Complexity: O(n*log2(n))
+&nbsp; *
+&nbsp; * &lt;p&gt;To run script:
+&nbsp; *
+&nbsp; * &lt;p&gt;./gradlew run -Palgorithm=graphtheory.treealgorithms.LowestCommonAncestorEulerTour
+&nbsp; *
+&nbsp; * @author William Fiset
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.graphtheory.treealgorithms;
+&nbsp;
+&nbsp;import java.util.*;
+&nbsp;
+&nbsp;public class LowestCommonAncestorEulerTour {
+&nbsp;
+&nbsp;  public static void main(String[] args) {
+<b class="nc">&nbsp;    TreeNode root = createFirstTreeFromSlides();</b>
+<b class="nc">&nbsp;    LowestCommonAncestorEulerTour solver = new LowestCommonAncestorEulerTour(root);</b>
+&nbsp;
+&nbsp;    // LCA of 13 and 14 = 2
+<b class="nc">&nbsp;    TreeNode lca = solver.lca(13, 14);</b>
+<b class="nc">&nbsp;    System.out.printf(&quot;LCA of 13 and 14 = %s\n&quot;, lca);</b>
+<b class="nc">&nbsp;    if (lca.index() != 2) {</b>
+<b class="nc">&nbsp;      System.out.println(&quot;Error, expected lca to be 2&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // LCA of 9 and 11 = 0
+<b class="nc">&nbsp;    lca = solver.lca(9, 11);</b>
+<b class="nc">&nbsp;    System.out.printf(&quot;LCA of 9 and 11 = %s\n&quot;, lca);</b>
+<b class="nc">&nbsp;    if (lca.index() != 0) {</b>
+<b class="nc">&nbsp;      System.out.println(&quot;Error, expected lca to be 0&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // LCA of 12 and 12 = 12
+<b class="nc">&nbsp;    lca = solver.lca(12, 12);</b>
+<b class="nc">&nbsp;    System.out.printf(&quot;LCA of 12 and 12 = %s\n&quot;, lca);</b>
+<b class="nc">&nbsp;    if (lca.index() != 12) {</b>
+<b class="nc">&nbsp;      System.out.println(&quot;Error, expected lca to be 12&quot;);</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  private static TreeNode createFirstTreeFromSlides() {
+<b class="nc">&nbsp;    int n = 17;</b>
+<b class="nc">&nbsp;    List&lt;List&lt;Integer&gt;&gt; tree = createEmptyGraph(n);</b>
+&nbsp;
+<b class="nc">&nbsp;    addUndirectedEdge(tree, 0, 1);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(tree, 0, 2);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(tree, 1, 3);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(tree, 1, 4);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(tree, 2, 5);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(tree, 2, 6);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(tree, 2, 7);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(tree, 3, 8);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(tree, 3, 9);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(tree, 5, 10);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(tree, 5, 11);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(tree, 7, 12);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(tree, 7, 13);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(tree, 11, 14);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(tree, 11, 15);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(tree, 11, 16);</b>
+&nbsp;
+<b class="nc">&nbsp;    return TreeNode.rootTree(tree, 0);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /* Graph/Tree creation helper methods. */
+&nbsp;
+&nbsp;  // Create a graph as a adjacency list with &#39;n&#39; nodes.
+&nbsp;  public static List&lt;List&lt;Integer&gt;&gt; createEmptyGraph(int n) {
+<b class="fc">&nbsp;    List&lt;List&lt;Integer&gt;&gt; graph = new ArrayList&lt;&gt;(n);</b>
+<b class="fc">&nbsp;    for (int i = 0; i &lt; n; i++) graph.add(new LinkedList&lt;&gt;());</b>
+<b class="fc">&nbsp;    return graph;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public static void addUndirectedEdge(List&lt;List&lt;Integer&gt;&gt; graph, int from, int to) {
+<b class="fc">&nbsp;    graph.get(from).add(to);</b>
+<b class="fc">&nbsp;    graph.get(to).add(from);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public static class TreeNode {
+&nbsp;    // Number of nodes in the subtree. Computed when tree is built.
+&nbsp;    private int n;
+&nbsp;
+&nbsp;    private int index;
+&nbsp;    private TreeNode parent;
+&nbsp;    private List&lt;TreeNode&gt; children;
+&nbsp;
+&nbsp;    // Useful constructor for root node.
+&nbsp;    public TreeNode(int index) {
+<b class="fc">&nbsp;      this(index, /*parent=*/ null);</b>
+&nbsp;    }
+&nbsp;
+<b class="fc">&nbsp;    public TreeNode(int index, TreeNode parent) {</b>
+<b class="fc">&nbsp;      this.index = index;</b>
+<b class="fc">&nbsp;      this.parent = parent;</b>
+<b class="fc">&nbsp;      children = new LinkedList&lt;&gt;();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void addChildren(TreeNode... nodes) {
+<b class="fc">&nbsp;      for (TreeNode node : nodes) {</b>
+<b class="fc">&nbsp;        children.add(node);</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setSize(int n) {
+<b class="fc">&nbsp;      this.n = n;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Number of nodes in the subtree (including the node itself)
+&nbsp;    public int size() {
+<b class="fc">&nbsp;      return n;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public int index() {
+<b class="fc">&nbsp;      return index;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public TreeNode parent() {
+<b class="fc">&nbsp;      return parent;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;TreeNode&gt; children() {
+<b class="fc">&nbsp;      return children;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public static TreeNode rootTree(List&lt;List&lt;Integer&gt;&gt; graph, int rootId) {
+<b class="fc">&nbsp;      TreeNode root = new TreeNode(rootId);</b>
+<b class="fc">&nbsp;      TreeNode rootedTree = buildTree(graph, root);</b>
+<b class="fc">&nbsp;      if (rootedTree.size() &lt; graph.size()) {</b>
+<b class="nc">&nbsp;        System.out.println(</b>
+&nbsp;            &quot;WARNING: Input graph malformed. Did you forget to include all n-1 edges?&quot;);
+&nbsp;      }
+<b class="fc">&nbsp;      return rootedTree;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Do dfs to construct rooted tree.
+&nbsp;    private static TreeNode buildTree(List&lt;List&lt;Integer&gt;&gt; graph, TreeNode node) {
+<b class="fc">&nbsp;      int subtreeNodeCount = 1;</b>
+<b class="fc">&nbsp;      for (int neighbor : graph.get(node.index())) {</b>
+&nbsp;        // Ignore adding an edge pointing back to parent.
+<b class="fc">&nbsp;        if (node.parent() != null &amp;&amp; neighbor == node.parent().index()) {</b>
+<b class="fc">&nbsp;          continue;</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        TreeNode child = new TreeNode(neighbor, node);</b>
+<b class="fc">&nbsp;        node.addChildren(child);</b>
+&nbsp;
+<b class="fc">&nbsp;        buildTree(graph, child);</b>
+<b class="fc">&nbsp;        subtreeNodeCount += child.size();</b>
+<b class="fc">&nbsp;      }</b>
+<b class="fc">&nbsp;      node.setSize(subtreeNodeCount);</b>
+<b class="fc">&nbsp;      return node;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public String toString() {
+<b class="nc">&nbsp;      return String.valueOf(index);</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  private final int n;
+&nbsp;
+<b class="fc">&nbsp;  private int tourIndex = 0;</b>
+&nbsp;
+&nbsp;  // Populated when constructing Euler Tour.
+&nbsp;  private long[] nodeDepth;
+&nbsp;  private TreeNode[] nodeOrder;
+&nbsp;
+&nbsp;  // The last occurrence mapping. This mapping keeps track of the last occurrence of a TreeNode in
+&nbsp;  // the Euler tour for easy indexing.
+&nbsp;  private int[] last;
+&nbsp;
+&nbsp;  // Sparse table impl which can efficiently do Range Minimum Queries (RMQs).
+&nbsp;  private MinSparseTable sparseTable;
+&nbsp;
+<b class="fc">&nbsp;  public LowestCommonAncestorEulerTour(TreeNode root) {</b>
+<b class="fc">&nbsp;    this.n = root.size();</b>
+<b class="fc">&nbsp;    setup(root);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private void setup(TreeNode root) {
+<b class="fc">&nbsp;    int eulerTourSize = 2 * n - 1;</b>
+<b class="fc">&nbsp;    nodeOrder = new TreeNode[eulerTourSize];</b>
+<b class="fc">&nbsp;    nodeDepth = new long[eulerTourSize];</b>
+<b class="fc">&nbsp;    last = new int[n];</b>
+&nbsp;
+&nbsp;    // Do depth first search to construct Euler tour.
+<b class="fc">&nbsp;    dfs(root, /*depth=*/ 0);</b>
+&nbsp;
+&nbsp;    // Initialize and build sparse table on the `nodeDepth` array which will
+&nbsp;    // allow us to index into the `nodeOrder` array and return the LCA.
+<b class="fc">&nbsp;    sparseTable = new MinSparseTable(nodeDepth);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Construct Euler Tour by populating the `nodeDepth` and `nodeOrder` arrays.
+&nbsp;  private void dfs(TreeNode node, long depth) {
+<b class="fc">&nbsp;    if (node == null) {</b>
+&nbsp;      return;
+&nbsp;    }
+&nbsp;
+<b class="fc">&nbsp;    visit(node, depth);</b>
+<b class="fc">&nbsp;    for (TreeNode child : node.children()) {</b>
+<b class="fc">&nbsp;      dfs(child, depth + 1);</b>
+<b class="fc">&nbsp;      visit(node, depth);</b>
+<b class="fc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private void visit(TreeNode node, long depth) {
+<b class="fc">&nbsp;    nodeOrder[tourIndex] = node;</b>
+<b class="fc">&nbsp;    nodeDepth[tourIndex] = depth;</b>
+<b class="fc">&nbsp;    last[node.index()] = tourIndex;</b>
+<b class="fc">&nbsp;    tourIndex++;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Finds the lowest common ancestor of the nodes with `index1` and `index2`.
+&nbsp;  public TreeNode lca(int index1, int index2) {
+<b class="fc">&nbsp;    int l = Math.min(last[index1], last[index2]);</b>
+<b class="fc">&nbsp;    int r = Math.max(last[index1], last[index2]);</b>
+<b class="fc">&nbsp;    int i = sparseTable.queryIndex(l, r);</b>
+<b class="fc">&nbsp;    return nodeOrder[i];</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Sparse table for efficient minimum range queries in O(1) with O(nlogn) space
+&nbsp;  private static class MinSparseTable {
+&nbsp;
+&nbsp;    // The number of elements in the original input array.
+&nbsp;    private int n;
+&nbsp;
+&nbsp;    // The maximum power of 2 needed. This value is floor(log2(n))
+&nbsp;    private int P;
+&nbsp;
+&nbsp;    // Fast log base 2 logarithm lookup table, 1 &lt;= i &lt;= n
+&nbsp;    private int[] log2;
+&nbsp;
+&nbsp;    // The sparse table values.
+&nbsp;    private long[][] dp;
+&nbsp;
+&nbsp;    // Index Table (IT) associated with the values in the sparse table.
+&nbsp;    private int[][] it;
+&nbsp;
+<b class="fc">&nbsp;    public MinSparseTable(long[] values) {</b>
+<b class="fc">&nbsp;      init(values);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void init(long[] v) {
+<b class="fc">&nbsp;      n = v.length;</b>
+<b class="fc">&nbsp;      P = (int) (Math.log(n) / Math.log(2));</b>
+<b class="fc">&nbsp;      dp = new long[P + 1][n];</b>
+<b class="fc">&nbsp;      it = new int[P + 1][n];</b>
+&nbsp;
+<b class="fc">&nbsp;      for (int i = 0; i &lt; n; i++) {</b>
+<b class="fc">&nbsp;        dp[0][i] = v[i];</b>
+<b class="fc">&nbsp;        it[0][i] = i;</b>
+&nbsp;      }
+&nbsp;
+<b class="fc">&nbsp;      log2 = new int[n + 1];</b>
+<b class="fc">&nbsp;      for (int i = 2; i &lt;= n; i++) {</b>
+<b class="fc">&nbsp;        log2[i] = log2[i / 2] + 1;</b>
+&nbsp;      }
+&nbsp;
+&nbsp;      // Build sparse table combining the values of the previous intervals.
+<b class="fc">&nbsp;      for (int p = 1; p &lt;= P; p++) {</b>
+<b class="fc">&nbsp;        for (int i = 0; i + (1 &lt;&lt; p) &lt;= n; i++) {</b>
+<b class="fc">&nbsp;          long leftInterval = dp[p - 1][i];</b>
+<b class="fc">&nbsp;          long rightInterval = dp[p - 1][i + (1 &lt;&lt; (p - 1))];</b>
+<b class="fc">&nbsp;          dp[p][i] = Math.min(leftInterval, rightInterval);</b>
+&nbsp;
+&nbsp;          // Propagate the index of the best value
+<b class="fc">&nbsp;          if (leftInterval &lt;= rightInterval) {</b>
+<b class="fc">&nbsp;            it[p][i] = it[p - 1][i];</b>
+&nbsp;          } else {
+<b class="fc">&nbsp;            it[p][i] = it[p - 1][i + (1 &lt;&lt; (p - 1))];</b>
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+&nbsp;    // Returns the index of the minimum element in the range [l, r].
+&nbsp;    public int queryIndex(int l, int r) {
+<b class="fc">&nbsp;      int len = r - l + 1;</b>
+<b class="fc">&nbsp;      int p = log2[r - l + 1];</b>
+<b class="fc">&nbsp;      long leftInterval = dp[p][l];</b>
+<b class="fc">&nbsp;      long rightInterval = dp[p][r - (1 &lt;&lt; p) + 1];</b>
+<b class="fc">&nbsp;      if (leftInterval &lt;= rightInterval) {</b>
+<b class="fc">&nbsp;        return it[p][l];</b>
+&nbsp;      } else {
+<b class="fc">&nbsp;        return it[p][r - (1 &lt;&lt; p) + 1];</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

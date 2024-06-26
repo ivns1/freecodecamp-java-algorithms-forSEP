@@ -1,0 +1,287 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > IntArray</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.datastructures.dynamicarray</a>
+</div>
+
+<h1>Coverage Summary for Class: IntArray (com.williamfiset.algorithms.datastructures.dynamicarray)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">IntArray</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/48)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">IntArray$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/20)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/53)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * Most of the time when you use an array it&#39;s to place integers inside of it, so why not have a
+&nbsp; * super fast integer only array? This file contains an implementation of an integer only array
+&nbsp; * which can outperform Java&#39;s ArrayList by about a factor of 10-15x! Enjoy!
+&nbsp; *
+&nbsp; * @author William Fiset, william.alexandre.fiset@gmail.com
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.datastructures.dynamicarray;
+&nbsp;
+&nbsp;public class IntArray implements Iterable&lt;Integer&gt; {
+&nbsp;
+&nbsp;  private static final int DEFAULT_CAP = 1 &lt;&lt; 3;
+&nbsp;
+&nbsp;  public int[] arr;
+<b class="nc">&nbsp;  public int len = 0;</b>
+<b class="nc">&nbsp;  private int capacity = 0;</b>
+&nbsp;
+&nbsp;  // Initialize the array with a default capacity
+&nbsp;  public IntArray() {
+<b class="nc">&nbsp;    this(DEFAULT_CAP);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Initialize the array with a certain capacity
+<b class="nc">&nbsp;  public IntArray(int capacity) {</b>
+<b class="nc">&nbsp;    if (capacity &lt; 0) throw new IllegalArgumentException(&quot;Illegal Capacity: &quot; + capacity);</b>
+<b class="nc">&nbsp;    this.capacity = capacity;</b>
+<b class="nc">&nbsp;    arr = new int[capacity];</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Given an array make it a dynamic array!
+<b class="nc">&nbsp;  public IntArray(int[] array) {</b>
+<b class="nc">&nbsp;    if (array == null) throw new IllegalArgumentException(&quot;Array cannot be null&quot;);</b>
+<b class="nc">&nbsp;    arr = java.util.Arrays.copyOf(array, array.length);</b>
+<b class="nc">&nbsp;    capacity = len = array.length;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Returns the size of the array
+&nbsp;  public int size() {
+<b class="nc">&nbsp;    return len;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Returns true/false on whether the array is empty
+&nbsp;  public boolean isEmpty() {
+<b class="nc">&nbsp;    return len == 0;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // To get/set values without method call overhead you can do
+&nbsp;  // array_obj.arr[index] instead, you can gain about 10x the speed!
+&nbsp;  public int get(int index) {
+<b class="nc">&nbsp;    return arr[index];</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public void set(int index, int elem) {
+<b class="nc">&nbsp;    arr[index] = elem;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Add an element to this dynamic array
+&nbsp;  public void add(int elem) {
+<b class="nc">&nbsp;    if (len + 1 &gt;= capacity) {</b>
+<b class="nc">&nbsp;      if (capacity == 0) capacity = 1;</b>
+<b class="nc">&nbsp;      else capacity *= 2; // double the size</b>
+<b class="nc">&nbsp;      arr = java.util.Arrays.copyOf(arr, capacity); // pads with extra 0/null elements</b>
+&nbsp;    }
+<b class="nc">&nbsp;    arr[len++] = elem;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Removes the element at the specified index in this list.
+&nbsp;  // If possible, avoid calling this method as it take O(n) time
+&nbsp;  // to remove an element (since you have to reconstruct the array!)
+&nbsp;  public void removeAt(int rm_index) {
+<b class="nc">&nbsp;    System.arraycopy(arr, rm_index + 1, arr, rm_index, len - rm_index - 1);</b>
+<b class="nc">&nbsp;    --len;</b>
+<b class="nc">&nbsp;    --capacity;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Search and remove an element if it is found in the array
+&nbsp;  // If possible, avoid calling this method as it take O(n) time
+&nbsp;  public boolean remove(int elem) {
+<b class="nc">&nbsp;    for (int i = 0; i &lt; len; i++) {</b>
+<b class="nc">&nbsp;      if (arr[i] == elem) {</b>
+<b class="nc">&nbsp;        removeAt(i);</b>
+<b class="nc">&nbsp;        return true;</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    return false;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Reverse the contents of this array
+&nbsp;  public void reverse() {
+<b class="nc">&nbsp;    for (int i = 0; i &lt; len / 2; i++) {</b>
+<b class="nc">&nbsp;      int tmp = arr[i];</b>
+<b class="nc">&nbsp;      arr[i] = arr[len - i - 1];</b>
+<b class="nc">&nbsp;      arr[len - i - 1] = tmp;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  // Perform a binary search on this array to find an element in O(log(n)) time
+&nbsp;  // Make sure this array is sorted! Returns a value &lt; 0 if item is not found
+&nbsp;  public int binarySearch(int key) {
+<b class="nc">&nbsp;    int index = java.util.Arrays.binarySearch(arr, 0, len, key);</b>
+&nbsp;    // if (index &lt; 0) index = -index - 1; // If not found this will tell you where to insert
+<b class="nc">&nbsp;    return index;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Sort this array
+&nbsp;  public void sort() {
+<b class="nc">&nbsp;    java.util.Arrays.sort(arr, 0, len);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Iterator is still fast but not as fast as iterative for loop
+&nbsp;  @Override
+&nbsp;  public java.util.Iterator&lt;Integer&gt; iterator() {
+<b class="nc">&nbsp;    return new java.util.Iterator&lt;Integer&gt;() {</b>
+<b class="nc">&nbsp;      int index = 0;</b>
+&nbsp;
+&nbsp;      public boolean hasNext() {
+<b class="nc">&nbsp;        return index &lt; len;</b>
+&nbsp;      }
+&nbsp;
+&nbsp;      public Integer next() {
+<b class="nc">&nbsp;        return arr[index++];</b>
+&nbsp;      }
+&nbsp;
+&nbsp;      public void remove() {
+<b class="nc">&nbsp;        throw new UnsupportedOperationException();</b>
+&nbsp;      }
+&nbsp;    };
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public String toString() {
+<b class="nc">&nbsp;    if (len == 0) return &quot;[]&quot;;</b>
+&nbsp;    else {
+<b class="nc">&nbsp;      StringBuilder sb = new StringBuilder(len).append(&quot;[&quot;);</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; len - 1; i++) sb.append(arr[i] + &quot;, &quot;);</b>
+<b class="nc">&nbsp;      return sb.append(arr[len - 1] + &quot;]&quot;).toString();</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  // Example usage
+&nbsp;  public static void main(String[] args) {
+&nbsp;
+<b class="nc">&nbsp;    IntArray ar = new IntArray(50);</b>
+<b class="nc">&nbsp;    ar.add(3);</b>
+<b class="nc">&nbsp;    ar.add(7);</b>
+<b class="nc">&nbsp;    ar.add(6);</b>
+<b class="nc">&nbsp;    ar.add(-2);</b>
+&nbsp;
+<b class="nc">&nbsp;    ar.sort(); // [-2, 3, 6, 7]</b>
+&nbsp;
+&nbsp;    // Prints [-2, 3, 6, 7]
+<b class="nc">&nbsp;    for (int i = 0; i &lt; ar.size(); i++) System.out.println(ar.get(i));</b>
+&nbsp;
+&nbsp;    // Prints [-2, 3, 6, 7]
+<b class="nc">&nbsp;    System.out.println(ar);</b>
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

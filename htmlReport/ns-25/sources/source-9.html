@@ -1,0 +1,188 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > UniqueCombinations</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.other</a>
+</div>
+
+<h1>Coverage Summary for Class: UniqueCombinations (com.williamfiset.algorithms.other)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UniqueCombinations</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/23)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * This file shows you how to generate all the unique combinations of a set even though some
+&nbsp; * elements may be repeated. For example, if your set is {2, 2, 3, 3, 3} and you care only about
+&nbsp; * sets of size two (r = 2) then the unique sets are {{2,2}, {2,3}, {3,3}}.
+&nbsp; *
+&nbsp; * &lt;p&gt;Time Complexity: O( n choose r )
+&nbsp; *
+&nbsp; * @author William Fiset, william.alexandre.fiset@gmail.com
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.other;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;
+<b class="nc">&nbsp;public class UniqueCombinations {</b>
+&nbsp;
+&nbsp;  public static void combinations(int[] set, int r) {
+&nbsp;
+<b class="nc">&nbsp;    if (set == null) return;</b>
+<b class="nc">&nbsp;    if (r &lt; 0) return;</b>
+&nbsp;
+&nbsp;    // Sort the numbers so we can easily skip duplicates.
+<b class="nc">&nbsp;    java.util.Arrays.sort(set);</b>
+&nbsp;
+<b class="nc">&nbsp;    boolean[] used = new boolean[set.length];</b>
+<b class="nc">&nbsp;    combinations(0, r, used, set);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private static void combinations(int at, int r, boolean[] used, int[] set) {
+&nbsp;
+<b class="nc">&nbsp;    final int n = set.length;</b>
+&nbsp;
+&nbsp;    // We select &#39;r&#39; elements so we found a valid subset!
+<b class="nc">&nbsp;    if (r == 0) {</b>
+&nbsp;
+<b class="nc">&nbsp;      List&lt;Integer&gt; subset = new ArrayList&lt;&gt;(r);</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; n; i++) if (used[i]) subset.add(set[i]);</b>
+<b class="nc">&nbsp;      System.out.println(subset);</b>
+&nbsp;
+<b class="nc">&nbsp;    } else {</b>
+<b class="nc">&nbsp;      for (int i = at; i &lt; n; i++) {</b>
+&nbsp;
+&nbsp;        // Since the elements are sorted we can skip duplicate
+&nbsp;        // elements to ensure the uniqueness of our output.
+<b class="nc">&nbsp;        if (i &gt; at &amp;&amp; set[i - 1] == set[i]) continue;</b>
+&nbsp;
+<b class="nc">&nbsp;        used[i] = true;</b>
+<b class="nc">&nbsp;        combinations(i + 1, r - 1, used, set);</b>
+<b class="nc">&nbsp;        used[i] = false;</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  public static void main(String[] args) {
+&nbsp;
+&nbsp;    // Example #1
+<b class="nc">&nbsp;    int r = 2;</b>
+<b class="nc">&nbsp;    int[] set = {2, 3, 3, 2, 3};</b>
+<b class="nc">&nbsp;    combinations(set, r);</b>
+&nbsp;    // Prints:
+&nbsp;    // [2, 2]
+&nbsp;    // [2, 3]
+&nbsp;    // [3, 3]
+&nbsp;
+<b class="nc">&nbsp;    r = 3;</b>
+<b class="nc">&nbsp;    set = new int[] {1, 2, 2, 2, 3, 3, 4, 4};</b>
+<b class="nc">&nbsp;    combinations(set, r);</b>
+&nbsp;    // Prints:
+&nbsp;    // [1, 2, 2]
+&nbsp;    // [1, 2, 3]
+&nbsp;    // [1, 2, 4]
+&nbsp;    // [1, 3, 3]
+&nbsp;    // [1, 3, 4]
+&nbsp;    // [1, 4, 4]
+&nbsp;    // [2, 2, 2]
+&nbsp;    // [2, 2, 3]
+&nbsp;    // [2, 2, 4]
+&nbsp;    // [2, 3, 3]
+&nbsp;    // [2, 3, 4]
+&nbsp;    // [2, 4, 4]
+&nbsp;    // [3, 3, 4]
+&nbsp;    // [3, 4, 4]
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,421 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > LazyPrimsAdjacencyList</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.graphtheory</a>
+</div>
+
+<h1>Coverage Summary for Class: LazyPrimsAdjacencyList (com.williamfiset.algorithms.graphtheory)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">LazyPrimsAdjacencyList</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/142)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">LazyPrimsAdjacencyList$Edge</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/15)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/147)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * An implementation of the lazy version of Prim&#39;s algorithm which relies on using a traditional
+&nbsp; * priority queue to query the next best edge.
+&nbsp; *
+&nbsp; * &lt;p&gt;Time Complexity: O(ElogE)
+&nbsp; *
+&nbsp; * @author William Fiset, william.alexandre.fiset@gmail.com
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.graphtheory;
+&nbsp;
+&nbsp;import java.util.*;
+&nbsp;
+&nbsp;public class LazyPrimsAdjacencyList {
+&nbsp;
+&nbsp;  static class Edge implements Comparable&lt;Edge&gt; {
+&nbsp;    int from, to, cost;
+&nbsp;
+<b class="nc">&nbsp;    public Edge(int from, int to, int cost) {</b>
+<b class="nc">&nbsp;      this.from = from;</b>
+<b class="nc">&nbsp;      this.to = to;</b>
+<b class="nc">&nbsp;      this.cost = cost;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public int compareTo(Edge other) {
+<b class="nc">&nbsp;      return cost - other.cost;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  // Inputs
+&nbsp;  private final int n;
+&nbsp;  private final List&lt;List&lt;Edge&gt;&gt; graph;
+&nbsp;
+&nbsp;  // Internal
+&nbsp;  private boolean solved;
+&nbsp;  private boolean mstExists;
+&nbsp;  private boolean[] visited;
+&nbsp;  private PriorityQueue&lt;Edge&gt; pq;
+&nbsp;
+&nbsp;  // Outputs
+&nbsp;  private long minCostSum;
+&nbsp;  private Edge[] mstEdges;
+&nbsp;
+<b class="nc">&nbsp;  public LazyPrimsAdjacencyList(List&lt;List&lt;Edge&gt;&gt; graph) {</b>
+<b class="nc">&nbsp;    if (graph == null || graph.isEmpty()) throw new IllegalArgumentException();</b>
+<b class="nc">&nbsp;    this.n = graph.size();</b>
+<b class="nc">&nbsp;    this.graph = graph;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Returns the edges used in finding the minimum spanning tree,
+&nbsp;  // or returns null if no MST exists.
+&nbsp;  public Edge[] getMst() {
+<b class="nc">&nbsp;    solve();</b>
+<b class="nc">&nbsp;    return mstExists ? mstEdges : null;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public Long getMstCost() {
+<b class="nc">&nbsp;    solve();</b>
+<b class="nc">&nbsp;    return mstExists ? minCostSum : null;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private void addEdges(int nodeIndex) {
+<b class="nc">&nbsp;    visited[nodeIndex] = true;</b>
+&nbsp;
+&nbsp;    // edges will never be null if the createEmptyGraph method was used to build the graph.
+<b class="nc">&nbsp;    List&lt;Edge&gt; edges = graph.get(nodeIndex);</b>
+<b class="nc">&nbsp;    for (Edge e : edges)</b>
+<b class="nc">&nbsp;      if (!visited[e.to]) {</b>
+&nbsp;        // System.out.printf(&quot;(%d, %d, %d)\n&quot;, e.from, e.to, e.cost);
+<b class="nc">&nbsp;        pq.offer(e);</b>
+&nbsp;      }
+&nbsp;  }
+&nbsp;
+&nbsp;  // Computes the minimum spanning tree and minimum spanning tree cost.
+&nbsp;  private void solve() {
+<b class="nc">&nbsp;    if (solved) return;</b>
+<b class="nc">&nbsp;    solved = true;</b>
+&nbsp;
+<b class="nc">&nbsp;    int m = n - 1, edgeCount = 0;</b>
+<b class="nc">&nbsp;    pq = new PriorityQueue&lt;&gt;();</b>
+<b class="nc">&nbsp;    visited = new boolean[n];</b>
+<b class="nc">&nbsp;    mstEdges = new Edge[m];</b>
+&nbsp;
+&nbsp;    // Add initial set of edges to the priority queue starting at node 0.
+<b class="nc">&nbsp;    addEdges(0);</b>
+&nbsp;
+&nbsp;    // Loop while the MST is not complete.
+<b class="nc">&nbsp;    while (!pq.isEmpty() &amp;&amp; edgeCount != m) {</b>
+<b class="nc">&nbsp;      Edge edge = pq.poll();</b>
+<b class="nc">&nbsp;      int nodeIndex = edge.to;</b>
+&nbsp;
+&nbsp;      // Skip any edge pointing to an already visited node.
+<b class="nc">&nbsp;      if (visited[nodeIndex]) continue;</b>
+&nbsp;
+<b class="nc">&nbsp;      mstEdges[edgeCount++] = edge;</b>
+<b class="nc">&nbsp;      minCostSum += edge.cost;</b>
+&nbsp;
+<b class="nc">&nbsp;      addEdges(nodeIndex);</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    // Check if MST spans entire graph.
+<b class="nc">&nbsp;    mstExists = (edgeCount == m);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /* Graph construction helpers. */
+&nbsp;
+&nbsp;  static List&lt;List&lt;Edge&gt;&gt; createEmptyGraph(int n) {
+<b class="nc">&nbsp;    List&lt;List&lt;Edge&gt;&gt; g = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;    for (int i = 0; i &lt; n; i++) g.add(new ArrayList&lt;&gt;());</b>
+<b class="nc">&nbsp;    return g;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  static void addDirectedEdge(List&lt;List&lt;Edge&gt;&gt; g, int from, int to, int cost) {
+<b class="nc">&nbsp;    g.get(from).add(new Edge(from, to, cost));</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  static void addUndirectedEdge(List&lt;List&lt;Edge&gt;&gt; g, int from, int to, int cost) {
+<b class="nc">&nbsp;    addDirectedEdge(g, from, to, cost);</b>
+<b class="nc">&nbsp;    addDirectedEdge(g, to, from, cost);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /* Example usage. */
+&nbsp;
+&nbsp;  public static void main(String[] args) {
+&nbsp;    // example1();
+&nbsp;    // firstGraphFromSlides();
+&nbsp;    // squareGraphFromSlides();
+<b class="nc">&nbsp;    lazyPrimsDemoFromSlides();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private static void example1() {
+<b class="nc">&nbsp;    int n = 10;</b>
+<b class="nc">&nbsp;    List&lt;List&lt;Edge&gt;&gt; g = createEmptyGraph(n);</b>
+&nbsp;
+<b class="nc">&nbsp;    addUndirectedEdge(g, 0, 1, 5);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 1, 2, 4);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 2, 9, 2);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 0, 4, 1);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 0, 3, 4);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 1, 3, 2);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 2, 7, 4);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 2, 8, 1);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 9, 8, 0);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 4, 5, 1);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 5, 6, 7);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 6, 8, 4);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 4, 3, 2);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 5, 3, 5);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 3, 6, 11);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 6, 7, 1);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 3, 7, 2);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 7, 8, 6);</b>
+&nbsp;
+<b class="nc">&nbsp;    LazyPrimsAdjacencyList solver = new LazyPrimsAdjacencyList(g);</b>
+<b class="nc">&nbsp;    Long cost = solver.getMstCost();</b>
+&nbsp;
+<b class="nc">&nbsp;    if (cost == null) {</b>
+<b class="nc">&nbsp;      System.out.println(&quot;No MST does not exists&quot;);</b>
+&nbsp;    } else {
+<b class="nc">&nbsp;      System.out.println(&quot;MST cost: &quot; + cost);</b>
+<b class="nc">&nbsp;      for (Edge e : solver.getMst()) {</b>
+<b class="nc">&nbsp;        System.out.println(String.format(&quot;from: %d, to: %d, cost: %d&quot;, e.from, e.to, e.cost));</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+&nbsp;    // Output:
+&nbsp;    // MST cost: 14
+&nbsp;    // from: 0, to: 4, cost: 1
+&nbsp;    // from: 4, to: 5, cost: 1
+&nbsp;    // from: 4, to: 3, cost: 2
+&nbsp;    // from: 3, to: 1, cost: 2
+&nbsp;    // from: 3, to: 7, cost: 2
+&nbsp;    // from: 7, to: 6, cost: 1
+&nbsp;    // from: 6, to: 8, cost: 4
+&nbsp;    // from: 8, to: 9, cost: 0
+&nbsp;    // from: 8, to: 2, cost: 1
+&nbsp;  }
+&nbsp;
+&nbsp;  private static void firstGraphFromSlides() {
+<b class="nc">&nbsp;    int n = 7;</b>
+<b class="nc">&nbsp;    List&lt;List&lt;Edge&gt;&gt; g = createEmptyGraph(n);</b>
+&nbsp;
+<b class="nc">&nbsp;    addUndirectedEdge(g, 0, 1, 9);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 0, 2, 0);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 0, 3, 5);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 0, 5, 7);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 1, 3, -2);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 1, 4, 3);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 1, 6, 4);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 2, 5, 6);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 3, 5, 2);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 3, 6, 3);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 4, 6, 6);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 5, 6, 1);</b>
+&nbsp;
+<b class="nc">&nbsp;    LazyPrimsAdjacencyList solver = new LazyPrimsAdjacencyList(g);</b>
+<b class="nc">&nbsp;    Long cost = solver.getMstCost();</b>
+&nbsp;
+<b class="nc">&nbsp;    if (cost == null) {</b>
+<b class="nc">&nbsp;      System.out.println(&quot;No MST does not exists&quot;);</b>
+&nbsp;    } else {
+<b class="nc">&nbsp;      System.out.println(&quot;MST cost: &quot; + cost);</b>
+<b class="nc">&nbsp;      for (Edge e : solver.getMst()) {</b>
+<b class="nc">&nbsp;        System.out.println(String.format(&quot;from: %d, to: %d, cost: %d&quot;, e.from, e.to, e.cost));</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  private static void squareGraphFromSlides() {
+<b class="nc">&nbsp;    int n = 9;</b>
+<b class="nc">&nbsp;    List&lt;List&lt;Edge&gt;&gt; g = createEmptyGraph(n);</b>
+&nbsp;
+<b class="nc">&nbsp;    addUndirectedEdge(g, 0, 1, 6);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 0, 3, 3);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 1, 2, 4);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 1, 4, 2);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 2, 5, 12);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 3, 4, 1);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 3, 6, 8);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 4, 5, 7);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 4, 7, 9);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 5, 8, 10);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 6, 7, 11);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 7, 8, 5);</b>
+&nbsp;
+<b class="nc">&nbsp;    LazyPrimsAdjacencyList solver = new LazyPrimsAdjacencyList(g);</b>
+<b class="nc">&nbsp;    Long cost = solver.getMstCost();</b>
+&nbsp;
+<b class="nc">&nbsp;    if (cost == null) {</b>
+<b class="nc">&nbsp;      System.out.println(&quot;No MST does not exists&quot;);</b>
+&nbsp;    } else {
+<b class="nc">&nbsp;      System.out.println(&quot;MST cost: &quot; + cost);</b>
+<b class="nc">&nbsp;      for (Edge e : solver.getMst()) {</b>
+<b class="nc">&nbsp;        System.out.println(String.format(&quot;from: %d, to: %d, cost: %d&quot;, e.from, e.to, e.cost));</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  private static void lazyPrimsDemoFromSlides() {
+<b class="nc">&nbsp;    int n = 8;</b>
+<b class="nc">&nbsp;    List&lt;List&lt;Edge&gt;&gt; g = createEmptyGraph(n);</b>
+&nbsp;
+<b class="nc">&nbsp;    addDirectedEdge(g, 0, 1, 10);</b>
+<b class="nc">&nbsp;    addDirectedEdge(g, 0, 2, 1);</b>
+<b class="nc">&nbsp;    addDirectedEdge(g, 0, 3, 4);</b>
+&nbsp;
+<b class="nc">&nbsp;    addDirectedEdge(g, 2, 1, 3);</b>
+<b class="nc">&nbsp;    addDirectedEdge(g, 2, 5, 8);</b>
+<b class="nc">&nbsp;    addDirectedEdge(g, 2, 3, 2);</b>
+<b class="nc">&nbsp;    addDirectedEdge(g, 2, 0, 1);</b>
+&nbsp;
+<b class="nc">&nbsp;    addDirectedEdge(g, 3, 2, 2);</b>
+<b class="nc">&nbsp;    addDirectedEdge(g, 3, 5, 2);</b>
+<b class="nc">&nbsp;    addDirectedEdge(g, 3, 6, 7);</b>
+<b class="nc">&nbsp;    addDirectedEdge(g, 3, 0, 4);</b>
+&nbsp;
+<b class="nc">&nbsp;    addDirectedEdge(g, 5, 2, 8);</b>
+<b class="nc">&nbsp;    addDirectedEdge(g, 5, 4, 1);</b>
+<b class="nc">&nbsp;    addDirectedEdge(g, 5, 7, 9);</b>
+<b class="nc">&nbsp;    addDirectedEdge(g, 5, 6, 6);</b>
+<b class="nc">&nbsp;    addDirectedEdge(g, 5, 3, 2);</b>
+&nbsp;
+<b class="nc">&nbsp;    addDirectedEdge(g, 4, 1, 0);</b>
+<b class="nc">&nbsp;    addDirectedEdge(g, 4, 5, 1);</b>
+<b class="nc">&nbsp;    addDirectedEdge(g, 4, 7, 8);</b>
+&nbsp;
+<b class="nc">&nbsp;    addDirectedEdge(g, 1, 0, 10);</b>
+<b class="nc">&nbsp;    addDirectedEdge(g, 1, 2, 3);</b>
+<b class="nc">&nbsp;    addDirectedEdge(g, 1, 4, 0);</b>
+&nbsp;
+<b class="nc">&nbsp;    addDirectedEdge(g, 6, 3, 7);</b>
+<b class="nc">&nbsp;    addDirectedEdge(g, 6, 5, 6);</b>
+<b class="nc">&nbsp;    addDirectedEdge(g, 6, 7, 12);</b>
+&nbsp;
+<b class="nc">&nbsp;    addDirectedEdge(g, 7, 4, 8);</b>
+<b class="nc">&nbsp;    addDirectedEdge(g, 7, 5, 9);</b>
+<b class="nc">&nbsp;    addDirectedEdge(g, 7, 6, 12);</b>
+&nbsp;
+<b class="nc">&nbsp;    LazyPrimsAdjacencyList solver = new LazyPrimsAdjacencyList(g);</b>
+<b class="nc">&nbsp;    Long cost = solver.getMstCost();</b>
+&nbsp;
+<b class="nc">&nbsp;    if (cost == null) {</b>
+<b class="nc">&nbsp;      System.out.println(&quot;No MST does not exists&quot;);</b>
+&nbsp;    } else {
+<b class="nc">&nbsp;      System.out.println(&quot;MST cost: &quot; + cost);</b>
+<b class="nc">&nbsp;      for (Edge e : solver.getMst()) {</b>
+<b class="nc">&nbsp;        System.out.println(String.format(&quot;from: %d, to: %d, cost: %d&quot;, e.from, e.to, e.cost));</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

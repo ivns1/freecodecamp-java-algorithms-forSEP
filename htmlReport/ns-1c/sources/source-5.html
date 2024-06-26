@@ -1,0 +1,235 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > BellmanFordEdgeList</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.graphtheory</a>
+</div>
+
+<h1>Coverage Summary for Class: BellmanFordEdgeList (com.williamfiset.algorithms.graphtheory)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BellmanFordEdgeList</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/34)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">BellmanFordEdgeList$Edge</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/38)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * An implementation of the Bellman-Ford algorithm. The algorithm finds the shortest path between a
+&nbsp; * starting node and all other nodes in the graph. The algorithm also detects negative cycles.
+&nbsp; *
+&nbsp; * @author William Fiset, william.alexandre.fiset@gmail.com
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.graphtheory;
+&nbsp;
+<b class="nc">&nbsp;public class BellmanFordEdgeList {</b>
+&nbsp;
+&nbsp;  // A directed edge
+&nbsp;  public static class Edge {
+&nbsp;    double cost;
+&nbsp;    int from, to;
+&nbsp;
+<b class="nc">&nbsp;    public Edge(int from, int to, double cost) {</b>
+<b class="nc">&nbsp;      this.to = to;</b>
+<b class="nc">&nbsp;      this.from = from;</b>
+<b class="nc">&nbsp;      this.cost = cost;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * An implementation of the Bellman-Ford algorithm. The algorithm finds the shortest path between
+&nbsp;   * a starting node and all other nodes in the graph. The algorithm also detects negative cycles.
+&nbsp;   * If a node is part of a negative cycle then the minimum cost for that node is set to
+&nbsp;   * Double.NEGATIVE_INFINITY.
+&nbsp;   *
+&nbsp;   * @param edges - An edge list containing directed edges forming the graph
+&nbsp;   * @param V - The number of vertices in the graph.
+&nbsp;   * @param start - The id of the starting node
+&nbsp;   */
+&nbsp;  public static double[] bellmanFord(Edge[] edges, int V, int start) {
+&nbsp;
+<b class="nc">&nbsp;    double[] dist = new double[V];</b>
+<b class="nc">&nbsp;    java.util.Arrays.fill(dist, Double.POSITIVE_INFINITY);</b>
+<b class="nc">&nbsp;    dist[start] = 0;</b>
+&nbsp;
+&nbsp;    // Only in the worst case does it take V-1 iterations for the Bellman-Ford
+&nbsp;    // algorithm to complete. Another stopping condition is when we&#39;re unable to
+&nbsp;    // relax an edge, this means we have reached the optimal solution early.
+<b class="nc">&nbsp;    boolean relaxedAnEdge = true;</b>
+&nbsp;
+&nbsp;    // For each vertex, apply relaxation for all the edges
+<b class="nc">&nbsp;    for (int v = 0; v &lt; V - 1 &amp;&amp; relaxedAnEdge; v++) {</b>
+<b class="nc">&nbsp;      relaxedAnEdge = false;</b>
+<b class="nc">&nbsp;      for (Edge edge : edges) {</b>
+<b class="nc">&nbsp;        if (dist[edge.from] + edge.cost &lt; dist[edge.to]) {</b>
+<b class="nc">&nbsp;          dist[edge.to] = dist[edge.from] + edge.cost;</b>
+<b class="nc">&nbsp;          relaxedAnEdge = true;</b>
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+&nbsp;    // Run algorithm a second time to detect which nodes are part
+&nbsp;    // of a negative cycle. A negative cycle has occurred if we
+&nbsp;    // can find a better path beyond the optimal solution.
+<b class="nc">&nbsp;    relaxedAnEdge = true;</b>
+<b class="nc">&nbsp;    for (int v = 0; v &lt; V - 1 &amp;&amp; relaxedAnEdge; v++) {</b>
+<b class="nc">&nbsp;      relaxedAnEdge = false;</b>
+<b class="nc">&nbsp;      for (Edge edge : edges) {</b>
+<b class="nc">&nbsp;        if (dist[edge.from] + edge.cost &lt; dist[edge.to]) {</b>
+<b class="nc">&nbsp;          dist[edge.to] = Double.NEGATIVE_INFINITY;</b>
+<b class="nc">&nbsp;          relaxedAnEdge = true;</b>
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+&nbsp;    // Return the array containing the shortest distance to every node
+<b class="nc">&nbsp;    return dist;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public static void main(String[] args) {
+&nbsp;
+<b class="nc">&nbsp;    int E = 10, V = 9, start = 0;</b>
+<b class="nc">&nbsp;    Edge[] edges = new Edge[E];</b>
+<b class="nc">&nbsp;    edges[0] = new Edge(0, 1, 1);</b>
+<b class="nc">&nbsp;    edges[1] = new Edge(1, 2, 1);</b>
+<b class="nc">&nbsp;    edges[2] = new Edge(2, 4, 1);</b>
+<b class="nc">&nbsp;    edges[3] = new Edge(4, 3, -3);</b>
+<b class="nc">&nbsp;    edges[4] = new Edge(3, 2, 1);</b>
+<b class="nc">&nbsp;    edges[5] = new Edge(1, 5, 4);</b>
+<b class="nc">&nbsp;    edges[6] = new Edge(1, 6, 4);</b>
+<b class="nc">&nbsp;    edges[7] = new Edge(5, 6, 5);</b>
+<b class="nc">&nbsp;    edges[8] = new Edge(6, 7, 4);</b>
+<b class="nc">&nbsp;    edges[9] = new Edge(5, 7, 3);</b>
+&nbsp;
+<b class="nc">&nbsp;    double[] d = bellmanFord(edges, V, start);</b>
+&nbsp;
+<b class="nc">&nbsp;    for (int i = 0; i &lt; V; i++)</b>
+<b class="nc">&nbsp;      System.out.printf(&quot;The cost to get from node %d to %d is %.2f\n&quot;, start, i, d[i]);</b>
+&nbsp;
+&nbsp;    // Output:
+&nbsp;    // The cost to get from node 0 to 0 is 0.00
+&nbsp;    // The cost to get from node 0 to 1 is 1.00
+&nbsp;    // The cost to get from node 0 to 2 is -Infinity
+&nbsp;    // The cost to get from node 0 to 3 is -Infinity
+&nbsp;    // The cost to get from node 0 to 4 is -Infinity
+&nbsp;    // The cost to get from node 0 to 5 is 5.00
+&nbsp;    // The cost to get from node 0 to 6 is 5.00
+&nbsp;    // The cost to get from node 0 to 7 is 8.00
+&nbsp;    // The cost to get from node 0 to 8 is Infinity
+&nbsp;
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

@@ -2,7 +2,7 @@
 package com.williamfiset.algorithms.math;
 
 public class ModularInverse {
-
+  public static BranchCoverageIsaac branchCoverage = new BranchCoverageIsaac();
   // This function performs the extended euclidean algorithm on two numbers a and b.
   // The function returns the gcd(a,b) as well as the numbers x and y such
   // that ax + by = gcd(a,b). This calculation is important in number theory
@@ -20,8 +20,12 @@ public class ModularInverse {
   // Returns the modular inverse of 'a' mod 'm' if it exists.
   // Make sure m > 0 and 'a' & 'm' are relatively prime.
   public static Long modInv(long a, long m) {
+    branchCoverage.clearValuesModInverse();
 
-    if (m <= 0) throw new ArithmeticException("mod must be > 0");
+    if (m <= 0){
+      branchCoverage.wasCovered("306_modInv_1");
+      throw new ArithmeticException("mod must be > 0");
+    }
 
     // Avoid a being negative
     a = ((a % m) + m) % m;
@@ -30,7 +34,12 @@ public class ModularInverse {
     long gcd = v[0];
     long x = v[1];
 
-    if (gcd != 1) return null;
+    if (gcd != 1){
+      branchCoverage.wasCovered("307_modInv_2");
+      return null;
+    }
+
+    branchCoverage.wasCovered("308_modInv_3");
     return ((x + m) % m) % m;
   }
 

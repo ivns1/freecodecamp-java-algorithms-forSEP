@@ -1,0 +1,274 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > ModPow</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.math</a>
+</div>
+
+<h1>Coverage Summary for Class: ModPow (com.williamfiset.algorithms.math)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ModPow</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/84)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * NOTE: An issue was found with this file when dealing with negative numbers when exponentiating!
+&nbsp; * See bug tracking progress on issue
+&nbsp; *
+&nbsp; * &lt;p&gt;An implementation of the modPow(a, n, mod) operation. This implementation is substantially
+&nbsp; * faster than Java&#39;s BigInteger class because it only uses primitive types.
+&nbsp; *
+&nbsp; * &lt;p&gt;Time Complexity O(lg(n))
+&nbsp; *
+&nbsp; * @author William Fiset, william.alexandre.fiset@gmail.com
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.math;
+&nbsp;
+<b class="nc">&nbsp;public class ModPow {</b>
+&nbsp;
+&nbsp;  // The values placed into the modPow function cannot be greater
+&nbsp;  // than MAX or less than MIN otherwise long overflow will
+&nbsp;  // happen when the values get squared (they will exceed 2^63-1)
+<b class="nc">&nbsp;  private static final long MAX = (long) Math.sqrt(Long.MAX_VALUE);</b>
+<b class="nc">&nbsp;  private static final long MIN = -MAX;</b>
+&nbsp;
+&nbsp;  // Computes the Greatest Common Divisor (GCD) of a &amp; b
+&nbsp;  private static long gcd(long a, long b) {
+<b class="nc">&nbsp;    return b == 0 ? (a &lt; 0 ? -a : a) : gcd(b, a % b);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // This function performs the extended euclidean algorithm on two numbers a and b.
+&nbsp;  // The function returns the gcd(a,b) as well as the numbers x and y such
+&nbsp;  // that ax + by = gcd(a,b). This calculation is important in number theory
+&nbsp;  // and can be used for several things such as finding modular inverses and
+&nbsp;  // solutions to linear Diophantine equations.
+&nbsp;  private static long[] egcd(long a, long b) {
+<b class="nc">&nbsp;    if (b == 0) return new long[] {a &lt; 0 ? -a : a, 1L, 0L};</b>
+<b class="nc">&nbsp;    long[] v = egcd(b, a % b);</b>
+<b class="nc">&nbsp;    long tmp = v[1] - v[2] * (a / b);</b>
+<b class="nc">&nbsp;    v[1] = v[2];</b>
+<b class="nc">&nbsp;    v[2] = tmp;</b>
+<b class="nc">&nbsp;    return v;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Returns the modular inverse of &#39;a&#39; mod &#39;m&#39;
+&nbsp;  // Make sure m &gt; 0 and &#39;a&#39; &amp; &#39;m&#39; are relatively prime.
+&nbsp;  private static long modInv(long a, long m) {
+&nbsp;
+<b class="nc">&nbsp;    a = ((a % m) + m) % m;</b>
+&nbsp;
+<b class="nc">&nbsp;    long[] v = egcd(a, m);</b>
+<b class="nc">&nbsp;    long x = v[1];</b>
+&nbsp;
+<b class="nc">&nbsp;    return ((x % m) + m) % m;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Computes a^n modulo mod very efficiently in O(lg(n)) time.
+&nbsp;  // This function supports negative exponent values and a negative
+&nbsp;  // base, however the modulus must be positive.
+&nbsp;  public static long modPow(long a, long n, long mod) {
+&nbsp;
+<b class="nc">&nbsp;    if (mod &lt;= 0) throw new ArithmeticException(&quot;mod must be &gt; 0&quot;);</b>
+<b class="nc">&nbsp;    if (a &gt; MAX || mod &gt; MAX)</b>
+<b class="nc">&nbsp;      throw new IllegalArgumentException(&quot;Long overflow is upon you, mod or base is too high!&quot;);</b>
+<b class="nc">&nbsp;    if (a &lt; MIN || mod &lt; MIN)</b>
+<b class="nc">&nbsp;      throw new IllegalArgumentException(&quot;Long overflow is upon you, mod or base is too low!&quot;);</b>
+&nbsp;
+&nbsp;    // To handle negative exponents we can use the modular
+&nbsp;    // inverse of a to our advantage since: a^-n mod m = (a^-1)^n mod m
+<b class="nc">&nbsp;    if (n &lt; 0) {</b>
+<b class="nc">&nbsp;      if (gcd(a, mod) != 1)</b>
+<b class="nc">&nbsp;        throw new ArithmeticException(&quot;If n &lt; 0 then must have gcd(a, mod) = 1&quot;);</b>
+<b class="nc">&nbsp;      return modPow(modInv(a, mod), -n, mod);</b>
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    if (n == 0L) return 1L;</b>
+<b class="nc">&nbsp;    long p = a, r = 1L;</b>
+&nbsp;
+<b class="nc">&nbsp;    for (long i = 0; n != 0; i++) {</b>
+<b class="nc">&nbsp;      long mask = 1L &lt;&lt; i;</b>
+<b class="nc">&nbsp;      if ((n &amp; mask) == mask) {</b>
+<b class="nc">&nbsp;        r = (((r * p) % mod) + mod) % mod;</b>
+<b class="nc">&nbsp;        n -= mask;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      p = ((p * p) % mod + mod) % mod;</b>
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    return ((r % mod) + mod) % mod;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Example usage
+&nbsp;  public static void main(String[] args) {
+&nbsp;
+&nbsp;    java.math.BigInteger A, N, M, r1;
+&nbsp;    long a, n, m, r2;
+&nbsp;
+<b class="nc">&nbsp;    A = new java.math.BigInteger(&quot;3&quot;);</b>
+<b class="nc">&nbsp;    N = new java.math.BigInteger(&quot;4&quot;);</b>
+<b class="nc">&nbsp;    M = new java.math.BigInteger(&quot;1000000&quot;);</b>
+<b class="nc">&nbsp;    a = A.longValue();</b>
+<b class="nc">&nbsp;    n = N.longValue();</b>
+<b class="nc">&nbsp;    m = M.longValue();</b>
+&nbsp;
+&nbsp;    // 3 ^ 4 mod 1000000
+<b class="nc">&nbsp;    r1 = A.modPow(N, M); // 81</b>
+<b class="nc">&nbsp;    r2 = modPow(a, n, m); // 81</b>
+<b class="nc">&nbsp;    System.out.println(r1 + &quot; &quot; + r2);</b>
+&nbsp;
+<b class="nc">&nbsp;    A = new java.math.BigInteger(&quot;-45&quot;);</b>
+<b class="nc">&nbsp;    N = new java.math.BigInteger(&quot;12345&quot;);</b>
+<b class="nc">&nbsp;    M = new java.math.BigInteger(&quot;987654321&quot;);</b>
+<b class="nc">&nbsp;    a = A.longValue();</b>
+<b class="nc">&nbsp;    n = N.longValue();</b>
+<b class="nc">&nbsp;    m = M.longValue();</b>
+&nbsp;
+&nbsp;    // Finds -45 ^ 12345 mod 987654321
+<b class="nc">&nbsp;    r1 = A.modPow(N, M); // 323182557</b>
+<b class="nc">&nbsp;    r2 = modPow(a, n, m); // 323182557</b>
+<b class="nc">&nbsp;    System.out.println(r1 + &quot; &quot; + r2);</b>
+&nbsp;
+<b class="nc">&nbsp;    A = new java.math.BigInteger(&quot;6&quot;);</b>
+<b class="nc">&nbsp;    N = new java.math.BigInteger(&quot;-66&quot;);</b>
+<b class="nc">&nbsp;    M = new java.math.BigInteger(&quot;101&quot;);</b>
+<b class="nc">&nbsp;    a = A.longValue();</b>
+<b class="nc">&nbsp;    n = N.longValue();</b>
+<b class="nc">&nbsp;    m = M.longValue();</b>
+&nbsp;
+&nbsp;    // Finds 6 ^ -66 mod 101
+<b class="nc">&nbsp;    r1 = A.modPow(N, M); // 84</b>
+<b class="nc">&nbsp;    r2 = modPow(a, n, m); // 84</b>
+<b class="nc">&nbsp;    System.out.println(r1 + &quot; &quot; + r2);</b>
+&nbsp;
+<b class="nc">&nbsp;    A = new java.math.BigInteger(&quot;-5&quot;);</b>
+<b class="nc">&nbsp;    N = new java.math.BigInteger(&quot;-7&quot;);</b>
+<b class="nc">&nbsp;    M = new java.math.BigInteger(&quot;1009&quot;);</b>
+<b class="nc">&nbsp;    a = A.longValue();</b>
+<b class="nc">&nbsp;    n = N.longValue();</b>
+<b class="nc">&nbsp;    m = M.longValue();</b>
+&nbsp;
+&nbsp;    // Finds -5 ^ -7 mod 1009
+<b class="nc">&nbsp;    r1 = A.modPow(N, M); // 675</b>
+<b class="nc">&nbsp;    r2 = modPow(a, n, m); // 675</b>
+<b class="nc">&nbsp;    System.out.println(r1 + &quot; &quot; + r2);</b>
+&nbsp;
+<b class="nc">&nbsp;    for (int i = 0; i &lt; 1000; i++) {</b>
+<b class="nc">&nbsp;      A = new java.math.BigInteger(a + &quot;&quot;);</b>
+<b class="nc">&nbsp;      N = new java.math.BigInteger(n + &quot;&quot;);</b>
+<b class="nc">&nbsp;      M = new java.math.BigInteger(m + &quot;&quot;);</b>
+<b class="nc">&nbsp;      a = Math.random() &lt; 0.5 ? randLong(MAX) : -randLong(MAX);</b>
+<b class="nc">&nbsp;      n = randLong();</b>
+<b class="nc">&nbsp;      m = randLong(MAX);</b>
+&nbsp;      try {
+<b class="nc">&nbsp;        r1 = A.modPow(N, M);</b>
+<b class="nc">&nbsp;        r2 = modPow(a, n, m);</b>
+<b class="nc">&nbsp;        if (r1.longValue() != r2)</b>
+<b class="nc">&nbsp;          System.out.printf(&quot;Broke with: a = %d, n = %d, m = %d\n&quot;, a, n, m);</b>
+<b class="nc">&nbsp;      } catch (ArithmeticException e) {</b>
+<b class="nc">&nbsp;      }</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  /* TESTING RELATED METHODS */
+&nbsp;
+<b class="nc">&nbsp;  static final java.util.Random RANDOM = new java.util.Random();</b>
+&nbsp;
+&nbsp;  // Returns long between [1, bound]
+&nbsp;  public static long randLong(long bound) {
+<b class="nc">&nbsp;    return java.util.concurrent.ThreadLocalRandom.current().nextLong(1, bound + 1);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public static long randLong() {
+<b class="nc">&nbsp;    return RANDOM.nextLong();</b>
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

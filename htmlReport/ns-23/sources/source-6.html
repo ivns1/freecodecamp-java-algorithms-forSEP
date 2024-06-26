@@ -1,0 +1,146 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > MatrixMultiplication</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.linearalgebra</a>
+</div>
+
+<h1>Coverage Summary for Class: MatrixMultiplication (com.williamfiset.algorithms.linearalgebra)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MatrixMultiplication</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/12)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * Multiply two matrices together and get their product
+&nbsp; *
+&nbsp; * &lt;p&gt;Time Complexity: O(n^3)
+&nbsp; *
+&nbsp; * @author Micah Stairs
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.linearalgebra;
+&nbsp;
+<b class="nc">&nbsp;class MatrixMultiplication {</b>
+&nbsp;
+&nbsp;  // Returns the result of the product of the matrices &#39;a&#39; and &#39;b&#39;
+&nbsp;  // or null if the matrices are the wrong dimensions
+&nbsp;  static double[][] multiply(double[][] a, double[][] b) {
+<b class="nc">&nbsp;    int aRows = a.length, aCols = a[0].length;</b>
+<b class="nc">&nbsp;    int bRows = b.length, bCols = b[0].length;</b>
+<b class="nc">&nbsp;    if (aCols != bRows) return null;</b>
+<b class="nc">&nbsp;    double[][] c = new double[aRows][bCols];</b>
+<b class="nc">&nbsp;    for (int i = 0; i &lt; aRows; i++)</b>
+<b class="nc">&nbsp;      for (int j = 0; j &lt; bCols; j++) for (int k = 0; k &lt; aCols; k++) c[i][j] += a[i][k] * b[k][j];</b>
+<b class="nc">&nbsp;    return c;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public static void main(String[] args) {
+&nbsp;
+<b class="nc">&nbsp;    double[][] a = {</b>
+&nbsp;      {1, 2, 3, 4},
+&nbsp;      {4, 3, 2, 1},
+&nbsp;      {1, 2, 2, 1}
+&nbsp;    };
+&nbsp;
+<b class="nc">&nbsp;    double[][] b = {</b>
+&nbsp;      {1, 0},
+&nbsp;      {2, 1},
+&nbsp;      {0, 3},
+&nbsp;      {0, 0}
+&nbsp;    };
+&nbsp;
+<b class="nc">&nbsp;    double[][] c = multiply(a, b);</b>
+<b class="nc">&nbsp;    for (double[] row : c) System.out.println(java.util.Arrays.toString(row));</b>
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

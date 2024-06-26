@@ -1,0 +1,384 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > Entry</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.datastructures.hashtable</a>
+</div>
+
+<h1>Coverage Summary for Class: Entry (com.williamfiset.algorithms.datastructures.hashtable)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Entry</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    33,3%
+  </span>
+  <span class="absValue">
+    (1/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    57,1%
+  </span>
+  <span class="absValue">
+    (4/7)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * An implementation of a hash-table using separate chaining with a linked list.
+&nbsp; *
+&nbsp; * @author William Fiset, william.alexandre.fiset@gmail.com
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.datastructures.hashtable;
+&nbsp;
+&nbsp;import java.util.*;
+&nbsp;
+&nbsp;class Entry&lt;K, V&gt; {
+&nbsp;
+&nbsp;  int hash;
+&nbsp;  K key;
+&nbsp;  V value;
+&nbsp;
+<b class="fc">&nbsp;  public Entry(K key, V value) {</b>
+<b class="fc">&nbsp;    this.key = key;</b>
+<b class="fc">&nbsp;    this.value = value;</b>
+<b class="fc">&nbsp;    this.hash = key.hashCode();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // We are not overriding the Object equals method
+&nbsp;  // No casting is required with this method.
+&nbsp;  public boolean equals(Entry&lt;K, V&gt; other) {
+<b class="nc">&nbsp;    if (hash != other.hash) return false;</b>
+<b class="nc">&nbsp;    return key.equals(other.key);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public String toString() {
+<b class="nc">&nbsp;    return key + &quot; =&gt; &quot; + value;</b>
+&nbsp;  }
+&nbsp;}
+&nbsp;
+&nbsp;@SuppressWarnings(&quot;unchecked&quot;)
+&nbsp;public class HashTableSeparateChaining&lt;K, V&gt; implements Iterable&lt;K&gt; {
+&nbsp;
+&nbsp;  private static final int DEFAULT_CAPACITY = 3;
+&nbsp;  private static final double DEFAULT_LOAD_FACTOR = 0.75;
+&nbsp;
+&nbsp;  private double maxLoadFactor;
+&nbsp;  private int capacity, threshold, size = 0;
+&nbsp;  private LinkedList&lt;Entry&lt;K, V&gt;&gt;[] table;
+&nbsp;
+&nbsp;  public HashTableSeparateChaining() {
+&nbsp;    this(DEFAULT_CAPACITY, DEFAULT_LOAD_FACTOR);
+&nbsp;  }
+&nbsp;
+&nbsp;  public HashTableSeparateChaining(int capacity) {
+&nbsp;    this(capacity, DEFAULT_LOAD_FACTOR);
+&nbsp;  }
+&nbsp;
+&nbsp;  // Designated constructor
+&nbsp;  public HashTableSeparateChaining(int capacity, double maxLoadFactor) {
+&nbsp;    if (capacity &lt; 0) throw new IllegalArgumentException(&quot;Illegal capacity&quot;);
+&nbsp;    if (maxLoadFactor &lt;= 0 || Double.isNaN(maxLoadFactor) || Double.isInfinite(maxLoadFactor))
+&nbsp;      throw new IllegalArgumentException(&quot;Illegal maxLoadFactor&quot;);
+&nbsp;    this.maxLoadFactor = maxLoadFactor;
+&nbsp;    this.capacity = Math.max(DEFAULT_CAPACITY, capacity);
+&nbsp;    threshold = (int) (this.capacity * maxLoadFactor);
+&nbsp;    table = new LinkedList[this.capacity];
+&nbsp;  }
+&nbsp;
+&nbsp;  // Returns the number of elements currently inside the hash-table
+&nbsp;  public int size() {
+&nbsp;    return size;
+&nbsp;  }
+&nbsp;
+&nbsp;  // Returns true/false depending on whether the hash-table is empty
+&nbsp;  public boolean isEmpty() {
+&nbsp;    return size == 0;
+&nbsp;  }
+&nbsp;
+&nbsp;  // Converts a hash value to an index. Essentially, this strips the
+&nbsp;  // negative sign and places the hash value in the domain [0, capacity)
+&nbsp;  private int normalizeIndex(int keyHash) {
+&nbsp;    return (keyHash &amp; 0x7FFFFFFF) % capacity;
+&nbsp;  }
+&nbsp;
+&nbsp;  // Clears all the contents of the hash-table
+&nbsp;  public void clear() {
+&nbsp;    Arrays.fill(table, null);
+&nbsp;    size = 0;
+&nbsp;  }
+&nbsp;
+&nbsp;  public boolean containsKey(K key) {
+&nbsp;    return hasKey(key);
+&nbsp;  }
+&nbsp;
+&nbsp;  // Returns true/false depending on whether a key is in the hash table
+&nbsp;  public boolean hasKey(K key) {
+&nbsp;    int bucketIndex = normalizeIndex(key.hashCode());
+&nbsp;    return bucketSeekEntry(bucketIndex, key) != null;
+&nbsp;  }
+&nbsp;
+&nbsp;  // Insert, put and add all place a value in the hash-table
+&nbsp;  public V put(K key, V value) {
+&nbsp;    return insert(key, value);
+&nbsp;  }
+&nbsp;
+&nbsp;  public V add(K key, V value) {
+&nbsp;    return insert(key, value);
+&nbsp;  }
+&nbsp;
+&nbsp;  public V insert(K key, V value) {
+&nbsp;
+&nbsp;    if (key == null) throw new IllegalArgumentException(&quot;Null key&quot;);
+&nbsp;    Entry&lt;K, V&gt; newEntry = new Entry&lt;&gt;(key, value);
+&nbsp;    int bucketIndex = normalizeIndex(newEntry.hash);
+&nbsp;    return bucketInsertEntry(bucketIndex, newEntry);
+&nbsp;  }
+&nbsp;
+&nbsp;  // Gets a key&#39;s values from the map and returns the value.
+&nbsp;  // NOTE: returns null if the value is null AND also returns
+&nbsp;  // null if the key does not exists, so watch out..
+&nbsp;  public V get(K key) {
+&nbsp;
+&nbsp;    if (key == null) return null;
+&nbsp;    int bucketIndex = normalizeIndex(key.hashCode());
+&nbsp;    Entry&lt;K, V&gt; entry = bucketSeekEntry(bucketIndex, key);
+&nbsp;    if (entry != null) return entry.value;
+&nbsp;    return null;
+&nbsp;  }
+&nbsp;
+&nbsp;  // Removes a key from the map and returns the value.
+&nbsp;  // NOTE: returns null if the value is null AND also returns
+&nbsp;  // null if the key does not exists.
+&nbsp;  public V remove(K key) {
+&nbsp;
+&nbsp;    if (key == null) return null;
+&nbsp;    int bucketIndex = normalizeIndex(key.hashCode());
+&nbsp;    return bucketRemoveEntry(bucketIndex, key);
+&nbsp;  }
+&nbsp;
+&nbsp;  // Removes an entry from a given bucket if it exists
+&nbsp;  private V bucketRemoveEntry(int bucketIndex, K key) {
+&nbsp;
+&nbsp;    Entry&lt;K, V&gt; entry = bucketSeekEntry(bucketIndex, key);
+&nbsp;    if (entry != null) {
+&nbsp;      LinkedList&lt;Entry&lt;K, V&gt;&gt; links = table[bucketIndex];
+&nbsp;      links.remove(entry);
+&nbsp;      --size;
+&nbsp;      return entry.value;
+&nbsp;    } else return null;
+&nbsp;  }
+&nbsp;
+&nbsp;  // Inserts an entry in a given bucket only if the entry does not already
+&nbsp;  // exist in the given bucket, but if it does then update the entry value
+&nbsp;  private V bucketInsertEntry(int bucketIndex, Entry&lt;K, V&gt; entry) {
+&nbsp;
+&nbsp;    LinkedList&lt;Entry&lt;K, V&gt;&gt; bucket = table[bucketIndex];
+&nbsp;    if (bucket == null) table[bucketIndex] = bucket = new LinkedList&lt;&gt;();
+&nbsp;
+&nbsp;    Entry&lt;K, V&gt; existentEntry = bucketSeekEntry(bucketIndex, entry.key);
+&nbsp;    if (existentEntry == null) {
+&nbsp;      bucket.add(entry);
+&nbsp;      if (++size &gt; threshold) resizeTable();
+&nbsp;      return null; // Use null to indicate that there was no previous entry
+&nbsp;    } else {
+&nbsp;      V oldVal = existentEntry.value;
+&nbsp;      existentEntry.value = entry.value;
+&nbsp;      return oldVal;
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  // Finds and returns a particular entry in a given bucket if it exists, returns null otherwise
+&nbsp;  private Entry&lt;K, V&gt; bucketSeekEntry(int bucketIndex, K key) {
+&nbsp;
+&nbsp;    if (key == null) return null;
+&nbsp;    LinkedList&lt;Entry&lt;K, V&gt;&gt; bucket = table[bucketIndex];
+&nbsp;    if (bucket == null) return null;
+&nbsp;    for (Entry&lt;K, V&gt; entry : bucket) if (entry.key.equals(key)) return entry;
+&nbsp;    return null;
+&nbsp;  }
+&nbsp;
+&nbsp;  // Resizes the internal table holding buckets of entries
+&nbsp;  private void resizeTable() {
+&nbsp;
+&nbsp;    capacity *= 2;
+&nbsp;    threshold = (int) (capacity * maxLoadFactor);
+&nbsp;
+&nbsp;    LinkedList&lt;Entry&lt;K, V&gt;&gt;[] newTable = new LinkedList[capacity];
+&nbsp;
+&nbsp;    for (int i = 0; i &lt; table.length; i++) {
+&nbsp;      if (table[i] != null) {
+&nbsp;
+&nbsp;        for (Entry&lt;K, V&gt; entry : table[i]) {
+&nbsp;          int bucketIndex = normalizeIndex(entry.hash);
+&nbsp;          LinkedList&lt;Entry&lt;K, V&gt;&gt; bucket = newTable[bucketIndex];
+&nbsp;          if (bucket == null) newTable[bucketIndex] = bucket = new LinkedList&lt;&gt;();
+&nbsp;          bucket.add(entry);
+&nbsp;        }
+&nbsp;
+&nbsp;        // Avoid memory leak. Help the GC
+&nbsp;        table[i].clear();
+&nbsp;        table[i] = null;
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+&nbsp;    table = newTable;
+&nbsp;  }
+&nbsp;
+&nbsp;  // Returns the list of keys found within the hash table
+&nbsp;  public List&lt;K&gt; keys() {
+&nbsp;
+&nbsp;    List&lt;K&gt; keys = new ArrayList&lt;&gt;(size());
+&nbsp;    for (LinkedList&lt;Entry&lt;K, V&gt;&gt; bucket : table)
+&nbsp;      if (bucket != null) for (Entry&lt;K, V&gt; entry : bucket) keys.add(entry.key);
+&nbsp;    return keys;
+&nbsp;  }
+&nbsp;
+&nbsp;  // Returns the list of values found within the hash table
+&nbsp;  public List&lt;V&gt; values() {
+&nbsp;
+&nbsp;    List&lt;V&gt; values = new ArrayList&lt;&gt;(size());
+&nbsp;    for (LinkedList&lt;Entry&lt;K, V&gt;&gt; bucket : table)
+&nbsp;      if (bucket != null) for (Entry&lt;K, V&gt; entry : bucket) values.add(entry.value);
+&nbsp;    return values;
+&nbsp;  }
+&nbsp;
+&nbsp;  // Return an iterator to iterate over all the keys in this map
+&nbsp;  @Override
+&nbsp;  public java.util.Iterator&lt;K&gt; iterator() {
+&nbsp;    final int elementCount = size();
+&nbsp;    return new java.util.Iterator&lt;K&gt;() {
+&nbsp;
+&nbsp;      int bucketIndex = 0;
+&nbsp;      java.util.Iterator&lt;Entry&lt;K, V&gt;&gt; bucketIter = (table[0] == null) ? null : table[0].iterator();
+&nbsp;
+&nbsp;      @Override
+&nbsp;      public boolean hasNext() {
+&nbsp;
+&nbsp;        // An item was added or removed while iterating
+&nbsp;        if (elementCount != size) throw new java.util.ConcurrentModificationException();
+&nbsp;
+&nbsp;        // No iterator or the current iterator is empty
+&nbsp;        if (bucketIter == null || !bucketIter.hasNext()) {
+&nbsp;
+&nbsp;          // Search next buckets until a valid iterator is found
+&nbsp;          while (++bucketIndex &lt; capacity) {
+&nbsp;            if (table[bucketIndex] != null) {
+&nbsp;
+&nbsp;              // Make sure this iterator actually has elements -_-
+&nbsp;              java.util.Iterator&lt;Entry&lt;K, V&gt;&gt; nextIter = table[bucketIndex].iterator();
+&nbsp;              if (nextIter.hasNext()) {
+&nbsp;                bucketIter = nextIter;
+&nbsp;                break;
+&nbsp;              }
+&nbsp;            }
+&nbsp;          }
+&nbsp;        }
+&nbsp;        return bucketIndex &lt; capacity;
+&nbsp;      }
+&nbsp;
+&nbsp;      @Override
+&nbsp;      public K next() {
+&nbsp;        return bucketIter.next().key;
+&nbsp;      }
+&nbsp;
+&nbsp;      @Override
+&nbsp;      public void remove() {
+&nbsp;        throw new UnsupportedOperationException();
+&nbsp;      }
+&nbsp;    };
+&nbsp;  }
+&nbsp;
+&nbsp;  // Returns a string representation of this hash table
+&nbsp;  @Override
+&nbsp;  public String toString() {
+&nbsp;
+&nbsp;    StringBuilder sb = new StringBuilder();
+&nbsp;    sb.append(&quot;{&quot;);
+&nbsp;    for (int i = 0; i &lt; capacity; i++) {
+&nbsp;      if (table[i] == null) continue;
+&nbsp;      for (Entry&lt;K, V&gt; entry : table[i]) sb.append(entry + &quot;, &quot;);
+&nbsp;    }
+&nbsp;    sb.append(&quot;}&quot;);
+&nbsp;    return sb.toString();
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

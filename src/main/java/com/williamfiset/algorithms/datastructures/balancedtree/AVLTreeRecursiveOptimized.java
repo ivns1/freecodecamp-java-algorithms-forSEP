@@ -6,7 +6,16 @@
  */
 package com.williamfiset.algorithms.datastructures.balancedtree;
 
+
 public class AVLTreeRecursiveOptimized<T extends Comparable<T>> implements Iterable<T> {
+
+  private CoverageTool_AVLTreeOptimized coverageTracker;
+
+  // Constructor
+  public AVLTreeRecursiveOptimized(CoverageTool_AVLTreeOptimized coverageTracker) {
+    this.coverageTracker = coverageTracker;
+    this.coverageTracker.initialize(); // Initialize coverage for insert and balance methods
+  }
 
   public class Node {
 
@@ -88,28 +97,45 @@ public class AVLTreeRecursiveOptimized<T extends Comparable<T>> implements Itera
   // Inserts a value inside the AVL tree. This method returns 'TOKEN' if
   // the value we tried to insert was already inside the tree, otherwise
   // the new (or old) root node is returned.
-  private Node insert(Node node, T value) {
+
+
+
+  private Node insert(Node node, T value) { // 1st Function coverage improve
 
     // Base case.
-    if (node == null) return new Node(value);
+    if (node == null) {
+      coverageTracker.markBranch(401);
+      return new Node(value);
+    }
 
     // Compare current value to the value in the node.
     int cmp = value.compareTo(node.value);
 
     // Insert node in left subtree.
     if (cmp < 0) {
+      coverageTracker.markBranch(402);
       Node newLeftNode = insert(node.left, value);
-      if (newLeftNode == TOKEN) return TOKEN;
+      if (newLeftNode == TOKEN) {
+        coverageTracker.markBranch(403);
+        return TOKEN;
+      }
       node.left = newLeftNode;
 
       // Insert node in right subtree.
     } else if (cmp > 0) {
+      coverageTracker.markBranch(404);
       Node newRightNode = insert(node.right, value);
-      if (newRightNode == TOKEN) return TOKEN;
+      if (newRightNode == TOKEN) {
+        coverageTracker.markBranch(405);
+        return TOKEN;
+      }
       node.right = newRightNode;
 
       // Return 'TOKEN' to indicate a duplicate value in the tree.
-    } else return TOKEN;
+    } else {
+      coverageTracker.markBranch(406);
+      return TOKEN;
+    }
 
     // Update balance factor and height values.
     update(node);
@@ -132,29 +158,33 @@ public class AVLTreeRecursiveOptimized<T extends Comparable<T>> implements Itera
   }
 
   // Re-balance a node if its balance factor is +2 or -2.
-  private Node balance(Node node) {
+  private Node balance(Node node) { // 2nd Function coverage improve
 
     // Left heavy subtree.
     if (node.bf == -2) {
-
+      coverageTracker.markBranch(407);
       // Left-Left case.
-      if (node.left.bf <= 0) {
+      if (node.left.bf <= 0)  {
+        coverageTracker.markBranch(408);
         return leftLeftCase(node);
-
+      }
         // Left-Right case.
-      } else {
+      else {
+        coverageTracker.markBranch(409);
         return leftRightCase(node);
       }
 
       // Right heavy subtree needs balancing.
     } else if (node.bf == +2) {
-
+      coverageTracker.markBranch(410);
       // Right-Right case.
       if (node.right.bf >= 0) {
+        coverageTracker.markBranch(411);
         return rightRightCase(node);
-
-        // Right-Left case.
-      } else {
+      }
+      // Right-Left case.
+      else {
+        coverageTracker.markBranch(412);
         return rightLeftCase(node);
       }
     }
@@ -240,7 +270,6 @@ public class AVLTreeRecursiveOptimized<T extends Comparable<T>> implements Itera
 
       // Found the node we wish to remove.
     } else {
-
       // This is the case with only a right subtree or no subtree at all.
       // In this situation just swap the node we wish to remove
       // with its right child.
@@ -259,10 +288,8 @@ public class AVLTreeRecursiveOptimized<T extends Comparable<T>> implements Itera
         // subtree. As a heuristic, I will remove from the subtree with
         // the most nodes in hopes that this may help with balancing.
       } else {
-
         // Choose to remove from left subtree
         if (node.left.height > node.right.height) {
-
           // Swap the value of the successor into the node.
           T successorValue = findMax(node.left);
           node.value = successorValue;
@@ -273,7 +300,6 @@ public class AVLTreeRecursiveOptimized<T extends Comparable<T>> implements Itera
           node.left = replacement;
 
         } else {
-
           // Swap the value of the successor into the node.
           T successorValue = findMin(node.right);
           node.value = successorValue;
@@ -283,6 +309,7 @@ public class AVLTreeRecursiveOptimized<T extends Comparable<T>> implements Itera
           // two nodes in our tree with the same value.
           Node replacement = remove(node.right, successorValue);
           if (replacement == TOKEN) return TOKEN;
+
           node.right = replacement;
         }
       }

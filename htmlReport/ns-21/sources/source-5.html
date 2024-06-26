@@ -1,0 +1,283 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > TreeCenterLongestPathImpl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.graphtheory.treealgorithms</a>
+</div>
+
+<h1>Coverage Summary for Class: TreeCenterLongestPathImpl (com.williamfiset.algorithms.graphtheory.treealgorithms)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">TreeCenterLongestPathImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    66,7%
+  </span>
+  <span class="absValue">
+    (4/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    54,2%
+  </span>
+  <span class="absValue">
+    (39/72)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">TreeCenterLongestPathImpl$DfsResult</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/3)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    71,4%
+  </span>
+  <span class="absValue">
+    (5/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    56%
+  </span>
+  <span class="absValue">
+    (42/75)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * Finds the center(s) of a tree by finding the longest path through the tree.
+&nbsp; *
+&nbsp; * &lt;p&gt;./gradlew run
+&nbsp; * -Pmain=com.williamfiset.algorithms.graphtheory.treealgorithms.TreeCenterLongestPathImpl
+&nbsp; *
+&nbsp; * @author William Fiset, william.alexandre.fiset@gmail.com
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.graphtheory.treealgorithms;
+&nbsp;
+&nbsp;import java.util.*;
+&nbsp;
+<b class="nc">&nbsp;public class TreeCenterLongestPathImpl {</b>
+&nbsp;
+&nbsp;  private static class DfsResult {
+&nbsp;    // The distance to the furthest node (from where the DFS started)
+&nbsp;    int distance;
+&nbsp;
+&nbsp;    // The index of the furthest node (from where the DFS started)
+&nbsp;    int index;
+&nbsp;
+<b class="fc">&nbsp;    public DfsResult(int distance, int index) {</b>
+<b class="fc">&nbsp;      this.distance = distance;</b>
+<b class="fc">&nbsp;      this.index = index;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  private static DfsResult dfs(
+&nbsp;      List&lt;List&lt;Integer&gt;&gt; graph, boolean[] visited, int[] prev, int at, int parent) {
+&nbsp;
+&nbsp;    // Already visited this node
+<b class="fc">&nbsp;    if (visited[at]) return new DfsResult(0, parent);</b>
+&nbsp;
+&nbsp;    // Visit this node
+<b class="fc">&nbsp;    visited[at] = true;</b>
+&nbsp;
+&nbsp;    // Remember where we came from to rebuild path later on.
+<b class="fc">&nbsp;    prev[at] = parent;</b>
+&nbsp;
+<b class="fc">&nbsp;    int bestDist = 0, index = -1;</b>
+<b class="fc">&nbsp;    List&lt;Integer&gt; edges = graph.get(at);</b>
+&nbsp;
+<b class="fc">&nbsp;    for (int to : edges) {</b>
+<b class="fc">&nbsp;      DfsResult result = dfs(graph, visited, prev, to, at);</b>
+<b class="fc">&nbsp;      int dist = result.distance + 1;</b>
+<b class="fc">&nbsp;      if (dist &gt; bestDist) {</b>
+<b class="fc">&nbsp;        bestDist = dist;</b>
+<b class="fc">&nbsp;        index = result.index;</b>
+&nbsp;      }
+<b class="fc">&nbsp;    }</b>
+&nbsp;
+<b class="fc">&nbsp;    return new DfsResult(bestDist, index);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public static List&lt;Integer&gt; findTreeCenters(List&lt;List&lt;Integer&gt;&gt; graph) {
+<b class="fc">&nbsp;    List&lt;Integer&gt; centers = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;    if (graph == null) return centers;</b>
+&nbsp;
+<b class="fc">&nbsp;    int n = graph.size();</b>
+<b class="fc">&nbsp;    boolean[] visited = new boolean[n];</b>
+<b class="fc">&nbsp;    int[] prev = new int[n];</b>
+&nbsp;
+&nbsp;    // Do DFS to find furthest node from the start
+<b class="fc">&nbsp;    DfsResult result = dfs(graph, visited, prev, 0, -1);</b>
+<b class="fc">&nbsp;    int furthestNode1 = result.index;</b>
+&nbsp;
+&nbsp;    // Singleton
+<b class="fc">&nbsp;    if (furthestNode1 == -1) {</b>
+<b class="fc">&nbsp;      centers.add(0);</b>
+<b class="fc">&nbsp;      return centers;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Do another DFS, but this time from the furthest node.
+<b class="fc">&nbsp;    Arrays.fill(visited, false);</b>
+<b class="fc">&nbsp;    Arrays.fill(prev, 0);</b>
+&nbsp;
+<b class="fc">&nbsp;    result = dfs(graph, visited, prev, furthestNode1, -1);</b>
+<b class="fc">&nbsp;    int furthestNode2 = result.index;</b>
+&nbsp;
+<b class="fc">&nbsp;    List&lt;Integer&gt; path = new LinkedList&lt;&gt;();</b>
+<b class="fc">&nbsp;    for (int i = furthestNode2; i != -1; i = prev[i]) {</b>
+<b class="fc">&nbsp;      path.add(i);</b>
+&nbsp;    }
+&nbsp;
+<b class="fc">&nbsp;    if (path.size() % 2 == 0) {</b>
+<b class="fc">&nbsp;      centers.add(path.get(path.size() / 2 - 1));</b>
+&nbsp;    }
+<b class="fc">&nbsp;    centers.add(path.get(path.size() / 2));</b>
+<b class="fc">&nbsp;    return centers;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /** ********** TESTING ********* */
+&nbsp;
+&nbsp;  // Create an empty tree as a adjacency list.
+&nbsp;  public static List&lt;List&lt;Integer&gt;&gt; createEmptyTree(int n) {
+<b class="fc">&nbsp;    List&lt;List&lt;Integer&gt;&gt; tree = new ArrayList&lt;&gt;(n);</b>
+<b class="fc">&nbsp;    for (int i = 0; i &lt; n; i++) tree.add(new LinkedList&lt;&gt;());</b>
+<b class="fc">&nbsp;    return tree;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public static void addUndirectedEdge(List&lt;List&lt;Integer&gt;&gt; tree, int from, int to) {
+<b class="fc">&nbsp;    tree.get(from).add(to);</b>
+<b class="fc">&nbsp;    tree.get(to).add(from);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public static void main(String[] args) {
+&nbsp;
+<b class="nc">&nbsp;    List&lt;List&lt;Integer&gt;&gt; graph = createEmptyTree(9);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(graph, 0, 1);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(graph, 2, 1);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(graph, 2, 3);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(graph, 3, 4);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(graph, 5, 3);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(graph, 2, 6);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(graph, 6, 7);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(graph, 6, 8);</b>
+&nbsp;
+&nbsp;    // Centers are 2
+<b class="nc">&nbsp;    System.out.println(findTreeCenters(graph));</b>
+&nbsp;
+&nbsp;    // Centers are 0
+<b class="nc">&nbsp;    List&lt;List&lt;Integer&gt;&gt; graph2 = createEmptyTree(1);</b>
+<b class="nc">&nbsp;    System.out.println(findTreeCenters(graph2));</b>
+&nbsp;
+&nbsp;    // Centers are 0,1
+<b class="nc">&nbsp;    List&lt;List&lt;Integer&gt;&gt; graph3 = createEmptyTree(2);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(graph3, 0, 1);</b>
+<b class="nc">&nbsp;    System.out.println(findTreeCenters(graph3));</b>
+&nbsp;
+&nbsp;    // Centers are 1
+<b class="nc">&nbsp;    List&lt;List&lt;Integer&gt;&gt; graph4 = createEmptyTree(3);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(graph4, 0, 1);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(graph4, 1, 2);</b>
+<b class="nc">&nbsp;    System.out.println(findTreeCenters(graph4));</b>
+&nbsp;
+&nbsp;    // Centers are 1,2
+<b class="nc">&nbsp;    List&lt;List&lt;Integer&gt;&gt; graph5 = createEmptyTree(4);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(graph5, 0, 1);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(graph5, 1, 2);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(graph5, 2, 3);</b>
+<b class="nc">&nbsp;    System.out.println(findTreeCenters(graph5));</b>
+&nbsp;
+&nbsp;    // Centers are 2,3
+<b class="nc">&nbsp;    List&lt;List&lt;Integer&gt;&gt; graph6 = createEmptyTree(7);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(graph6, 0, 1);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(graph6, 1, 2);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(graph6, 2, 3);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(graph6, 3, 4);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(graph6, 4, 5);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(graph6, 4, 6);</b>
+<b class="nc">&nbsp;    System.out.println(findTreeCenters(graph6));</b>
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

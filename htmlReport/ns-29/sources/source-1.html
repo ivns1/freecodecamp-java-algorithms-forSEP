@@ -1,0 +1,153 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > TestUtils</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.utils</a>
+</div>
+
+<h1>Coverage Summary for Class: TestUtils (com.williamfiset.algorithms.utils)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">TestUtils</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    71,4%
+  </span>
+  <span class="absValue">
+    (5/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    68,8%
+  </span>
+  <span class="absValue">
+    (11/16)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.williamfiset.algorithms.utils;
+&nbsp;
+&nbsp;import java.util.*;
+&nbsp;
+<b class="nc">&nbsp;public final class TestUtils {</b>
+&nbsp;
+&nbsp;  // Generates an array of random values where every number is between
+&nbsp;  // [min, max) and there are possible repeats.
+&nbsp;  public static int[] randomIntegerArray(int sz, int min, int max) {
+<b class="fc">&nbsp;    int[] ar = new int[sz];</b>
+<b class="fc">&nbsp;    for (int i = 0; i &lt; sz; i++) ar[i] = randValue(min, max);</b>
+<b class="fc">&nbsp;    return ar;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Generates an array of random values where every number is between
+&nbsp;  // [min, max) and there are possible repeats.
+&nbsp;  public static long[] randomLongArray(int sz, long min, long max) {
+<b class="fc">&nbsp;    long[] ar = new long[sz];</b>
+<b class="fc">&nbsp;    for (int i = 0; i &lt; sz; i++) ar[i] = randValue(min, max);</b>
+<b class="fc">&nbsp;    return ar;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Generates a list of random values where every number is between
+&nbsp;  // [min, max) and there are possible repeats.
+&nbsp;  public static List&lt;Integer&gt; randomIntegerList(int sz, int min, int max) {
+<b class="fc">&nbsp;    List&lt;Integer&gt; lst = new ArrayList&lt;&gt;(sz);</b>
+<b class="fc">&nbsp;    for (int i = 0; i &lt; sz; i++) lst.add(randValue(min, max));</b>
+<b class="fc">&nbsp;    return lst;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Generates a list of shuffled values where every number in the array
+&nbsp;  // is in the range of [0, sz)
+&nbsp;  public static List&lt;Integer&gt; randomUniformUniqueIntegerList(int sz) {
+<b class="nc">&nbsp;    List&lt;Integer&gt; lst = new ArrayList&lt;&gt;(sz);</b>
+<b class="nc">&nbsp;    for (int i = 0; i &lt; sz; i++) lst.add(i);</b>
+<b class="nc">&nbsp;    Collections.shuffle(lst);</b>
+<b class="nc">&nbsp;    return lst;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Generates a random number between [min, max)
+&nbsp;  public static int randValue(int min, int max) {
+<b class="fc">&nbsp;    return min + (int) (Math.random() * ((max - min)));</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Generates a random number between [min, max)
+&nbsp;  public static long randValue(long min, long max) {
+<b class="fc">&nbsp;    return min + (long) (Math.random() * ((max - min)));</b>
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

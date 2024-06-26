@@ -1,0 +1,169 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > HouseRobber</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.dp.examples</a>
+</div>
+
+<h1>Coverage Summary for Class: HouseRobber (com.williamfiset.algorithms.dp.examples)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">HouseRobber</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/25)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * Problem: https://leetcode.com/problems/house-robber
+&nbsp; *
+&nbsp; * &lt;p&gt;Time Complexity: O(n), space Complexity: O(n)
+&nbsp; *
+&nbsp; * &lt;p&gt;Download the code: $ git clone https://github.com/williamfiset/Algorithms
+&nbsp; *
+&nbsp; * &lt;p&gt;Change directory to the root of the Algorithms directory:
+&nbsp; *
+&nbsp; * &lt;p&gt;$ cd Algorithms
+&nbsp; *
+&nbsp; * &lt;p&gt;Build: $ javac -d src/main/java
+&nbsp; * src/main/java/com/williamfiset/algorithms/dp/examples/HouseRobber.java
+&nbsp; *
+&nbsp; * &lt;p&gt;Run: $ java -cp src/main/java com/williamfiset/algorithms/dp/examples/HouseRobber
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.dp.examples;
+&nbsp;
+&nbsp;import java.util.*;
+&nbsp;
+<b class="nc">&nbsp;public class HouseRobber {</b>
+&nbsp;
+&nbsp;  int[] dp;
+&nbsp;
+&nbsp;  public int rob(int[] houses) {
+<b class="nc">&nbsp;    int n = houses.length;</b>
+<b class="nc">&nbsp;    dp = new int[n + 2];</b>
+<b class="nc">&nbsp;    for (int i = 0, j = 2; i &lt; n; i++, j++) {</b>
+<b class="nc">&nbsp;      dp[j] = Math.max(dp[j - 1], dp[j - 2] + houses[i]);</b>
+<b class="nc">&nbsp;      System.out.println(dp[j]);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return dp[n + 1];</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Finds a set of optimal houses to rob. This method assumes
+&nbsp;  // the rob method was already called and &#39;dp&#39; is populated.
+&nbsp;  public List&lt;Integer&gt; findRobbedHouses(int[] houses) {
+<b class="nc">&nbsp;    int n = houses.length;</b>
+<b class="nc">&nbsp;    List&lt;Integer&gt; robbedHouses = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;    for (int i = n - 1, j = n + 1; i &gt;= 0; i--, j--) {</b>
+<b class="nc">&nbsp;      if (dp[j - 2] + houses[i] &gt; dp[j - 1]) {</b>
+<b class="nc">&nbsp;        robbedHouses.add(i);</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    return robbedHouses;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public static void main(String[] args) {
+<b class="nc">&nbsp;    HouseRobber robber = new HouseRobber();</b>
+<b class="nc">&nbsp;    int[] houses = {5, 2, 4, 7, 2, 13, 9, 1, 8, 4};</b>
+<b class="nc">&nbsp;    int amount = robber.rob(houses);</b>
+<b class="nc">&nbsp;    System.out.println(&quot;Robbed: &quot; + amount + &quot;$&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;    List&lt;Integer&gt; robbedHouses = robber.findRobbedHouses(houses);</b>
+<b class="nc">&nbsp;    int sum = 0;</b>
+<b class="nc">&nbsp;    for (int houseIndex : robbedHouses) {</b>
+<b class="nc">&nbsp;      System.out.printf(&quot;Robbed house at index %d, for %d$\n&quot;, houseIndex, houses[houseIndex]);</b>
+<b class="nc">&nbsp;      sum += houses[houseIndex];</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;
+<b class="nc">&nbsp;    if (amount != sum) {</b>
+<b class="nc">&nbsp;      System.out.println(&quot;Oh dear, something is very wrong.&quot;);</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>
