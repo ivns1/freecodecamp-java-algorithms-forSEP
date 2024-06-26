@@ -1,0 +1,292 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > LowestCommonAncestor</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.graphtheory.treealgorithms</a>
+</div>
+
+<h1>Coverage Summary for Class: LowestCommonAncestor (com.williamfiset.algorithms.graphtheory.treealgorithms)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">LowestCommonAncestor</td>
+<td class="coverageStat">
+  <span class="percent">
+    71,4%
+  </span>
+  <span class="absValue">
+    (5/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    51,1%
+  </span>
+  <span class="absValue">
+    (24/47)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">LowestCommonAncestor$TreeNode</td>
+<td class="coverageStat">
+  <span class="percent">
+    90,9%
+  </span>
+  <span class="absValue">
+    (10/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    96,2%
+  </span>
+  <span class="absValue">
+    (25/26)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    83,3%
+  </span>
+  <span class="absValue">
+    (15/18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    67,1%
+  </span>
+  <span class="absValue">
+    (49/73)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.williamfiset.algorithms.graphtheory.treealgorithms;
+&nbsp;
+&nbsp;import java.util.*;
+&nbsp;
+&nbsp;public class LowestCommonAncestor {
+&nbsp;
+&nbsp;  public static class TreeNode {
+&nbsp;    // Number of nodes in the subtree. Computed when tree is built.
+&nbsp;    private int n;
+&nbsp;
+&nbsp;    private int id;
+&nbsp;    private TreeNode parent;
+&nbsp;    private List&lt;TreeNode&gt; children;
+&nbsp;
+&nbsp;    // Useful constructor for root node.
+&nbsp;    public TreeNode(int id) {
+<b class="fc">&nbsp;      this(id, /*parent=*/ null);</b>
+&nbsp;    }
+&nbsp;
+<b class="fc">&nbsp;    public TreeNode(int id, TreeNode parent) {</b>
+<b class="fc">&nbsp;      this.id = id;</b>
+<b class="fc">&nbsp;      this.parent = parent;</b>
+<b class="fc">&nbsp;      children = new LinkedList&lt;&gt;();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void addChildren(TreeNode... nodes) {
+<b class="fc">&nbsp;      for (TreeNode node : nodes) {</b>
+<b class="fc">&nbsp;        children.add(node);</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setSize(int n) {
+<b class="fc">&nbsp;      this.n = n;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Number of nodes in the subtree (including the node itself)
+&nbsp;    public int size() {
+<b class="fc">&nbsp;      return n;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public int id() {
+<b class="fc">&nbsp;      return id;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public TreeNode parent() {
+<b class="fc">&nbsp;      return parent;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;TreeNode&gt; children() {
+<b class="fc">&nbsp;      return children;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public static TreeNode rootTree(List&lt;List&lt;Integer&gt;&gt; graph, int rootId) {
+<b class="fc">&nbsp;      TreeNode root = new TreeNode(rootId);</b>
+<b class="fc">&nbsp;      return buildTree(graph, root);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Do dfs to construct rooted tree.
+&nbsp;    private static TreeNode buildTree(List&lt;List&lt;Integer&gt;&gt; graph, TreeNode node) {
+<b class="fc">&nbsp;      int subtreeNodeCount = 1;</b>
+<b class="fc">&nbsp;      for (int neighbor : graph.get(node.id())) {</b>
+&nbsp;        // Ignore adding an edge pointing back to parent.
+<b class="fc">&nbsp;        if (node.parent() != null &amp;&amp; neighbor == node.parent().id()) {</b>
+<b class="fc">&nbsp;          continue;</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        TreeNode child = new TreeNode(neighbor, node);</b>
+<b class="fc">&nbsp;        node.addChildren(child);</b>
+&nbsp;
+<b class="fc">&nbsp;        buildTree(graph, child);</b>
+<b class="fc">&nbsp;        subtreeNodeCount += child.size();</b>
+<b class="fc">&nbsp;      }</b>
+<b class="fc">&nbsp;      node.setSize(subtreeNodeCount);</b>
+<b class="fc">&nbsp;      return node;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public String toString() {
+<b class="nc">&nbsp;      return String.valueOf(id);</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+<b class="fc">&nbsp;  private TreeNode lcaNode = null;</b>
+&nbsp;  private TreeNode root;
+&nbsp;
+<b class="fc">&nbsp;  public LowestCommonAncestor(TreeNode root) {</b>
+<b class="fc">&nbsp;    this.root = root;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Finds the lowest common ancestor of the nodes with id1 and id2.
+&nbsp;  public TreeNode lca(int id1, int id2) {
+<b class="fc">&nbsp;    lcaNode = null;</b>
+<b class="fc">&nbsp;    helper(root, id1, id2);</b>
+<b class="fc">&nbsp;    return lcaNode;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private boolean helper(TreeNode node, int id1, int id2) {
+<b class="fc">&nbsp;    if (node == null) {</b>
+<b class="nc">&nbsp;      return false;</b>
+&nbsp;    }
+<b class="fc">&nbsp;    int count = 0;</b>
+<b class="fc">&nbsp;    if (node.id() == id1) {</b>
+<b class="fc">&nbsp;      count++;</b>
+&nbsp;    }
+<b class="fc">&nbsp;    if (node.id() == id2) {</b>
+<b class="fc">&nbsp;      count++;</b>
+&nbsp;    }
+<b class="fc">&nbsp;    for (TreeNode child : node.children()) {</b>
+<b class="fc">&nbsp;      if (helper(child, id1, id2)) {</b>
+<b class="fc">&nbsp;        count++;</b>
+&nbsp;      }
+<b class="fc">&nbsp;    }</b>
+<b class="fc">&nbsp;    if (count == 2) {</b>
+<b class="fc">&nbsp;      lcaNode = node;</b>
+&nbsp;    }
+<b class="fc">&nbsp;    return count &gt; 0;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /* Graph/Tree creation helper methods. */
+&nbsp;
+&nbsp;  // Create a graph as a adjacency list with &#39;n&#39; nodes.
+&nbsp;  public static List&lt;List&lt;Integer&gt;&gt; createEmptyGraph(int n) {
+<b class="fc">&nbsp;    List&lt;List&lt;Integer&gt;&gt; graph = new ArrayList&lt;&gt;(n);</b>
+<b class="fc">&nbsp;    for (int i = 0; i &lt; n; i++) graph.add(new LinkedList&lt;&gt;());</b>
+<b class="fc">&nbsp;    return graph;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public static void addUndirectedEdge(List&lt;List&lt;Integer&gt;&gt; graph, int from, int to) {
+<b class="fc">&nbsp;    graph.get(from).add(to);</b>
+<b class="fc">&nbsp;    graph.get(to).add(from);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public static void main(String[] args) {
+<b class="nc">&nbsp;    TreeNode root = createFirstTreeFromSlides();</b>
+<b class="nc">&nbsp;    LowestCommonAncestor solver = new LowestCommonAncestor(root);</b>
+<b class="nc">&nbsp;    System.out.println(solver.lca(10, 15).id());</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private static TreeNode createFirstTreeFromSlides() {
+<b class="nc">&nbsp;    int n = 17;</b>
+<b class="nc">&nbsp;    List&lt;List&lt;Integer&gt;&gt; tree = createEmptyGraph(n);</b>
+&nbsp;
+<b class="nc">&nbsp;    addUndirectedEdge(tree, 0, 1);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(tree, 0, 2);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(tree, 1, 3);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(tree, 1, 4);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(tree, 2, 5);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(tree, 2, 6);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(tree, 2, 7);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(tree, 3, 8);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(tree, 3, 9);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(tree, 5, 10);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(tree, 5, 11);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(tree, 7, 12);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(tree, 7, 13);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(tree, 11, 14);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(tree, 11, 15);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(tree, 11, 16);</b>
+&nbsp;
+<b class="nc">&nbsp;    return TreeNode.rootTree(tree, 0);</b>
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

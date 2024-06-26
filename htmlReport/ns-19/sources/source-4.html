@@ -1,0 +1,196 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > KnapsackUnbounded</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.dp</a>
+</div>
+
+<h1>Coverage Summary for Class: KnapsackUnbounded (com.williamfiset.algorithms.dp)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">KnapsackUnbounded</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/23)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * This file contains a dynamic programming solutions to the classic unbounded knapsack problem
+&nbsp; * where are you are trying to maximize the total profit of items selected without exceeding the
+&nbsp; * capacity of your knapsack.
+&nbsp; *
+&nbsp; * &lt;p&gt;Version 1: Time Complexity: O(nW) Version 1 Space Complexity: O(nW)
+&nbsp; *
+&nbsp; * &lt;p&gt;Version 2: Time Complexity: O(nW) Space Complexity: O(W)
+&nbsp; *
+&nbsp; * &lt;p&gt;Tested code against: https://www.hackerrank.com/challenges/unbounded-knapsack
+&nbsp; *
+&nbsp; * @author William Fiset, william.alexandre.fiset@gmail.com
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.dp;
+&nbsp;
+<b class="nc">&nbsp;public class KnapsackUnbounded {</b>
+&nbsp;
+&nbsp;  /**
+&nbsp;   * @param maxWeight - The maximum weight of the knapsack
+&nbsp;   * @param W - The weights of the items
+&nbsp;   * @param V - The values of the items
+&nbsp;   * @return The maximum achievable profit of selecting a subset of the elements such that the
+&nbsp;   *     capacity of the knapsack is not exceeded
+&nbsp;   */
+&nbsp;  public static int unboundedKnapsack(int maxWeight, int[] W, int[] V) {
+&nbsp;
+<b class="nc">&nbsp;    if (W == null || V == null || W.length != V.length || maxWeight &lt; 0)</b>
+<b class="nc">&nbsp;      throw new IllegalArgumentException(&quot;Invalid input&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;    final int N = W.length;</b>
+&nbsp;
+&nbsp;    // Initialize a table where individual rows represent items
+&nbsp;    // and columns represent the weight of the knapsack
+<b class="nc">&nbsp;    int[][] DP = new int[N + 1][maxWeight + 1];</b>
+&nbsp;
+&nbsp;    // Loop through items
+<b class="nc">&nbsp;    for (int i = 1; i &lt;= N; i++) {</b>
+&nbsp;
+&nbsp;      // Get the value and weight of the item
+<b class="nc">&nbsp;      int w = W[i - 1], v = V[i - 1];</b>
+&nbsp;
+&nbsp;      // Consider all possible knapsack sizes
+<b class="nc">&nbsp;      for (int sz = 1; sz &lt;= maxWeight; sz++) {</b>
+&nbsp;
+&nbsp;        // Try including the current element
+<b class="nc">&nbsp;        if (sz &gt;= w) DP[i][sz] = DP[i][sz - w] + v;</b>
+&nbsp;
+&nbsp;        // Check if not selecting this item at all is more profitable
+<b class="nc">&nbsp;        if (DP[i - 1][sz] &gt; DP[i][sz]) DP[i][sz] = DP[i - 1][sz];</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+&nbsp;    // Return the best value achievable
+<b class="nc">&nbsp;    return DP[N][maxWeight];</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public static int unboundedKnapsackSpaceEfficient(int maxWeight, int[] W, int[] V) {
+&nbsp;
+<b class="nc">&nbsp;    if (W == null || V == null || W.length != V.length)</b>
+<b class="nc">&nbsp;      throw new IllegalArgumentException(&quot;Invalid input&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;    final int N = W.length;</b>
+&nbsp;
+&nbsp;    // Initialize a table where we will only keep track of
+&nbsp;    // the best possible value for each knapsack weight
+<b class="nc">&nbsp;    int[] DP = new int[maxWeight + 1];</b>
+&nbsp;
+&nbsp;    // Consider all possible knapsack sizes
+<b class="nc">&nbsp;    for (int sz = 1; sz &lt;= maxWeight; sz++) {</b>
+&nbsp;
+&nbsp;      // Loop through items
+<b class="nc">&nbsp;      for (int i = 0; i &lt; N; i++) {</b>
+&nbsp;
+&nbsp;        // First check that we can include this item (we can&#39;t include it if
+&nbsp;        // it&#39;s too heavy for our knapsack). Assumming it fits inside the
+&nbsp;        // knapsack check if including this element would be profitable.
+<b class="nc">&nbsp;        if (sz - W[i] &gt;= 0 &amp;&amp; DP[sz - W[i]] + V[i] &gt; DP[sz]) DP[sz] = DP[sz - W[i]] + V[i];</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+&nbsp;    // Return the best value achievable
+<b class="nc">&nbsp;    return DP[maxWeight];</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public static void main(String[] args) {
+&nbsp;
+<b class="nc">&nbsp;    int[] W = {3, 6, 2};</b>
+<b class="nc">&nbsp;    int[] V = {5, 20, 3};</b>
+<b class="nc">&nbsp;    int knapsackValue = unboundedKnapsackSpaceEfficient(10, W, V);</b>
+<b class="nc">&nbsp;    System.out.println(&quot;Maximum knapsack value: &quot; + knapsackValue);</b>
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

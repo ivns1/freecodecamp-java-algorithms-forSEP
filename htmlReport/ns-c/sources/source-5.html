@@ -1,0 +1,357 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > MinIndexedDHeap</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.datastructures.priorityqueue</a>
+</div>
+
+<h1>Coverage Summary for Class: MinIndexedDHeap (com.williamfiset.algorithms.datastructures.priorityqueue)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MinIndexedDHeap</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    96,4%
+  </span>
+  <span class="absValue">
+    (27/28)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    95,7%
+  </span>
+  <span class="absValue">
+    (89/93)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * An implementation of an indexed min D-ary heap priority queue.
+&nbsp; *
+&nbsp; * &lt;p&gt;This implementation supports arbitrary keys with comparable values. To use arbitrary keys
+&nbsp; * (such as strings or objects) first map all your keys to the integer domain [0, N) where N is the
+&nbsp; * number of keys you have and then use the mapping with this indexed priority queue.
+&nbsp; *
+&nbsp; * &lt;p&gt;As convention, I denote &#39;ki&#39; as the index value in the domain [0, N) associated with a key k,
+&nbsp; * therefore: ki = map[k]
+&nbsp; *
+&nbsp; * @author William Fiset, william.alexandre.fiset@gmail.com
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.datastructures.priorityqueue;
+&nbsp;
+&nbsp;import static java.lang.Math.max;
+&nbsp;import static java.lang.Math.min;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;import java.util.NoSuchElementException;
+&nbsp;
+&nbsp;public class MinIndexedDHeap&lt;T extends Comparable&lt;T&gt;&gt; {
+&nbsp;
+&nbsp;  // Current number of elements in the heap.
+&nbsp;  private int sz;
+&nbsp;
+&nbsp;  // Maximum number of elements in the heap.
+&nbsp;  private final int N;
+&nbsp;
+&nbsp;  // The degree of every node in the heap.
+&nbsp;  private final int D;
+&nbsp;
+&nbsp;  // Lookup arrays to track the child/parent indexes of each node.
+&nbsp;  private final int[] child, parent;
+&nbsp;
+&nbsp;  // The Position Map (pm) maps Key Indexes (ki) to where the position of that
+&nbsp;  // key is represented in the priority queue in the domain [0, sz).
+&nbsp;  public final int[] pm;
+&nbsp;
+&nbsp;  // The Inverse Map (im) stores the indexes of the keys in the range
+&nbsp;  // [0, sz) which make up the priority queue. It should be noted that
+&nbsp;  // &#39;im&#39; and &#39;pm&#39; are inverses of each other, so: pm[im[i]] = im[pm[i]] = i
+&nbsp;  public final int[] im;
+&nbsp;
+&nbsp;  // The values associated with the keys. It is very important  to note
+&nbsp;  // that this array is indexed by the key indexes (aka &#39;ki&#39;).
+&nbsp;  public final Object[] values;
+&nbsp;
+&nbsp;  // Initializes a D-ary heap with a maximum capacity of maxSize.
+<b class="fc">&nbsp;  public MinIndexedDHeap(int degree, int maxSize) {</b>
+<b class="fc">&nbsp;    if (maxSize &lt;= 0) throw new IllegalArgumentException(&quot;maxSize &lt;= 0&quot;);</b>
+&nbsp;
+<b class="fc">&nbsp;    D = max(2, degree);</b>
+<b class="fc">&nbsp;    N = max(D + 1, maxSize);</b>
+&nbsp;
+<b class="fc">&nbsp;    im = new int[N];</b>
+<b class="fc">&nbsp;    pm = new int[N];</b>
+<b class="fc">&nbsp;    child = new int[N];</b>
+<b class="fc">&nbsp;    parent = new int[N];</b>
+<b class="fc">&nbsp;    values = new Object[N];</b>
+&nbsp;
+<b class="fc">&nbsp;    for (int i = 0; i &lt; N; i++) {</b>
+<b class="fc">&nbsp;      parent[i] = (i - 1) / D;</b>
+<b class="fc">&nbsp;      child[i] = i * D + 1;</b>
+<b class="fc">&nbsp;      pm[i] = im[i] = -1;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  public int size() {
+<b class="fc">&nbsp;    return sz;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public boolean isEmpty() {
+<b class="fc">&nbsp;    return sz == 0;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public boolean contains(int ki) {
+<b class="fc">&nbsp;    keyInBoundsOrThrow(ki);</b>
+<b class="fc">&nbsp;    return pm[ki] != -1;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public int peekMinKeyIndex() {
+<b class="fc">&nbsp;    isNotEmptyOrThrow();</b>
+<b class="fc">&nbsp;    return im[0];</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public int pollMinKeyIndex() {
+<b class="fc">&nbsp;    int minki = peekMinKeyIndex();</b>
+<b class="fc">&nbsp;    delete(minki);</b>
+<b class="fc">&nbsp;    return minki;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @SuppressWarnings(&quot;unchecked&quot;)
+&nbsp;  public T peekMinValue() {
+<b class="fc">&nbsp;    isNotEmptyOrThrow();</b>
+<b class="fc">&nbsp;    return (T) values[im[0]];</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public T pollMinValue() {
+<b class="fc">&nbsp;    T minValue = peekMinValue();</b>
+<b class="fc">&nbsp;    delete(peekMinKeyIndex());</b>
+<b class="fc">&nbsp;    return minValue;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public void insert(int ki, T value) {
+<b class="fc">&nbsp;    if (contains(ki)) throw new IllegalArgumentException(&quot;index already exists; received: &quot; + ki);</b>
+<b class="fc">&nbsp;    valueNotNullOrThrow(value);</b>
+<b class="fc">&nbsp;    pm[ki] = sz;</b>
+<b class="fc">&nbsp;    im[sz] = ki;</b>
+<b class="fc">&nbsp;    values[ki] = value;</b>
+<b class="fc">&nbsp;    swim(sz++);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @SuppressWarnings(&quot;unchecked&quot;)
+&nbsp;  public T valueOf(int ki) {
+<b class="fc">&nbsp;    keyExistsOrThrow(ki);</b>
+<b class="fc">&nbsp;    return (T) values[ki];</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @SuppressWarnings(&quot;unchecked&quot;)
+&nbsp;  public T delete(int ki) {
+<b class="fc">&nbsp;    keyExistsOrThrow(ki);</b>
+<b class="fc">&nbsp;    final int i = pm[ki];</b>
+<b class="fc">&nbsp;    swap(i, --sz);</b>
+<b class="fc">&nbsp;    sink(i);</b>
+<b class="fc">&nbsp;    swim(i);</b>
+<b class="fc">&nbsp;    T value = (T) values[ki];</b>
+<b class="fc">&nbsp;    values[ki] = null;</b>
+<b class="fc">&nbsp;    pm[ki] = -1;</b>
+<b class="fc">&nbsp;    im[sz] = -1;</b>
+<b class="fc">&nbsp;    return value;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @SuppressWarnings(&quot;unchecked&quot;)
+&nbsp;  public T update(int ki, T value) {
+<b class="fc">&nbsp;    keyExistsAndValueNotNullOrThrow(ki, value);</b>
+<b class="fc">&nbsp;    final int i = pm[ki];</b>
+<b class="fc">&nbsp;    T oldValue = (T) values[ki];</b>
+<b class="fc">&nbsp;    values[ki] = value;</b>
+<b class="fc">&nbsp;    sink(i);</b>
+<b class="fc">&nbsp;    swim(i);</b>
+<b class="fc">&nbsp;    return oldValue;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Strictly decreases the value associated with &#39;ki&#39; to &#39;value&#39;
+&nbsp;  public void decrease(int ki, T value) {
+<b class="fc">&nbsp;    keyExistsAndValueNotNullOrThrow(ki, value);</b>
+<b class="fc">&nbsp;    if (less(value, values[ki])) {</b>
+<b class="fc">&nbsp;      values[ki] = value;</b>
+<b class="fc">&nbsp;      swim(pm[ki]);</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  // Strictly increases the value associated with &#39;ki&#39; to &#39;value&#39;
+&nbsp;  public void increase(int ki, T value) {
+<b class="fc">&nbsp;    keyExistsAndValueNotNullOrThrow(ki, value);</b>
+<b class="fc">&nbsp;    if (less(values[ki], value)) {</b>
+<b class="fc">&nbsp;      values[ki] = value;</b>
+<b class="fc">&nbsp;      sink(pm[ki]);</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  /* Helper functions */
+&nbsp;
+&nbsp;  private void sink(int i) {
+<b class="fc">&nbsp;    for (int j = minChild(i); j != -1; ) {</b>
+<b class="fc">&nbsp;      swap(i, j);</b>
+<b class="fc">&nbsp;      i = j;</b>
+<b class="fc">&nbsp;      j = minChild(i);</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  private void swim(int i) {
+<b class="fc">&nbsp;    while (less(i, parent[i])) {</b>
+<b class="fc">&nbsp;      swap(i, parent[i]);</b>
+<b class="fc">&nbsp;      i = parent[i];</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  // From the parent node at index i find the minimum child below it
+&nbsp;  private int minChild(int i) {
+<b class="fc">&nbsp;    int index = -1, from = child[i], to = min(sz, from + D);</b>
+<b class="fc">&nbsp;    for (int j = from; j &lt; to; j++) if (less(j, i)) index = i = j;</b>
+<b class="fc">&nbsp;    return index;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private void swap(int i, int j) {
+<b class="fc">&nbsp;    pm[im[j]] = i;</b>
+<b class="fc">&nbsp;    pm[im[i]] = j;</b>
+<b class="fc">&nbsp;    int tmp = im[i];</b>
+<b class="fc">&nbsp;    im[i] = im[j];</b>
+<b class="fc">&nbsp;    im[j] = tmp;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Tests if the value of node i &lt; node j
+&nbsp;  @SuppressWarnings(&quot;unchecked&quot;)
+&nbsp;  private boolean less(int i, int j) {
+<b class="fc">&nbsp;    return ((Comparable&lt;? super T&gt;) values[im[i]]).compareTo((T) values[im[j]]) &lt; 0;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @SuppressWarnings(&quot;unchecked&quot;)
+&nbsp;  private boolean less(Object obj1, Object obj2) {
+<b class="fc">&nbsp;    return ((Comparable&lt;? super T&gt;) obj1).compareTo((T) obj2) &lt; 0;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public String toString() {
+<b class="nc">&nbsp;    List&lt;Integer&gt; lst = new ArrayList&lt;&gt;(sz);</b>
+<b class="nc">&nbsp;    for (int i = 0; i &lt; sz; i++) lst.add(im[i]);</b>
+<b class="nc">&nbsp;    return lst.toString();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /* Helper functions to make the code more readable. */
+&nbsp;
+&nbsp;  private void isNotEmptyOrThrow() {
+<b class="fc">&nbsp;    if (isEmpty()) throw new NoSuchElementException(&quot;Priority queue underflow&quot;);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private void keyExistsAndValueNotNullOrThrow(int ki, Object value) {
+<b class="fc">&nbsp;    keyExistsOrThrow(ki);</b>
+<b class="fc">&nbsp;    valueNotNullOrThrow(value);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private void keyExistsOrThrow(int ki) {
+<b class="fc">&nbsp;    if (!contains(ki)) throw new NoSuchElementException(&quot;Index does not exist; received: &quot; + ki);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private void valueNotNullOrThrow(Object value) {
+<b class="fc">&nbsp;    if (value == null) throw new IllegalArgumentException(&quot;value cannot be null&quot;);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private void keyInBoundsOrThrow(int ki) {
+<b class="fc">&nbsp;    if (ki &lt; 0 || ki &gt;= N)</b>
+<b class="nc">&nbsp;      throw new IllegalArgumentException(&quot;Key index out of bounds; received: &quot; + ki);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /* Test functions */
+&nbsp;
+&nbsp;  // Recursively checks if this heap is a min heap. This method is used
+&nbsp;  // for testing purposes to validate the heap invariant.
+&nbsp;  public boolean isMinHeap() {
+<b class="fc">&nbsp;    return isMinHeap(0);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private boolean isMinHeap(int i) {
+<b class="fc">&nbsp;    int from = child[i], to = min(sz, from + D);</b>
+<b class="fc">&nbsp;    for (int j = from; j &lt; to; j++) {</b>
+<b class="fc">&nbsp;      if (!less(i, j)) return false;</b>
+<b class="fc">&nbsp;      if (!isMinHeap(j)) return false;</b>
+&nbsp;    }
+<b class="fc">&nbsp;    return true;</b>
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

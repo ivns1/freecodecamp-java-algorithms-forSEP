@@ -1,0 +1,400 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > MinimumWeightPerfectMatching</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.dp</a>
+</div>
+
+<h1>Coverage Summary for Class: MinimumWeightPerfectMatching (com.williamfiset.algorithms.dp)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MinimumWeightPerfectMatching</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/118)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * Implementation of the Minimum Weight Perfect Matching (MWPM) problem. In this problem you are
+&nbsp; * given a distance matrix which gives the distance from each node to every other node, and you want
+&nbsp; * to pair up all the nodes to one another minimizing the overall cost.
+&nbsp; *
+&nbsp; * &lt;p&gt;Tested against: UVA 10911 - Forming Quiz Teams
+&nbsp; *
+&nbsp; * &lt;p&gt;To Run: ./gradlew run -Palgorithm=dp.MinimumWeightPerfectMatching
+&nbsp; *
+&nbsp; * &lt;p&gt;Time Complexity: O(n * 2^n)
+&nbsp; *
+&nbsp; * @author William Fiset
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.dp;
+&nbsp;
+&nbsp;import java.awt.geom.*;
+&nbsp;import java.util.*;
+&nbsp;
+&nbsp;public class MinimumWeightPerfectMatching {
+&nbsp;
+&nbsp;  // Inputs
+&nbsp;  private final int n;
+&nbsp;  private double[][] cost;
+&nbsp;
+&nbsp;  // Internal
+&nbsp;  private final int END_STATE;
+&nbsp;  private boolean solved;
+&nbsp;
+&nbsp;  // Outputs
+&nbsp;  private double minWeightCost;
+&nbsp;  private int[] matching;
+&nbsp;
+&nbsp;  // The cost matrix should be a symmetric (i.e cost[i][j] = cost[j][i])
+<b class="nc">&nbsp;  public MinimumWeightPerfectMatching(double[][] cost) {</b>
+<b class="nc">&nbsp;    if (cost == null) throw new IllegalArgumentException(&quot;Input cannot be null&quot;);</b>
+<b class="nc">&nbsp;    n = cost.length;</b>
+<b class="nc">&nbsp;    if (n == 0) throw new IllegalArgumentException(&quot;Matrix size is zero&quot;);</b>
+<b class="nc">&nbsp;    if (n % 2 != 0)</b>
+<b class="nc">&nbsp;      throw new IllegalArgumentException(&quot;Matrix has an odd size, no perfect matching exists.&quot;);</b>
+<b class="nc">&nbsp;    if (n &gt; 32)</b>
+<b class="nc">&nbsp;      throw new IllegalArgumentException(</b>
+&nbsp;          &quot;Matrix too large! A matrix that size for the MWPM problem with a time complexity of&quot;
+&nbsp;              + &quot;O(n^2*2^n) requires way too much computation and memory for a modern home computer.&quot;);
+<b class="nc">&nbsp;    END_STATE = (1 &lt;&lt; n) - 1;</b>
+<b class="nc">&nbsp;    this.cost = cost;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public double getMinWeightCost() {
+<b class="nc">&nbsp;    solveRecursive();</b>
+<b class="nc">&nbsp;    return minWeightCost;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Get the minimum weight cost matching. The matching is returned as an array where the nodes at
+&nbsp;   * index 2*i and 2*i+1 form a matched pair. For example, nodes at indexes (0, 1) are a pair, (2,
+&nbsp;   * 3) are another pair, etc...
+&nbsp;   *
+&nbsp;   * &lt;p&gt;How to iterate over the pairs:
+&nbsp;   *
+&nbsp;   * &lt;pre&gt;{@code
+&nbsp;   * MinimumWeightPerfectMatching mwpm = ...
+&nbsp;   * int[] matching = mwpm.getMinWeightCostMatching();
+&nbsp;   * for (int i = 0; i &lt; matching.length / 2; i++) {
+&nbsp;   *   int node1 = matching[2*i];
+&nbsp;   *   int node2 = matching[2*i+1];
+&nbsp;   *   // Do something with the matched pair (node1, node2)
+&nbsp;   * }
+&nbsp;   * }&lt;/pre&gt;
+&nbsp;   */
+&nbsp;  public int[] getMinWeightCostMatching() {
+<b class="nc">&nbsp;    solveRecursive();</b>
+<b class="nc">&nbsp;    return matching;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Recursive impl
+&nbsp;  // TODO(william): move to another file?
+&nbsp;  public void solveRecursive() {
+<b class="nc">&nbsp;    if (solved) return;</b>
+<b class="nc">&nbsp;    Double[] dp = new Double[1 &lt;&lt; n];</b>
+<b class="nc">&nbsp;    int[] history = new int[1 &lt;&lt; n];</b>
+<b class="nc">&nbsp;    minWeightCost = f(END_STATE, dp, history);</b>
+<b class="nc">&nbsp;    reconstructMatching(history);</b>
+<b class="nc">&nbsp;    solved = true;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private double f(int state, Double[] dp, int[] history) {
+<b class="nc">&nbsp;    if (dp[state] != null) {</b>
+<b class="nc">&nbsp;      return dp[state];</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (state == 0) {</b>
+<b class="nc">&nbsp;      return 0;</b>
+&nbsp;    }
+&nbsp;    int p1, p2;
+&nbsp;    // Seek to find active bit position (p1)
+<b class="nc">&nbsp;    for (p1 = 0; p1 &lt; n; p1++) {</b>
+<b class="nc">&nbsp;      if ((state &amp; (1 &lt;&lt; p1)) &gt; 0) {</b>
+<b class="nc">&nbsp;        break;</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    int bestState = -1;</b>
+<b class="nc">&nbsp;    double minimum = Double.MAX_VALUE;</b>
+&nbsp;
+<b class="nc">&nbsp;    for (p2 = p1 + 1; p2 &lt; n; p2++) {</b>
+&nbsp;      // Position `p2` is on. Try matching the pair (p1, p2) together.
+<b class="nc">&nbsp;      if ((state &amp; (1 &lt;&lt; p2)) &gt; 0) {</b>
+<b class="nc">&nbsp;        int reducedState = state ^ (1 &lt;&lt; p1) ^ (1 &lt;&lt; p2);</b>
+<b class="nc">&nbsp;        double matchCost = f(reducedState, dp, history) + cost[p1][p2];</b>
+<b class="nc">&nbsp;        if (matchCost &lt; minimum) {</b>
+<b class="nc">&nbsp;          minimum = matchCost;</b>
+<b class="nc">&nbsp;          bestState = reducedState;</b>
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    history[state] = bestState;</b>
+<b class="nc">&nbsp;    return dp[state] = minimum;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public void solve() {
+<b class="nc">&nbsp;    if (solved) return;</b>
+&nbsp;
+&nbsp;    // The DP state is encoded as a bitmask where the i&#39;th bit is flipped on if the i&#39;th node is
+&nbsp;    // included in the state. Encoding the state this way allows us to compactly represent selecting
+&nbsp;    // a subset of the nodes present in the matching. Furthermore, it allows using the &#39;&amp;&#39; binary
+&nbsp;    // operator to compare states to see if they overlap and the &#39;|&#39; operator to combine states.
+&nbsp;    //
+&nbsp;    // dp[i] contains the optimal cost of the MWPM for the nodes captured in the binary
+&nbsp;    // representation of `i`. The dp table is always half empty because all states with an odd
+&nbsp;    // number of nodes do not have a MWPM.
+<b class="nc">&nbsp;    Double[] dp = new Double[1 &lt;&lt; n];</b>
+&nbsp;
+&nbsp;    // Memo table to save the history of the chosen states. This table is used to reconstruct the
+&nbsp;    // chosen pairs of nodes after the algorithm has executed.
+<b class="nc">&nbsp;    int[] history = new int[1 &lt;&lt; n];</b>
+&nbsp;
+&nbsp;    // All the states consisting of pairs of nodes are the building blocks of this algorithm.
+&nbsp;    // In every iteration, we try to add a pair of nodes to previous state to construct a larger
+&nbsp;    // matching.
+<b class="nc">&nbsp;    final int numPairs = (n * (n - 1)) / 2;</b>
+<b class="nc">&nbsp;    int[] pairStates = new int[numPairs];</b>
+<b class="nc">&nbsp;    double[] pairCost = new double[numPairs];</b>
+&nbsp;
+<b class="nc">&nbsp;    int k = 0;</b>
+<b class="nc">&nbsp;    for (int i = 0; i &lt; n; i++) {</b>
+<b class="nc">&nbsp;      for (int j = i + 1; j &lt; n; j++) {</b>
+<b class="nc">&nbsp;        int state = (1 &lt;&lt; i) | (1 &lt;&lt; j);</b>
+<b class="nc">&nbsp;        dp[state] = cost[i][j];</b>
+<b class="nc">&nbsp;        pairStates[k] = state;</b>
+<b class="nc">&nbsp;        pairCost[k] = cost[i][j];</b>
+<b class="nc">&nbsp;        k++;</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    for (int state = 0b11; state &lt; (1 &lt;&lt; n); state++) { // O(2^n)</b>
+&nbsp;      // Skip states with an odd number of bits (nodes). It&#39;s easier (and faster) to
+&nbsp;      // check dp[state] instead of calling `Integer.bitCount` for the bit count.
+<b class="nc">&nbsp;      if (dp[state] == null) {</b>
+<b class="nc">&nbsp;        continue;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      for (int i = 0; i &lt; numPairs; i++) { // O(n^2)</b>
+<b class="nc">&nbsp;        int pair = pairStates[i];</b>
+&nbsp;        // Ignore states which overlap
+<b class="nc">&nbsp;        if ((state &amp; pair) != 0) continue;</b>
+&nbsp;
+<b class="nc">&nbsp;        int newState = state | pair;</b>
+<b class="nc">&nbsp;        double newCost = dp[state] + pairCost[i];</b>
+<b class="nc">&nbsp;        if (dp[newState] == null || newCost &lt; dp[newState]) {</b>
+<b class="nc">&nbsp;          dp[newState] = newCost;</b>
+&nbsp;          // Save the fact that we went from &#39;state&#39; -&gt; &#39;newState&#39;. From this we will be able to
+&nbsp;          // reconstruct which pairs of nodes were taken by looking at &#39;state&#39; xor &#39;newState&#39; which
+&nbsp;          // should give us the binary representation (state) of the pair used.
+<b class="nc">&nbsp;          history[newState] = state;</b>
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    reconstructMatching(history);</b>
+&nbsp;
+<b class="nc">&nbsp;    minWeightCost = dp[END_STATE];</b>
+<b class="nc">&nbsp;    solved = true;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Populates the `matching` array with a sorted deterministic matching sorted by lowest node
+&nbsp;  // index. For example, if the perfect matching consists of the pairs (3, 4), (1, 5), (0, 2).
+&nbsp;  // The matching is sorted such that the pairs appear in the ordering: (0, 2), (1, 5), (3, 4).
+&nbsp;  // Furthermore, it is guaranteed that for any pair (a, b) that a &lt; b.
+&nbsp;  private void reconstructMatching(int[] history) {
+&nbsp;    // A map between pairs of nodes that were matched together.
+<b class="nc">&nbsp;    int[] map = new int[n];</b>
+<b class="nc">&nbsp;    int[] leftNodes = new int[n / 2];</b>
+&nbsp;
+&nbsp;    // Reconstruct the matching of pairs of nodes working backwards through computed states.
+<b class="nc">&nbsp;    for (int i = 0, state = END_STATE; state != 0; state = history[state]) {</b>
+&nbsp;      // Isolate the pair used by xoring the state with the state used to generate it.
+<b class="nc">&nbsp;      int pairUsed = state ^ history[state];</b>
+&nbsp;
+<b class="nc">&nbsp;      int leftNode = getBitPosition(Integer.lowestOneBit(pairUsed));</b>
+<b class="nc">&nbsp;      int rightNode = getBitPosition(Integer.highestOneBit(pairUsed));</b>
+&nbsp;
+<b class="nc">&nbsp;      leftNodes[i++] = leftNode;</b>
+<b class="nc">&nbsp;      map[leftNode] = rightNode;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Sort the left nodes in ascending order.
+<b class="nc">&nbsp;    java.util.Arrays.sort(leftNodes);</b>
+&nbsp;
+<b class="nc">&nbsp;    matching = new int[n];</b>
+<b class="nc">&nbsp;    for (int i = 0; i &lt; n / 2; i++) {</b>
+<b class="nc">&nbsp;      matching[2 * i] = leftNodes[i];</b>
+<b class="nc">&nbsp;      int rightNode = map[leftNodes[i]];</b>
+<b class="nc">&nbsp;      matching[2 * i + 1] = rightNode;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  // Gets the zero base index position of the 1 bit in `k`. `k` must be a power of 2, so there is
+&nbsp;  // only ever 1 bit in the binary representation of k.
+&nbsp;  private int getBitPosition(int k) {
+<b class="nc">&nbsp;    int count = -1;</b>
+<b class="nc">&nbsp;    while (k &gt; 0) {</b>
+<b class="nc">&nbsp;      count++;</b>
+<b class="nc">&nbsp;      k &gt;&gt;= 1;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return count;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /* Example */
+&nbsp;
+&nbsp;  public static void main(String[] args) {
+&nbsp;    // test1();
+&nbsp;    // for (int i = 0; i &lt; 50; i++) {
+&nbsp;    //   if (include(i)) System.out.printf(&quot;%2d %7s\n&quot;, i, Integer.toBinaryString(i));
+&nbsp;    // }
+<b class="nc">&nbsp;  }</b>
+&nbsp;
+&nbsp;  private static boolean include(int i) {
+<b class="nc">&nbsp;    boolean toInclude = Integer.bitCount(i) &gt;= 2 &amp;&amp; Integer.bitCount(i) % 2 == 0;</b>
+<b class="nc">&nbsp;    return toInclude;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private static void test1() {
+&nbsp;    // int n = 18;
+<b class="nc">&nbsp;    int n = 6;</b>
+<b class="nc">&nbsp;    List&lt;Point2D&gt; pts = new ArrayList&lt;&gt;();</b>
+&nbsp;
+&nbsp;    // Generate points on a 2D plane which will produce a unique answer
+<b class="nc">&nbsp;    for (int i = 0; i &lt; n / 2; i++) {</b>
+<b class="nc">&nbsp;      pts.add(new Point2D.Double(2 * i, 0));</b>
+<b class="nc">&nbsp;      pts.add(new Point2D.Double(2 * i, 1));</b>
+&nbsp;    }
+<b class="nc">&nbsp;    Collections.shuffle(pts);</b>
+&nbsp;
+<b class="nc">&nbsp;    double[][] cost = new double[n][n];</b>
+<b class="nc">&nbsp;    for (int i = 0; i &lt; n; i++) {</b>
+<b class="nc">&nbsp;      for (int j = 0; j &lt; n; j++) {</b>
+<b class="nc">&nbsp;        cost[i][j] = pts.get(i).distance(pts.get(j));</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    MinimumWeightPerfectMatching mwpm = new MinimumWeightPerfectMatching(cost);</b>
+<b class="nc">&nbsp;    double minCost = mwpm.getMinWeightCost();</b>
+<b class="nc">&nbsp;    if (minCost != n / 2) {</b>
+<b class="nc">&nbsp;      System.out.printf(&quot;MWPM cost is wrong! Got: %.5f But wanted: %d\n&quot;, minCost, n / 2);</b>
+&nbsp;    } else {
+<b class="nc">&nbsp;      System.out.printf(&quot;MWPM is: %.5f\n&quot;, minCost);</b>
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    int[] matching = mwpm.getMinWeightCostMatching();</b>
+<b class="nc">&nbsp;    for (int i = 0; i &lt; matching.length / 2; i++) {</b>
+<b class="nc">&nbsp;      int ii = matching[2 * i];</b>
+<b class="nc">&nbsp;      int jj = matching[2 * i + 1];</b>
+<b class="nc">&nbsp;      System.out.printf(</b>
+&nbsp;          &quot;(%d, %d) &lt;-&gt; (%d, %d)\n&quot;,
+<b class="nc">&nbsp;          (int) pts.get(ii).getX(),</b>
+<b class="nc">&nbsp;          (int) pts.get(ii).getY(),</b>
+<b class="nc">&nbsp;          (int) pts.get(jj).getX(),</b>
+<b class="nc">&nbsp;          (int) pts.get(jj).getY());</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  private static void test2() {
+<b class="nc">&nbsp;    double[][] costMatrix = {</b>
+&nbsp;      {0, 2, 1, 2},
+&nbsp;      {2, 0, 2, 1},
+&nbsp;      {1, 2, 0, 2},
+&nbsp;      {2, 1, 2, 0},
+&nbsp;    };
+&nbsp;
+<b class="nc">&nbsp;    MinimumWeightPerfectMatching mwpm = new MinimumWeightPerfectMatching(costMatrix);</b>
+<b class="nc">&nbsp;    double cost = mwpm.getMinWeightCost();</b>
+<b class="nc">&nbsp;    if (cost != 2.0) {</b>
+<b class="nc">&nbsp;      System.out.println(&quot;error cost not 2&quot;);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    System.out.println(cost);</b>
+&nbsp;    // System.out.println(mwpm.solve2());
+&nbsp;
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

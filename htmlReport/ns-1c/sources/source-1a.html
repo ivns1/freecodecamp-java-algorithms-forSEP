@@ -1,0 +1,251 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > KruskalsEdgeList</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.graphtheory</a>
+</div>
+
+<h1>Coverage Summary for Class: KruskalsEdgeList (com.williamfiset.algorithms.graphtheory)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">KruskalsEdgeList</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/12)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">KruskalsEdgeList$Edge</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">KruskalsEdgeList$UnionFind</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/24)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/41)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * An implementation of Kruskal&#39;s MST algorithm using an edge list Time Complexity: O(ElogE)
+&nbsp; *
+&nbsp; * @author William Fiset, william.alexandre.fiset@gmail.com
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.graphtheory;
+&nbsp;
+<b class="nc">&nbsp;public class KruskalsEdgeList {</b>
+&nbsp;
+&nbsp;  // Union find data structure
+&nbsp;  static class UnionFind {
+&nbsp;
+&nbsp;    private int[] id, sz;
+&nbsp;
+<b class="nc">&nbsp;    public UnionFind(int n) {</b>
+<b class="nc">&nbsp;      id = new int[n];</b>
+<b class="nc">&nbsp;      sz = new int[n];</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; n; i++) {</b>
+<b class="nc">&nbsp;        id[i] = i;</b>
+<b class="nc">&nbsp;        sz[i] = 1;</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+&nbsp;    public int find(int p) {
+<b class="nc">&nbsp;      int root = p;</b>
+<b class="nc">&nbsp;      while (root != id[root]) root = id[root];</b>
+<b class="nc">&nbsp;      while (p != root) { // Do path compression</b>
+<b class="nc">&nbsp;        int next = id[p];</b>
+<b class="nc">&nbsp;        id[p] = root;</b>
+<b class="nc">&nbsp;        p = next;</b>
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      return root;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean connected(int p, int q) {
+<b class="nc">&nbsp;      return find(p) == find(q);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public int size(int p) {
+<b class="nc">&nbsp;      return sz[find(p)];</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void union(int p, int q) {
+<b class="nc">&nbsp;      int root1 = find(p);</b>
+<b class="nc">&nbsp;      int root2 = find(q);</b>
+<b class="nc">&nbsp;      if (root1 == root2) return;</b>
+<b class="nc">&nbsp;      if (sz[root1] &lt; sz[root2]) {</b>
+<b class="nc">&nbsp;        sz[root2] += sz[root1];</b>
+<b class="nc">&nbsp;        id[root1] = root2;</b>
+&nbsp;      } else {
+<b class="nc">&nbsp;        sz[root1] += sz[root2];</b>
+<b class="nc">&nbsp;        id[root2] = root1;</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  static class Edge implements Comparable&lt;Edge&gt; {
+&nbsp;    int from, to, cost;
+&nbsp;
+<b class="nc">&nbsp;    public Edge(int from, int to, int cost) {</b>
+<b class="nc">&nbsp;      this.from = from;</b>
+<b class="nc">&nbsp;      this.to = to;</b>
+<b class="nc">&nbsp;      this.cost = cost;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public int compareTo(Edge other) {
+<b class="nc">&nbsp;      return cost - other.cost;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  // Given a graph represented as an edge list this method finds
+&nbsp;  // the Minimum Spanning Tree (MST) cost if there exists
+&nbsp;  // a MST, otherwise it returns null.
+&nbsp;  static Long kruskals(Edge[] edges, int n) {
+&nbsp;
+<b class="nc">&nbsp;    if (edges == null) return null;</b>
+&nbsp;
+<b class="nc">&nbsp;    long sum = 0L;</b>
+<b class="nc">&nbsp;    java.util.Arrays.sort(edges);</b>
+<b class="nc">&nbsp;    UnionFind uf = new UnionFind(n);</b>
+&nbsp;
+<b class="nc">&nbsp;    for (Edge edge : edges) {</b>
+&nbsp;
+&nbsp;      // Skip this edge to avoid creating a cycle in MST
+<b class="nc">&nbsp;      if (uf.connected(edge.from, edge.to)) continue;</b>
+&nbsp;
+&nbsp;      // Include this edge
+<b class="nc">&nbsp;      uf.union(edge.from, edge.to);</b>
+<b class="nc">&nbsp;      sum += edge.cost;</b>
+&nbsp;
+&nbsp;      // Optimization to stop early if we found
+&nbsp;      // a MST that includes all the nodes
+<b class="nc">&nbsp;      if (uf.size(0) == n) break;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Make sure we have a MST that includes all the nodes
+<b class="nc">&nbsp;    if (uf.size(0) != n) return null;</b>
+&nbsp;
+<b class="nc">&nbsp;    return sum;</b>
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,225 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > FastFourierTransform</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.math</a>
+</div>
+
+<h1>Coverage Summary for Class: FastFourierTransform (com.williamfiset.algorithms.math)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">FastFourierTransform</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/58)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * This snippet multiplies 2 polynomials with possibly negative coefficients very efficiently using
+&nbsp; * the Fast Fourier Transform. NOTE: This code only works for polynomials with coefficients in the
+&nbsp; * range of a signed integer.
+&nbsp; *
+&nbsp; * &lt;p&gt;Time Complexity: O( nlogn )
+&nbsp; *
+&nbsp; * @author David Brink
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.math;
+&nbsp;
+<b class="nc">&nbsp;public class FastFourierTransform {</b>
+&nbsp;
+&nbsp;  // p is a prime number set to be larger than 2^31-1
+<b class="nc">&nbsp;  private static long p = 4300210177L;</b>
+&nbsp;
+&nbsp;  // q is 2^64 mod p used to compute x*y mod p
+&nbsp;  // Note: If x*y mod p is negative it is because 2^64
+&nbsp;  // has been subtracted and so it must be added again.
+<b class="nc">&nbsp;  private static long q = 857728777;</b>
+&nbsp;
+&nbsp;  // A number that has order 2^20 modulo p
+<b class="nc">&nbsp;  private static long zeta = 3273;</b>
+&nbsp;
+<b class="nc">&nbsp;  private static int exp = 20;</b>
+&nbsp;  private static long[] powers;
+&nbsp;
+&nbsp;  static {
+<b class="nc">&nbsp;    powers = new long[(1 &lt;&lt; exp) + 1];</b>
+<b class="nc">&nbsp;    powers[0] = 1;</b>
+<b class="nc">&nbsp;    for (int i = 1; i &lt; powers.length; i++) powers[i] = mult(zeta, powers[i - 1]);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Computes the polynomial product modulo p
+&nbsp;  public static long[] multiply(long[] x, long[] y) {
+&nbsp;
+&nbsp;    // If the coefficients are negative place them in the range of [0, p)
+<b class="nc">&nbsp;    for (int i = 0; i &lt; x.length; i++) if (x[i] &lt; 0) x[i] += p;</b>
+<b class="nc">&nbsp;    for (int i = 0; i &lt; y.length; i++) if (y[i] &lt; 0) y[i] += p;</b>
+&nbsp;
+<b class="nc">&nbsp;    int zLength = x.length + y.length - 1;</b>
+<b class="nc">&nbsp;    int logN = 32 - Integer.numberOfLeadingZeros(zLength - 1);</b>
+<b class="nc">&nbsp;    long[] xx = transform(x, logN, false);</b>
+<b class="nc">&nbsp;    long[] yy = transform(y, logN, false);</b>
+<b class="nc">&nbsp;    long[] zz = new long[1 &lt;&lt; logN];</b>
+<b class="nc">&nbsp;    for (int i = 0; i &lt; zz.length; i++) zz[i] = mult(xx[i], yy[i]);</b>
+<b class="nc">&nbsp;    long[] nZ = transform(zz, logN, true);</b>
+<b class="nc">&nbsp;    long[] z = new long[zLength];</b>
+<b class="nc">&nbsp;    long nInverse = p - ((p - 1) &gt;&gt;&gt; logN);</b>
+<b class="nc">&nbsp;    for (int i = 0; i &lt; z.length; i++) {</b>
+&nbsp;
+<b class="nc">&nbsp;      z[i] = mult(nInverse, nZ[i]);</b>
+&nbsp;
+&nbsp;      // Allow for negative coefficients. If you know the answer cannot be
+&nbsp;      // greater than 2^31-1 subtract p to obtain the negative coefficient.
+<b class="nc">&nbsp;      if (z[i] &gt;= Integer.MAX_VALUE) z[i] -= p;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return z;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private static long mult(long x, long y) {
+<b class="nc">&nbsp;    long z = x * y;</b>
+<b class="nc">&nbsp;    if (z &lt; 0) {</b>
+<b class="nc">&nbsp;      z = z % p + q;</b>
+<b class="nc">&nbsp;      return z &lt; 0 ? z + p : z;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (z &lt; (1L &lt;&lt; 56) &amp;&amp; x &gt; (1 &lt;&lt; 28) &amp;&amp; y &gt; (1 &lt;&lt; 28)) {</b>
+<b class="nc">&nbsp;      z = z % p + q;</b>
+<b class="nc">&nbsp;      return z &lt; p ? z : z - p;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return z % p;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private static long[] transform(long[] v, int logN, boolean inverse) {
+<b class="nc">&nbsp;    int n = 1 &lt;&lt; logN;</b>
+<b class="nc">&nbsp;    long[] w = new long[n];</b>
+<b class="nc">&nbsp;    for (int i = 0; i &lt; v.length; i++) w[Integer.reverse(i) &gt;&gt;&gt; 32 - logN] = v[i];</b>
+<b class="nc">&nbsp;    for (int i = 0; i &lt; logN; i++) {</b>
+<b class="nc">&nbsp;      int jMax = 1 &lt;&lt; i;</b>
+<b class="nc">&nbsp;      int kStep = 2 &lt;&lt; i;</b>
+<b class="nc">&nbsp;      int index = 0;</b>
+<b class="nc">&nbsp;      int step = 1 &lt;&lt; exp - i - 1;</b>
+<b class="nc">&nbsp;      if (inverse) {</b>
+<b class="nc">&nbsp;        index = 1 &lt;&lt; exp;</b>
+<b class="nc">&nbsp;        step = -step;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      for (int j = 0; j &lt; jMax; j++) {</b>
+<b class="nc">&nbsp;        long zeta = powers[index];</b>
+<b class="nc">&nbsp;        index += step;</b>
+<b class="nc">&nbsp;        for (int k = j; k &lt; n; k += kStep) {</b>
+<b class="nc">&nbsp;          int kk = jMax | k;</b>
+<b class="nc">&nbsp;          long x = w[k];</b>
+<b class="nc">&nbsp;          long y = mult(zeta, w[kk]);</b>
+<b class="nc">&nbsp;          long z = x + y;</b>
+<b class="nc">&nbsp;          w[k] = z &lt; p ? z : z - p;</b>
+<b class="nc">&nbsp;          z = x - y;</b>
+<b class="nc">&nbsp;          w[kk] = z &lt; 0 ? z + p : z;</b>
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    return w;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /* Example usage */
+&nbsp;
+&nbsp;  public static void main(String[] args) {
+&nbsp;
+&nbsp;    // 1*x^0 + 5*x^1 + 3*x^2 + 2*x^3
+<b class="nc">&nbsp;    long[] polynomial1 = {1, 5, 3, 2};</b>
+&nbsp;
+&nbsp;    // 0*x^0 + 0*x^1 + 6*x^2 + 2*x^3 + 5*x^4
+<b class="nc">&nbsp;    long[] polynomial2 = {0, 0, 6, 2, 5};</b>
+&nbsp;
+&nbsp;    // Multiply the polynomials using the FFT algorithm
+<b class="nc">&nbsp;    long[] result = FastFourierTransform.multiply(polynomial1, polynomial2);</b>
+&nbsp;
+&nbsp;    // Prints [0, 0, 6, 32, 33, 43, 19, 10] or equivalently
+&nbsp;    // 6*x^2 + 32*x^3 + 33*x^4 + 43*x^5 + 19*x^6 + 10*x^7
+<b class="nc">&nbsp;    System.out.println(java.util.Arrays.toString(result));</b>
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

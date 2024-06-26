@@ -1,0 +1,769 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > EagerPrimsAdjacencyList</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.graphtheory</a>
+</div>
+
+<h1>Coverage Summary for Class: EagerPrimsAdjacencyList (com.williamfiset.algorithms.graphtheory)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">EagerPrimsAdjacencyList</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/17)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/190)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">EagerPrimsAdjacencyList$Edge</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">EagerPrimsAdjacencyList$MinIndexedDHeap</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/28)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/93)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/47)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/288)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * An implementation of the eager version of Prim&#39;s algorithm which relies on using an indexed
+&nbsp; * priority queue data structure to query the next best edge.
+&nbsp; *
+&nbsp; * &lt;p&gt;Time Complexity: O(ElogV)
+&nbsp; *
+&nbsp; * @author William Fiset, william.alexandre.fiset@gmail.com
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.graphtheory;
+&nbsp;
+&nbsp;import static java.lang.Math.*;
+&nbsp;
+&nbsp;import java.util.*;
+&nbsp;
+&nbsp;public class EagerPrimsAdjacencyList {
+&nbsp;
+&nbsp;  static class Edge implements Comparable&lt;Edge&gt; {
+&nbsp;    int from, to, cost;
+&nbsp;
+<b class="nc">&nbsp;    public Edge(int from, int to, int cost) {</b>
+<b class="nc">&nbsp;      this.from = from;</b>
+<b class="nc">&nbsp;      this.to = to;</b>
+<b class="nc">&nbsp;      this.cost = cost;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public int compareTo(Edge other) {
+<b class="nc">&nbsp;      return cost - other.cost;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  // Inputs
+&nbsp;  private final int n;
+&nbsp;  private final List&lt;List&lt;Edge&gt;&gt; graph;
+&nbsp;
+&nbsp;  // Internal
+&nbsp;  private boolean solved;
+&nbsp;  private boolean mstExists;
+&nbsp;  private boolean[] visited;
+&nbsp;  private MinIndexedDHeap&lt;Edge&gt; ipq;
+&nbsp;
+&nbsp;  // Outputs
+&nbsp;  private long minCostSum;
+&nbsp;  private Edge[] mstEdges;
+&nbsp;
+<b class="nc">&nbsp;  public EagerPrimsAdjacencyList(List&lt;List&lt;Edge&gt;&gt; graph) {</b>
+<b class="nc">&nbsp;    if (graph == null || graph.isEmpty()) throw new IllegalArgumentException();</b>
+<b class="nc">&nbsp;    this.n = graph.size();</b>
+<b class="nc">&nbsp;    this.graph = graph;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Returns the edges used in finding the minimum spanning tree,
+&nbsp;  // or returns null if no MST exists.
+&nbsp;  public Edge[] getMst() {
+<b class="nc">&nbsp;    solve();</b>
+<b class="nc">&nbsp;    return mstExists ? mstEdges : null;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public Long getMstCost() {
+<b class="nc">&nbsp;    solve();</b>
+<b class="nc">&nbsp;    return mstExists ? minCostSum : null;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private void relaxEdgesAtNode(int currentNodeIndex) {
+<b class="nc">&nbsp;    visited[currentNodeIndex] = true;</b>
+&nbsp;
+&nbsp;    // edges will never be null if the createEmptyGraph method was used to build the graph.
+<b class="nc">&nbsp;    List&lt;Edge&gt; edges = graph.get(currentNodeIndex);</b>
+&nbsp;
+<b class="nc">&nbsp;    for (Edge edge : edges) {</b>
+<b class="nc">&nbsp;      int destNodeIndex = edge.to;</b>
+&nbsp;
+&nbsp;      // Skip edges pointing to already visited nodes.
+<b class="nc">&nbsp;      if (visited[destNodeIndex]) continue;</b>
+&nbsp;
+<b class="nc">&nbsp;      if (ipq.contains(destNodeIndex)) {</b>
+&nbsp;        // Try and improve the cheapest edge at destNodeIndex with the current edge in the IPQ.
+<b class="nc">&nbsp;        ipq.decrease(destNodeIndex, edge);</b>
+&nbsp;      } else {
+&nbsp;        // Insert edge for the first time.
+<b class="nc">&nbsp;        ipq.insert(destNodeIndex, edge);</b>
+&nbsp;      }
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Computes the minimum spanning tree and minimum spanning tree cost.
+&nbsp;  private void solve() {
+<b class="nc">&nbsp;    if (solved) return;</b>
+<b class="nc">&nbsp;    solved = true;</b>
+&nbsp;
+<b class="nc">&nbsp;    int m = n - 1, edgeCount = 0;</b>
+<b class="nc">&nbsp;    visited = new boolean[n];</b>
+<b class="nc">&nbsp;    mstEdges = new Edge[m];</b>
+&nbsp;
+&nbsp;    // The degree of the d-ary heap supporting the IPQ can greatly impact performance, especially
+&nbsp;    // on dense graphs. The base 2 logarithm of n is a decent value based on my quick experiments
+&nbsp;    // (even better than E/V in many cases).
+<b class="nc">&nbsp;    int degree = (int) Math.ceil(Math.log(n) / Math.log(2));</b>
+<b class="nc">&nbsp;    ipq = new MinIndexedDHeap&lt;&gt;(max(2, degree), n);</b>
+&nbsp;
+&nbsp;    // Add initial set of edges to the priority queue starting at node 0.
+<b class="nc">&nbsp;    relaxEdgesAtNode(0);</b>
+&nbsp;
+<b class="nc">&nbsp;    while (!ipq.isEmpty() &amp;&amp; edgeCount != m) {</b>
+<b class="nc">&nbsp;      int destNodeIndex = ipq.peekMinKeyIndex(); // equivalently: edge.to</b>
+<b class="nc">&nbsp;      Edge edge = ipq.pollMinValue();</b>
+&nbsp;
+<b class="nc">&nbsp;      mstEdges[edgeCount++] = edge;</b>
+<b class="nc">&nbsp;      minCostSum += edge.cost;</b>
+&nbsp;
+<b class="nc">&nbsp;      relaxEdgesAtNode(destNodeIndex);</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    // Verify MST spans entire graph.
+<b class="nc">&nbsp;    mstExists = (edgeCount == m);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /* Graph construction helpers. */
+&nbsp;
+&nbsp;  // Creates an empty adjacency list graph with n nodes.
+&nbsp;  static List&lt;List&lt;Edge&gt;&gt; createEmptyGraph(int n) {
+<b class="nc">&nbsp;    List&lt;List&lt;Edge&gt;&gt; g = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;    for (int i = 0; i &lt; n; i++) g.add(new ArrayList&lt;&gt;());</b>
+<b class="nc">&nbsp;    return g;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  static void addDirectedEdge(List&lt;List&lt;Edge&gt;&gt; g, int from, int to, int cost) {
+<b class="nc">&nbsp;    g.get(from).add(new Edge(from, to, cost));</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  static void addUndirectedEdge(List&lt;List&lt;Edge&gt;&gt; g, int from, int to, int cost) {
+<b class="nc">&nbsp;    addDirectedEdge(g, from, to, cost);</b>
+<b class="nc">&nbsp;    addDirectedEdge(g, to, from, cost);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /* Example usage. */
+&nbsp;
+&nbsp;  public static void main(String[] args) {
+&nbsp;    // example1();
+&nbsp;    // firstGraphFromSlides();
+&nbsp;    // squareGraphFromSlides();
+&nbsp;    // disjointOnFirstNode();
+&nbsp;    // disjointGraph();
+<b class="nc">&nbsp;    eagerPrimsExampleFromSlides();</b>
+&nbsp;    // lazyVsEagerAnalysis();
+&nbsp;  }
+&nbsp;
+&nbsp;  private static void example1() {
+<b class="nc">&nbsp;    int n = 10;</b>
+<b class="nc">&nbsp;    List&lt;List&lt;Edge&gt;&gt; g = createEmptyGraph(n);</b>
+&nbsp;
+<b class="nc">&nbsp;    addUndirectedEdge(g, 0, 1, 5);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 1, 2, 4);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 2, 9, 2);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 0, 4, 1);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 0, 3, 4);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 1, 3, 2);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 2, 7, 4);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 2, 8, 1);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 9, 8, 0);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 4, 5, 1);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 5, 6, 7);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 6, 8, 4);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 4, 3, 2);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 5, 3, 5);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 3, 6, 11);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 6, 7, 1);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 3, 7, 2);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 7, 8, 6);</b>
+&nbsp;
+<b class="nc">&nbsp;    EagerPrimsAdjacencyList solver = new EagerPrimsAdjacencyList(g);</b>
+<b class="nc">&nbsp;    Long cost = solver.getMstCost();</b>
+&nbsp;
+<b class="nc">&nbsp;    if (cost == null) {</b>
+<b class="nc">&nbsp;      System.out.println(&quot;No MST does not exists&quot;);</b>
+&nbsp;    } else {
+<b class="nc">&nbsp;      System.out.println(&quot;MST cost: &quot; + cost);</b>
+<b class="nc">&nbsp;      for (Edge e : solver.getMst()) {</b>
+<b class="nc">&nbsp;        System.out.println(String.format(&quot;from: %d, to: %d, cost: %d&quot;, e.from, e.to, e.cost));</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+&nbsp;    // Output:
+&nbsp;    // MST cost: 14
+&nbsp;    // from: 0, to: 4, cost: 1
+&nbsp;    // from: 4, to: 5, cost: 1
+&nbsp;    // from: 4, to: 3, cost: 2
+&nbsp;    // from: 3, to: 1, cost: 2
+&nbsp;    // from: 3, to: 7, cost: 2
+&nbsp;    // from: 7, to: 6, cost: 1
+&nbsp;    // from: 6, to: 8, cost: 4
+&nbsp;    // from: 8, to: 9, cost: 0
+&nbsp;    // from: 8, to: 2, cost: 1
+&nbsp;  }
+&nbsp;
+&nbsp;  private static void firstGraphFromSlides() {
+<b class="nc">&nbsp;    int n = 7;</b>
+<b class="nc">&nbsp;    List&lt;List&lt;Edge&gt;&gt; g = createEmptyGraph(n);</b>
+&nbsp;
+<b class="nc">&nbsp;    addUndirectedEdge(g, 0, 1, 9);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 0, 2, 0);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 0, 3, 5);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 0, 5, 7);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 1, 3, -2);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 1, 4, 3);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 1, 6, 4);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 2, 5, 6);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 3, 5, 2);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 3, 6, 3);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 4, 6, 6);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 5, 6, 1);</b>
+&nbsp;
+<b class="nc">&nbsp;    EagerPrimsAdjacencyList solver = new EagerPrimsAdjacencyList(g);</b>
+<b class="nc">&nbsp;    Long cost = solver.getMstCost();</b>
+&nbsp;
+<b class="nc">&nbsp;    if (cost == null) {</b>
+<b class="nc">&nbsp;      System.out.println(&quot;No MST does not exists&quot;);</b>
+&nbsp;    } else {
+<b class="nc">&nbsp;      System.out.println(&quot;MST cost: &quot; + cost);</b>
+<b class="nc">&nbsp;      for (Edge e : solver.getMst()) {</b>
+<b class="nc">&nbsp;        System.out.println(String.format(&quot;from: %d, to: %d, cost: %d&quot;, e.from, e.to, e.cost));</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  private static void squareGraphFromSlides() {
+<b class="nc">&nbsp;    int n = 9;</b>
+<b class="nc">&nbsp;    List&lt;List&lt;Edge&gt;&gt; g = createEmptyGraph(n);</b>
+&nbsp;
+<b class="nc">&nbsp;    addUndirectedEdge(g, 0, 1, 6);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 0, 3, 3);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 1, 2, 4);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 1, 4, 2);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 2, 5, 12);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 3, 4, 1);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 3, 6, 8);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 4, 5, 7);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 4, 7, 9);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 5, 8, 10);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 6, 7, 11);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 7, 8, 5);</b>
+&nbsp;
+<b class="nc">&nbsp;    EagerPrimsAdjacencyList solver = new EagerPrimsAdjacencyList(g);</b>
+<b class="nc">&nbsp;    Long cost = solver.getMstCost();</b>
+&nbsp;
+<b class="nc">&nbsp;    if (cost == null) {</b>
+<b class="nc">&nbsp;      System.out.println(&quot;No MST does not exists&quot;);</b>
+&nbsp;    } else {
+<b class="nc">&nbsp;      System.out.println(&quot;MST cost: &quot; + cost);</b>
+<b class="nc">&nbsp;      for (Edge e : solver.getMst()) {</b>
+<b class="nc">&nbsp;        System.out.println(String.format(&quot;from: %d, to: %d, cost: %d&quot;, e.from, e.to, e.cost));</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  private static void disjointOnFirstNode() {
+<b class="nc">&nbsp;    int n = 4;</b>
+<b class="nc">&nbsp;    List&lt;List&lt;Edge&gt;&gt; g = createEmptyGraph(n);</b>
+&nbsp;
+&nbsp;    // Node edges connected to zero
+<b class="nc">&nbsp;    addUndirectedEdge(g, 1, 2, 1);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 2, 3, 1);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 3, 1, 1);</b>
+&nbsp;
+<b class="nc">&nbsp;    EagerPrimsAdjacencyList solver = new EagerPrimsAdjacencyList(g);</b>
+<b class="nc">&nbsp;    Long cost = solver.getMstCost();</b>
+&nbsp;
+<b class="nc">&nbsp;    if (cost == null) {</b>
+<b class="nc">&nbsp;      System.out.println(&quot;No MST does not exists&quot;);</b>
+&nbsp;    } else {
+<b class="nc">&nbsp;      System.out.println(&quot;MST cost: &quot; + cost);</b>
+<b class="nc">&nbsp;      for (Edge e : solver.getMst()) {</b>
+<b class="nc">&nbsp;        System.out.println(String.format(&quot;from: %d, to: %d, cost: %d&quot;, e.from, e.to, e.cost));</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  private static void disjointGraph() {
+<b class="nc">&nbsp;    int n = 6;</b>
+<b class="nc">&nbsp;    List&lt;List&lt;Edge&gt;&gt; g = createEmptyGraph(n);</b>
+&nbsp;
+&nbsp;    // Component 1
+<b class="nc">&nbsp;    addUndirectedEdge(g, 0, 1, 1);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 1, 2, 1);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 2, 0, 1);</b>
+&nbsp;
+&nbsp;    // Component 2
+<b class="nc">&nbsp;    addUndirectedEdge(g, 3, 4, 1);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 4, 5, 1);</b>
+<b class="nc">&nbsp;    addUndirectedEdge(g, 5, 3, 1);</b>
+&nbsp;
+<b class="nc">&nbsp;    EagerPrimsAdjacencyList solver = new EagerPrimsAdjacencyList(g);</b>
+<b class="nc">&nbsp;    Long cost = solver.getMstCost();</b>
+&nbsp;
+<b class="nc">&nbsp;    if (cost == null) {</b>
+<b class="nc">&nbsp;      System.out.println(&quot;No MST does not exists&quot;);</b>
+&nbsp;    } else {
+<b class="nc">&nbsp;      System.out.println(&quot;MST cost: &quot; + cost);</b>
+<b class="nc">&nbsp;      for (Edge e : solver.getMst()) {</b>
+<b class="nc">&nbsp;        System.out.println(String.format(&quot;from: %d, to: %d, cost: %d&quot;, e.from, e.to, e.cost));</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  private static void eagerPrimsExampleFromSlides() {
+<b class="nc">&nbsp;    int n = 7;</b>
+<b class="nc">&nbsp;    List&lt;List&lt;Edge&gt;&gt; g = createEmptyGraph(n);</b>
+&nbsp;
+<b class="nc">&nbsp;    addDirectedEdge(g, 0, 2, 0);</b>
+<b class="nc">&nbsp;    addDirectedEdge(g, 0, 5, 7);</b>
+<b class="nc">&nbsp;    addDirectedEdge(g, 0, 3, 5);</b>
+<b class="nc">&nbsp;    addDirectedEdge(g, 0, 1, 9);</b>
+&nbsp;
+<b class="nc">&nbsp;    addDirectedEdge(g, 2, 0, 0);</b>
+<b class="nc">&nbsp;    addDirectedEdge(g, 2, 5, 6);</b>
+&nbsp;
+<b class="nc">&nbsp;    addDirectedEdge(g, 3, 0, 5);</b>
+<b class="nc">&nbsp;    addDirectedEdge(g, 3, 1, -2);</b>
+<b class="nc">&nbsp;    addDirectedEdge(g, 3, 6, 3);</b>
+<b class="nc">&nbsp;    addDirectedEdge(g, 3, 5, 2);</b>
+&nbsp;
+<b class="nc">&nbsp;    addDirectedEdge(g, 1, 0, 9);</b>
+<b class="nc">&nbsp;    addDirectedEdge(g, 1, 3, -2);</b>
+<b class="nc">&nbsp;    addDirectedEdge(g, 1, 6, 4);</b>
+<b class="nc">&nbsp;    addDirectedEdge(g, 1, 4, 3);</b>
+&nbsp;
+<b class="nc">&nbsp;    addDirectedEdge(g, 5, 2, 6);</b>
+<b class="nc">&nbsp;    addDirectedEdge(g, 5, 0, 7);</b>
+<b class="nc">&nbsp;    addDirectedEdge(g, 5, 3, 2);</b>
+<b class="nc">&nbsp;    addDirectedEdge(g, 5, 6, 1);</b>
+&nbsp;
+<b class="nc">&nbsp;    addDirectedEdge(g, 6, 5, 1);</b>
+<b class="nc">&nbsp;    addDirectedEdge(g, 6, 3, 3);</b>
+<b class="nc">&nbsp;    addDirectedEdge(g, 6, 1, 4);</b>
+<b class="nc">&nbsp;    addDirectedEdge(g, 6, 4, 6);</b>
+&nbsp;
+<b class="nc">&nbsp;    addDirectedEdge(g, 4, 1, 3);</b>
+<b class="nc">&nbsp;    addDirectedEdge(g, 4, 6, 6);</b>
+&nbsp;
+<b class="nc">&nbsp;    EagerPrimsAdjacencyList solver = new EagerPrimsAdjacencyList(g);</b>
+<b class="nc">&nbsp;    Long cost = solver.getMstCost();</b>
+&nbsp;
+<b class="nc">&nbsp;    if (cost == null) {</b>
+<b class="nc">&nbsp;      System.out.println(&quot;No MST does not exists&quot;);</b>
+&nbsp;    } else {
+<b class="nc">&nbsp;      System.out.println(&quot;MST cost: &quot; + cost);</b>
+<b class="nc">&nbsp;      for (Edge e : solver.getMst()) {</b>
+<b class="nc">&nbsp;        System.out.println(String.format(&quot;from: %d, to: %d, cost: %d&quot;, e.from, e.to, e.cost));</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+<b class="nc">&nbsp;  static Random random = new Random();</b>
+&nbsp;
+&nbsp;  private static void lazyVsEagerAnalysis() {
+<b class="nc">&nbsp;    int n = 5000;</b>
+<b class="nc">&nbsp;    List&lt;List&lt;EagerPrimsAdjacencyList.Edge&gt;&gt; g1 = EagerPrimsAdjacencyList.createEmptyGraph(n);</b>
+<b class="nc">&nbsp;    List&lt;List&lt;LazyPrimsAdjacencyList.Edge&gt;&gt; g2 = LazyPrimsAdjacencyList.createEmptyGraph(n);</b>
+&nbsp;
+<b class="nc">&nbsp;    for (int i = 0; i &lt; n; i++) {</b>
+<b class="nc">&nbsp;      for (int j = i + 1; j &lt; n; j++) {</b>
+<b class="nc">&nbsp;        int r = random.nextInt() % 10;</b>
+<b class="nc">&nbsp;        EagerPrimsAdjacencyList.addUndirectedEdge(g1, i, j, r);</b>
+<b class="nc">&nbsp;        LazyPrimsAdjacencyList.addUndirectedEdge(g2, i, j, r);</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    EagerPrimsAdjacencyList eagerSolver = new EagerPrimsAdjacencyList(g1);</b>
+<b class="nc">&nbsp;    LazyPrimsAdjacencyList lazySolver = new LazyPrimsAdjacencyList(g2);</b>
+&nbsp;
+<b class="nc">&nbsp;    long startTime = System.nanoTime();</b>
+<b class="nc">&nbsp;    Long eagerCost = eagerSolver.getMstCost();</b>
+<b class="nc">&nbsp;    long endTime = System.nanoTime();</b>
+<b class="nc">&nbsp;    System.out.println(&quot;Eager: &quot; + (endTime - startTime));</b>
+&nbsp;
+<b class="nc">&nbsp;    startTime = System.nanoTime();</b>
+<b class="nc">&nbsp;    Long lazyCost = lazySolver.getMstCost();</b>
+<b class="nc">&nbsp;    endTime = System.nanoTime();</b>
+<b class="nc">&nbsp;    System.out.println(&quot;Lazy:  &quot; + (endTime - startTime));</b>
+&nbsp;
+<b class="nc">&nbsp;    if (eagerCost.longValue() != lazyCost.longValue()) {</b>
+<b class="nc">&nbsp;      System.out.println(&quot;Oh dear. &quot; + eagerCost + &quot; != &quot; + lazyCost);</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  /* Supporting indexed priority queue implementation. */
+&nbsp;
+&nbsp;  private static class MinIndexedDHeap&lt;T extends Comparable&lt;T&gt;&gt; {
+&nbsp;
+&nbsp;    // Current number of elements in the heap.
+&nbsp;    private int sz;
+&nbsp;
+&nbsp;    // Maximum number of elements in the heap.
+&nbsp;    private final int N;
+&nbsp;
+&nbsp;    // The degree of every node in the heap.
+&nbsp;    private final int D;
+&nbsp;
+&nbsp;    // Lookup arrays to track the child/parent indexes of each node.
+&nbsp;    private final int[] child, parent;
+&nbsp;
+&nbsp;    // The Position Map (pm) maps Key Indexes (ki) to where the position of that
+&nbsp;    // key is represented in the priority queue in the domain [0, sz).
+&nbsp;    public final int[] pm;
+&nbsp;
+&nbsp;    // The Inverse Map (im) stores the indexes of the keys in the range
+&nbsp;    // [0, sz) which make up the priority queue. It should be noted that
+&nbsp;    // &#39;im&#39; and &#39;pm&#39; are inverses of each other, so: pm[im[i]] = im[pm[i]] = i
+&nbsp;    public final int[] im;
+&nbsp;
+&nbsp;    // The values associated with the keys. It is very important  to note
+&nbsp;    // that this array is indexed by the key indexes (aka &#39;ki&#39;).
+&nbsp;    public final Object[] values;
+&nbsp;
+&nbsp;    // Initializes a D-ary heap with a maximum capacity of maxSize.
+<b class="nc">&nbsp;    public MinIndexedDHeap(int degree, int maxSize) {</b>
+<b class="nc">&nbsp;      if (maxSize &lt;= 0) throw new IllegalArgumentException(&quot;maxSize &lt;= 0&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;      D = max(2, degree);</b>
+<b class="nc">&nbsp;      N = max(D + 1, maxSize);</b>
+&nbsp;
+<b class="nc">&nbsp;      im = new int[N];</b>
+<b class="nc">&nbsp;      pm = new int[N];</b>
+<b class="nc">&nbsp;      child = new int[N];</b>
+<b class="nc">&nbsp;      parent = new int[N];</b>
+<b class="nc">&nbsp;      values = new Object[N];</b>
+&nbsp;
+<b class="nc">&nbsp;      for (int i = 0; i &lt; N; i++) {</b>
+<b class="nc">&nbsp;        parent[i] = (i - 1) / D;</b>
+<b class="nc">&nbsp;        child[i] = i * D + 1;</b>
+<b class="nc">&nbsp;        pm[i] = im[i] = -1;</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+&nbsp;    public int size() {
+<b class="nc">&nbsp;      return sz;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean isEmpty() {
+<b class="nc">&nbsp;      return sz == 0;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean contains(int ki) {
+<b class="nc">&nbsp;      keyInBoundsOrThrow(ki);</b>
+<b class="nc">&nbsp;      return pm[ki] != -1;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public int peekMinKeyIndex() {
+<b class="nc">&nbsp;      isNotEmptyOrThrow();</b>
+<b class="nc">&nbsp;      return im[0];</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public int pollMinKeyIndex() {
+<b class="nc">&nbsp;      int minki = peekMinKeyIndex();</b>
+<b class="nc">&nbsp;      delete(minki);</b>
+<b class="nc">&nbsp;      return minki;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @SuppressWarnings(&quot;unchecked&quot;)
+&nbsp;    public T peekMinValue() {
+<b class="nc">&nbsp;      isNotEmptyOrThrow();</b>
+<b class="nc">&nbsp;      return (T) values[im[0]];</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public T pollMinValue() {
+<b class="nc">&nbsp;      T minValue = peekMinValue();</b>
+<b class="nc">&nbsp;      delete(peekMinKeyIndex());</b>
+<b class="nc">&nbsp;      return minValue;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void insert(int ki, T value) {
+<b class="nc">&nbsp;      if (contains(ki)) throw new IllegalArgumentException(&quot;index already exists; received: &quot; + ki);</b>
+<b class="nc">&nbsp;      valueNotNullOrThrow(value);</b>
+<b class="nc">&nbsp;      pm[ki] = sz;</b>
+<b class="nc">&nbsp;      im[sz] = ki;</b>
+<b class="nc">&nbsp;      values[ki] = value;</b>
+<b class="nc">&nbsp;      swim(sz++);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @SuppressWarnings(&quot;unchecked&quot;)
+&nbsp;    public T valueOf(int ki) {
+<b class="nc">&nbsp;      keyExistsOrThrow(ki);</b>
+<b class="nc">&nbsp;      return (T) values[ki];</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @SuppressWarnings(&quot;unchecked&quot;)
+&nbsp;    public T delete(int ki) {
+<b class="nc">&nbsp;      keyExistsOrThrow(ki);</b>
+<b class="nc">&nbsp;      final int i = pm[ki];</b>
+<b class="nc">&nbsp;      swap(i, --sz);</b>
+<b class="nc">&nbsp;      sink(i);</b>
+<b class="nc">&nbsp;      swim(i);</b>
+<b class="nc">&nbsp;      T value = (T) values[ki];</b>
+<b class="nc">&nbsp;      values[ki] = null;</b>
+<b class="nc">&nbsp;      pm[ki] = -1;</b>
+<b class="nc">&nbsp;      im[sz] = -1;</b>
+<b class="nc">&nbsp;      return value;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @SuppressWarnings(&quot;unchecked&quot;)
+&nbsp;    public T update(int ki, T value) {
+<b class="nc">&nbsp;      keyExistsAndValueNotNullOrThrow(ki, value);</b>
+<b class="nc">&nbsp;      final int i = pm[ki];</b>
+<b class="nc">&nbsp;      T oldValue = (T) values[ki];</b>
+<b class="nc">&nbsp;      values[ki] = value;</b>
+<b class="nc">&nbsp;      sink(i);</b>
+<b class="nc">&nbsp;      swim(i);</b>
+<b class="nc">&nbsp;      return oldValue;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Strictly decreases the value associated with &#39;ki&#39; to &#39;value&#39;
+&nbsp;    public void decrease(int ki, T value) {
+<b class="nc">&nbsp;      keyExistsAndValueNotNullOrThrow(ki, value);</b>
+<b class="nc">&nbsp;      if (less(value, values[ki])) {</b>
+<b class="nc">&nbsp;        values[ki] = value;</b>
+<b class="nc">&nbsp;        swim(pm[ki]);</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+&nbsp;    // Strictly increases the value associated with &#39;ki&#39; to &#39;value&#39;
+&nbsp;    public void increase(int ki, T value) {
+<b class="nc">&nbsp;      keyExistsAndValueNotNullOrThrow(ki, value);</b>
+<b class="nc">&nbsp;      if (less(values[ki], value)) {</b>
+<b class="nc">&nbsp;        values[ki] = value;</b>
+<b class="nc">&nbsp;        sink(pm[ki]);</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+&nbsp;    /* Helper functions */
+&nbsp;
+&nbsp;    private void sink(int i) {
+<b class="nc">&nbsp;      for (int j = minChild(i); j != -1; ) {</b>
+<b class="nc">&nbsp;        swap(i, j);</b>
+<b class="nc">&nbsp;        i = j;</b>
+<b class="nc">&nbsp;        j = minChild(i);</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+&nbsp;    private void swim(int i) {
+<b class="nc">&nbsp;      while (less(i, parent[i])) {</b>
+<b class="nc">&nbsp;        swap(i, parent[i]);</b>
+<b class="nc">&nbsp;        i = parent[i];</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+&nbsp;    // From the parent node at index i find the minimum child below it
+&nbsp;    private int minChild(int i) {
+<b class="nc">&nbsp;      int index = -1, from = child[i], to = min(sz, from + D);</b>
+<b class="nc">&nbsp;      for (int j = from; j &lt; to; j++) if (less(j, i)) index = i = j;</b>
+<b class="nc">&nbsp;      return index;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void swap(int i, int j) {
+<b class="nc">&nbsp;      pm[im[j]] = i;</b>
+<b class="nc">&nbsp;      pm[im[i]] = j;</b>
+<b class="nc">&nbsp;      int tmp = im[i];</b>
+<b class="nc">&nbsp;      im[i] = im[j];</b>
+<b class="nc">&nbsp;      im[j] = tmp;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Tests if the value of node i &lt; node j
+&nbsp;    @SuppressWarnings(&quot;unchecked&quot;)
+&nbsp;    private boolean less(int i, int j) {
+<b class="nc">&nbsp;      return ((Comparable&lt;? super T&gt;) values[im[i]]).compareTo((T) values[im[j]]) &lt; 0;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @SuppressWarnings(&quot;unchecked&quot;)
+&nbsp;    private boolean less(Object obj1, Object obj2) {
+<b class="nc">&nbsp;      return ((Comparable&lt;? super T&gt;) obj1).compareTo((T) obj2) &lt; 0;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public String toString() {
+<b class="nc">&nbsp;      List&lt;Integer&gt; lst = new ArrayList&lt;&gt;(sz);</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; sz; i++) lst.add(im[i]);</b>
+<b class="nc">&nbsp;      return lst.toString();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /* Helper functions to make the code more readable. */
+&nbsp;
+&nbsp;    private void isNotEmptyOrThrow() {
+<b class="nc">&nbsp;      if (isEmpty()) throw new NoSuchElementException(&quot;Priority queue underflow&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void keyExistsAndValueNotNullOrThrow(int ki, Object value) {
+<b class="nc">&nbsp;      keyExistsOrThrow(ki);</b>
+<b class="nc">&nbsp;      valueNotNullOrThrow(value);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void keyExistsOrThrow(int ki) {
+<b class="nc">&nbsp;      if (!contains(ki)) throw new NoSuchElementException(&quot;Index does not exist; received: &quot; + ki);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void valueNotNullOrThrow(Object value) {
+<b class="nc">&nbsp;      if (value == null) throw new IllegalArgumentException(&quot;value cannot be null&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void keyInBoundsOrThrow(int ki) {
+<b class="nc">&nbsp;      if (ki &lt; 0 || ki &gt;= N)</b>
+<b class="nc">&nbsp;        throw new IllegalArgumentException(&quot;Key index out of bounds; received: &quot; + ki);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /* Test functions */
+&nbsp;
+&nbsp;    // Recursively checks if this heap is a min heap. This method is used
+&nbsp;    // for testing purposes to validate the heap invariant.
+&nbsp;    public boolean isMinHeap() {
+<b class="nc">&nbsp;      return isMinHeap(0);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private boolean isMinHeap(int i) {
+<b class="nc">&nbsp;      int from = child[i], to = min(sz, from + D);</b>
+<b class="nc">&nbsp;      for (int j = from; j &lt; to; j++) {</b>
+<b class="nc">&nbsp;        if (!less(i, j)) return false;</b>
+<b class="nc">&nbsp;        if (!isMinHeap(j)) return false;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      return true;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

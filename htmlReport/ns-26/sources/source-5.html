@@ -1,0 +1,175 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > TernarySearchDiscrete</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.search</a>
+</div>
+
+<h1>Coverage Summary for Class: TernarySearchDiscrete (com.williamfiset.algorithms.search)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">TernarySearchDiscrete</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    60%
+  </span>
+  <span class="absValue">
+    (3/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    72,4%
+  </span>
+  <span class="absValue">
+    (21/29)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * Ternary search is similar to binary search except that it works on a function which decreases and
+&nbsp; * then increases. This implementation of ternary search works on discrete values and returns the
+&nbsp; * input value corresponding with the minimum output value of the function you&#39;re searching on.
+&nbsp; *
+&nbsp; * &lt;p&gt;Time Complexity: O(log(high - low)).
+&nbsp; *
+&nbsp; * &lt;p&gt;NOTE: You can also work with a function which increases and then decreases, simply negate your
+&nbsp; * function :)
+&nbsp; *
+&nbsp; * @author Thomas Finn Lidbetter
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.search;
+&nbsp;
+<b class="nc">&nbsp;public class TernarySearchDiscrete {</b>
+&nbsp;
+&nbsp;  // Define a very small epsilon value to compare double values.
+&nbsp;  static final double EPS = 0.000000001;
+&nbsp;
+&nbsp;  // A discrete function is just a set of data points.
+<b class="fc">&nbsp;  static final double[] function = {16, 12, 10, 3, 6, 7, 9, 10, 11, 12, 13, 17};</b>
+&nbsp;
+&nbsp;  // Define your own function on whatever you&#39;re attempting to ternary
+&nbsp;  // search. Remember that your function must be a discrete and an unimodal
+&nbsp;  // function, this means a function which decreases then increases (U shape)
+&nbsp;  static double f(int i) {
+<b class="fc">&nbsp;    return function[i];</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  static double discreteTernarySearch(int lo, int hi) {
+<b class="fc">&nbsp;    while (lo != hi) {</b>
+<b class="fc">&nbsp;      TernarySearchCoverageTool.trackBranch104Hit(); // Track branch entering while loop</b>
+&nbsp;
+<b class="fc">&nbsp;      if (hi - lo == 1) {</b>
+<b class="fc">&nbsp;        TernarySearchCoverageTool.trackBranch105Hit(); // Track branch hi - lo == 1</b>
+<b class="fc">&nbsp;        return Math.min(f(lo), f(hi));</b>
+&nbsp;      }
+<b class="fc">&nbsp;      if (hi - lo == 2) {</b>
+<b class="fc">&nbsp;        TernarySearchCoverageTool.trackBranch106Hit(); // Track branch hi - lo == 2</b>
+<b class="fc">&nbsp;        return Math.min(f(lo), Math.min(f(lo + 1), f(hi)));</b>
+&nbsp;      }
+&nbsp;
+<b class="fc">&nbsp;      int mid1 = (2 * lo + hi) / 3, mid2 = (lo + 2 * hi) / 3;</b>
+<b class="fc">&nbsp;      double res1 = f(mid1), res2 = f(mid2);</b>
+&nbsp;
+<b class="fc">&nbsp;      if (Math.abs(res1 - res2) &lt; EPS) {</b>
+<b class="nc">&nbsp;        TernarySearchCoverageTool.trackBranch107Hit(); // Track branch Math.abs(res1 - res2) &lt; EPS</b>
+<b class="nc">&nbsp;        lo = mid1;</b>
+<b class="nc">&nbsp;        hi = mid2;</b>
+<b class="fc">&nbsp;      } else if (res1 &gt; res2) {</b>
+<b class="fc">&nbsp;        TernarySearchCoverageTool.trackBranch108Hit(); // Track branch res1 &gt; res2</b>
+<b class="fc">&nbsp;        lo = mid1;</b>
+&nbsp;      } else {
+<b class="fc">&nbsp;        TernarySearchCoverageTool.trackBranch109Hit(); // Track branch res1 &lt;= res2</b>
+<b class="fc">&nbsp;        hi = mid2;</b>
+&nbsp;      }
+<b class="fc">&nbsp;    }</b>
+<b class="fc">&nbsp;    TernarySearchCoverageTool.trackBranch110Hit(); // Track branch res1 &lt;= res2</b>
+<b class="fc">&nbsp;    return lo;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public static void main(String[] args) {
+<b class="nc">&nbsp;    int lo = 0;</b>
+<b class="nc">&nbsp;    int hi = function.length - 1;</b>
+&nbsp;
+&nbsp;    // Use ternary search to find the minimum value on the
+&nbsp;    // whole interval of our function.
+<b class="nc">&nbsp;    double minValue = discreteTernarySearch(lo, hi);</b>
+<b class="nc">&nbsp;    System.out.printf(&quot;%.4f\n&quot;, minValue);</b>
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

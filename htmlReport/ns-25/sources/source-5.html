@@ -1,0 +1,258 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > Permutations</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.other</a>
+</div>
+
+<h1>Coverage Summary for Class: Permutations (com.williamfiset.algorithms.other)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Permutations</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/35)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * Here we present two methods (recursive and iterative) of generating all the permutations of a
+&nbsp; * list of elements.
+&nbsp; *
+&nbsp; * &lt;p&gt;Time Complexity: O(n!)
+&nbsp; *
+&nbsp; * @author William Fiset, Micah Stairs
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.other;
+&nbsp;
+<b class="nc">&nbsp;public class Permutations {</b>
+&nbsp;
+&nbsp;  /* RECURSIVE APPROACH */
+&nbsp;
+&nbsp;  // Generates all the permutations of a sequence of objects
+&nbsp;  public static void generatePermutations(Object[] sequence) {
+<b class="nc">&nbsp;    if (sequence == null) return;</b>
+<b class="nc">&nbsp;    boolean[] used = new boolean[sequence.length];</b>
+<b class="nc">&nbsp;    int[] picked = new int[sequence.length];</b>
+<b class="nc">&nbsp;    permutations(0, used, picked, sequence);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Recursive method to generate all the permutations of a sequence
+&nbsp;  // at       -&gt; Current element we&#39;re considering
+&nbsp;  // used     -&gt; The elements we have currently selected in our permutation
+&nbsp;  // picked   -&gt; The order of the indexes we have selected in our permutation
+&nbsp;  // sequence -&gt; The array we&#39;re generating permutations for
+&nbsp;  private static void permutations(int at, boolean[] used, int[] picked, Object[] sequence) {
+&nbsp;
+<b class="nc">&nbsp;    final int N = sequence.length;</b>
+&nbsp;
+&nbsp;    // We reached the end, so we&#39;ve found a valid permutation!
+<b class="nc">&nbsp;    if (at == N) {</b>
+&nbsp;
+&nbsp;      // Print permutation
+<b class="nc">&nbsp;      System.out.print(&quot;[ &quot;);</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; N; i++) System.out.print(sequence[picked[i]] + &quot; &quot;);</b>
+<b class="nc">&nbsp;      System.out.println(&quot;]&quot;);</b>
+&nbsp;
+&nbsp;    } else {
+&nbsp;
+<b class="nc">&nbsp;      for (int i = 0; i &lt; N; i++) {</b>
+&nbsp;
+&nbsp;        // We can only select elements once, so make sure we do
+&nbsp;        // not select an element which has already been chosen
+<b class="nc">&nbsp;        if (!used[i]) {</b>
+&nbsp;
+&nbsp;          // Select this element and track in picked which
+&nbsp;          // element was chosen for this permutations
+<b class="nc">&nbsp;          used[i] = true;</b>
+<b class="nc">&nbsp;          picked[at] = i;</b>
+<b class="nc">&nbsp;          permutations(at + 1, used, picked, sequence);</b>
+&nbsp;
+&nbsp;          // Backtrack (unselect element)
+<b class="nc">&nbsp;          used[i] = false;</b>
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  /* ITERATIVE APPROACH */
+&nbsp;
+&nbsp;  // Generates the next ordered permutation in-place (skips repeated permutations).
+&nbsp;  // Calling this when the array is already at the highest permutation returns false.
+&nbsp;  // Recommended usage is to start with the smallest permutations and use a do while
+&nbsp;  // loop to generate each successive permutations (see main for example).
+&nbsp;  static &lt;T extends Comparable&lt;? super T&gt;&gt; boolean nextPermutation(T[] sequence) {
+<b class="nc">&nbsp;    int first = getFirst(sequence);</b>
+<b class="nc">&nbsp;    if (first == -1) return false;</b>
+<b class="nc">&nbsp;    int toSwap = sequence.length - 1;</b>
+<b class="nc">&nbsp;    while (sequence[first].compareTo(sequence[toSwap]) &gt;= 0) --toSwap;</b>
+<b class="nc">&nbsp;    swap(sequence, first++, toSwap);</b>
+<b class="nc">&nbsp;    toSwap = sequence.length - 1;</b>
+<b class="nc">&nbsp;    while (first &lt; toSwap) swap(sequence, first++, toSwap--);</b>
+<b class="nc">&nbsp;    return true;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  static &lt;T extends Comparable&lt;? super T&gt;&gt; int getFirst(T[] sequence) {
+<b class="nc">&nbsp;    for (int i = sequence.length - 2; i &gt;= 0; --i)</b>
+<b class="nc">&nbsp;      if (sequence[i].compareTo(sequence[i + 1]) &lt; 0) return i;</b>
+<b class="nc">&nbsp;    return -1;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  static &lt;T extends Comparable&lt;? super T&gt;&gt; void swap(T[] sequence, int i, int j) {
+<b class="nc">&nbsp;    T tmp = sequence[i];</b>
+<b class="nc">&nbsp;    sequence[i] = sequence[j];</b>
+<b class="nc">&nbsp;    sequence[j] = tmp;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public static void main(String[] args) {
+&nbsp;
+<b class="nc">&nbsp;    Integer[] sequence = {1, 1, 2, 3};</b>
+<b class="nc">&nbsp;    generatePermutations(sequence);</b>
+&nbsp;    // prints:
+&nbsp;    // [ 1 1 2 3 ]
+&nbsp;    // [ 1 1 3 2 ]
+&nbsp;    // [ 1 2 1 3 ]
+&nbsp;    // [ 1 2 3 1 ]
+&nbsp;    // [ 1 3 1 2 ]
+&nbsp;    // [ 1 3 2 1 ]
+&nbsp;    // [ 1 1 2 3 ]
+&nbsp;    // [ 1 1 3 2 ]
+&nbsp;    // [ 1 2 1 3 ]
+&nbsp;    // [ 1 2 3 1 ]
+&nbsp;    // [ 1 3 1 2 ]
+&nbsp;    // [ 1 3 2 1 ]
+&nbsp;    // [ 2 1 1 3 ]
+&nbsp;    // [ 2 1 3 1 ]
+&nbsp;    // [ 2 1 1 3 ]
+&nbsp;    // [ 2 1 3 1 ]
+&nbsp;    // [ 2 3 1 1 ]
+&nbsp;    // [ 2 3 1 1 ]
+&nbsp;    // [ 3 1 1 2 ]
+&nbsp;    // [ 3 1 2 1 ]
+&nbsp;    // [ 3 1 1 2 ]
+&nbsp;    // [ 3 1 2 1 ]
+&nbsp;    // [ 3 2 1 1 ]
+&nbsp;    // [ 3 2 1 1 ]
+&nbsp;
+<b class="nc">&nbsp;    String[] alpha = {&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;};</b>
+&nbsp;    do {
+&nbsp;
+<b class="nc">&nbsp;      System.out.println(java.util.Arrays.toString(alpha));</b>
+&nbsp;
+&nbsp;      // Loop while alpha is not at its highest permutation ordering
+<b class="nc">&nbsp;    } while (nextPermutation(alpha));</b>
+&nbsp;    // prints:
+&nbsp;    // [A, B, C, D]
+&nbsp;    // [A, B, D, C]
+&nbsp;    // [A, C, B, D]
+&nbsp;    // [A, C, D, B]
+&nbsp;    // [A, D, B, C]
+&nbsp;    // [A, D, C, B]
+&nbsp;    // [B, A, C, D]
+&nbsp;    // [B, A, D, C]
+&nbsp;    // [B, C, A, D]
+&nbsp;    // [B, C, D, A]
+&nbsp;    // [B, D, A, C]
+&nbsp;    // [B, D, C, A]
+&nbsp;    // [C, A, B, D]
+&nbsp;    // [C, A, D, B]
+&nbsp;    // [C, B, A, D]
+&nbsp;    // [C, B, D, A]
+&nbsp;    // [C, D, A, B]
+&nbsp;    // [C, D, B, A]
+&nbsp;    // [D, A, B, C]
+&nbsp;    // [D, A, C, B]
+&nbsp;    // [D, B, A, C]
+&nbsp;    // [D, B, C, A]
+&nbsp;    // [D, C, A, B]
+&nbsp;    // [D, C, B, A]
+&nbsp;
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,180 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > CompressedPrimeSieve</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.math</a>
+</div>
+
+<h1>Coverage Summary for Class: CompressedPrimeSieve (com.williamfiset.algorithms.math)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CompressedPrimeSieve</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/25)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * Generate a compressed prime sieve using bit manipulation. The idea is that each bit represents a
+&nbsp; * boolean value indicating whether a number is prime or not. This saves a lot of room when creating
+&nbsp; * the sieve. In this implementation I store all odd numbers in individual longs meaning that for
+&nbsp; * each long I use I can represent a range of 128 numbers (even numbers are omitted because they are
+&nbsp; * not prime, with the exception of 2 which is handled as a special case).
+&nbsp; *
+&nbsp; * &lt;p&gt;Time Complexity: ~O(nloglogn)
+&nbsp; *
+&nbsp; * &lt;p&gt;Compile: javac -d src/main/java
+&nbsp; * src/main/java/com/williamfiset/algorithms/math/CompressedPrimeSieve.java
+&nbsp; *
+&nbsp; * &lt;p&gt;Run: java -cp src/main/java com/williamfiset/algorithms/math/CompressedPrimeSieve
+&nbsp; *
+&nbsp; * @author William Fiset, william.alexandre.fiset@gmail.com
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.math;
+&nbsp;
+<b class="nc">&nbsp;public class CompressedPrimeSieve {</b>
+&nbsp;  private static final double NUM_BITS = 128.0;
+&nbsp;  private static final int NUM_BITS_SHIFT = 7; // 2^7 = 128
+&nbsp;
+&nbsp;  // Sets the bit representing n to 1 indicating this number is not prime
+&nbsp;  private static void setBit(long[] arr, int n) {
+<b class="nc">&nbsp;    if ((n &amp; 1) == 0) return; // n is even</b>
+<b class="nc">&nbsp;    arr[n &gt;&gt; NUM_BITS_SHIFT] |= 1L &lt;&lt; ((n - 1) &gt;&gt; 1);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Returns true if the bit for n is off (meaning n is a prime).
+&nbsp;  // Note: do use this method to access numbers outside your prime sieve range!
+&nbsp;  private static boolean isNotSet(long[] arr, int n) {
+<b class="nc">&nbsp;    if (n &lt; 2) return false; // n is not prime</b>
+<b class="nc">&nbsp;    if (n == 2) return true; // two is prime</b>
+<b class="nc">&nbsp;    if ((n &amp; 1) == 0) return false; // n is even</b>
+<b class="nc">&nbsp;    long chunk = arr[n &gt;&gt; NUM_BITS_SHIFT];</b>
+<b class="nc">&nbsp;    long mask = 1L &lt;&lt; ((n - 1) &gt;&gt; 1);</b>
+<b class="nc">&nbsp;    return (chunk &amp; mask) != mask;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Returns true/false depending on whether n is prime.
+&nbsp;  public static boolean isPrime(long[] sieve, int n) {
+<b class="nc">&nbsp;    return isNotSet(sieve, n);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Returns an array of longs with each bit indicating whether a number
+&nbsp;  // is prime or not. Use the isNotSet and setBit methods to toggle to bits for each number.
+&nbsp;  public static long[] primeSieve(int limit) {
+<b class="nc">&nbsp;    final int numChunks = (int) Math.ceil(limit / NUM_BITS);</b>
+<b class="nc">&nbsp;    final int sqrtLimit = (int) Math.sqrt(limit);</b>
+&nbsp;    // if (limit &lt; 2) return 0; // uncomment for primeCount purposes
+&nbsp;    // int primeCount = (int) Math.ceil(limit / 2.0); // Counts number of primes &lt;= limit
+<b class="nc">&nbsp;    long[] chunks = new long[numChunks];</b>
+<b class="nc">&nbsp;    chunks[0] = 1; // 1 as not prime</b>
+<b class="nc">&nbsp;    for (int i = 3; i &lt;= sqrtLimit; i += 2)</b>
+<b class="nc">&nbsp;      if (isNotSet(chunks, i))</b>
+<b class="nc">&nbsp;        for (int j = i * i; j &lt;= limit; j += i)</b>
+<b class="nc">&nbsp;          if (isNotSet(chunks, j)) {</b>
+<b class="nc">&nbsp;            setBit(chunks, j);</b>
+&nbsp;            // primeCount--;
+&nbsp;          }
+<b class="nc">&nbsp;    return chunks;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /* Example usage. */
+&nbsp;
+&nbsp;  public static void main(String[] args) {
+<b class="nc">&nbsp;    final int limit = 200;</b>
+<b class="nc">&nbsp;    long[] sieve = CompressedPrimeSieve.primeSieve(limit);</b>
+&nbsp;
+<b class="nc">&nbsp;    for (int i = 0; i &lt;= limit; i++) {</b>
+<b class="nc">&nbsp;      if (CompressedPrimeSieve.isPrime(sieve, i)) {</b>
+<b class="nc">&nbsp;        System.out.printf(&quot;%d is prime!\n&quot;, i);</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

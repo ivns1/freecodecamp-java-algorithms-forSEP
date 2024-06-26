@@ -1,0 +1,191 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > CompactSegmentTree</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.datastructures.segmenttree</a>
+</div>
+
+<h1>Coverage Summary for Class: CompactSegmentTree (com.williamfiset.algorithms.datastructures.segmenttree)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CompactSegmentTree</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/29)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * A compact array based segment tree implementation. This segment tree supports point updates and
+&nbsp; * range queries.
+&nbsp; *
+&nbsp; * @author Al.Cash &amp; William Fiset, william.alexandre.fiset@gmail.com
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.datastructures.segmenttree;
+&nbsp;
+&nbsp;public class CompactSegmentTree {
+&nbsp;
+&nbsp;  private int N;
+&nbsp;
+&nbsp;  // Let UNIQUE be a value which does NOT
+&nbsp;  // and will not appear in the segment tree
+<b class="nc">&nbsp;  private long UNIQUE = 8123572096793136074L;</b>
+&nbsp;
+&nbsp;  // Segment tree values
+&nbsp;  private long[] tree;
+&nbsp;
+<b class="nc">&nbsp;  public CompactSegmentTree(int size) {</b>
+<b class="nc">&nbsp;    tree = new long[2 * (N = size)];</b>
+<b class="nc">&nbsp;    java.util.Arrays.fill(tree, UNIQUE);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public CompactSegmentTree(long[] values) {
+<b class="nc">&nbsp;    this(values.length);</b>
+&nbsp;    // TODO(william): Implement smarter construction.
+<b class="nc">&nbsp;    for (int i = 0; i &lt; N; i++) modify(i, values[i]);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // This is the segment tree function we are using for queries.
+&nbsp;  // The function must be an associative function, meaning
+&nbsp;  // the following property must hold: f(f(a,b),c) = f(a,f(b,c)).
+&nbsp;  // Common associative functions used with segment trees
+&nbsp;  // include: min, max, sum, product, GCD, and etc...
+&nbsp;  private long function(long a, long b) {
+<b class="nc">&nbsp;    if (a == UNIQUE) return b;</b>
+<b class="nc">&nbsp;    else if (b == UNIQUE) return a;</b>
+&nbsp;
+<b class="nc">&nbsp;    return a + b; // sum over a range</b>
+&nbsp;    // return (a &gt; b) ? a : b; // maximum value over a range
+&nbsp;    // return (a &lt; b) ? a : b; // minimum value over a range
+&nbsp;    // return a * b; // product over a range (watch out for overflow!)
+&nbsp;  }
+&nbsp;
+&nbsp;  // Adjust point i by a value, O(log(n))
+&nbsp;  public void modify(int i, long value) {
+<b class="nc">&nbsp;    tree[i + N] = function(tree[i + N], value);</b>
+<b class="nc">&nbsp;    for (i += N; i &gt; 1; i &gt;&gt;= 1) {</b>
+<b class="nc">&nbsp;      tree[i &gt;&gt; 1] = function(tree[i], tree[i ^ 1]);</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  // Query interval [l, r), O(log(n))
+&nbsp;  public long query(int l, int r) {
+<b class="nc">&nbsp;    long res = UNIQUE;</b>
+<b class="nc">&nbsp;    for (l += N, r += N; l &lt; r; l &gt;&gt;= 1, r &gt;&gt;= 1) {</b>
+<b class="nc">&nbsp;      if ((l &amp; 1) != 0) res = function(res, tree[l++]);</b>
+<b class="nc">&nbsp;      if ((r &amp; 1) != 0) res = function(res, tree[--r]);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (res == UNIQUE) {</b>
+<b class="nc">&nbsp;      throw new IllegalStateException(&quot;UNIQUE should not be the return value.&quot;);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return res;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public static void main(String[] args) {
+&nbsp;    // exmaple1();
+<b class="nc">&nbsp;    example2();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private static void example1() {
+<b class="nc">&nbsp;    long[] values = new long[] {3, 0, 8, 9, 8, 2, 5, 3, 7, 1};</b>
+<b class="nc">&nbsp;    CompactSegmentTree st = new CompactSegmentTree(values);</b>
+<b class="nc">&nbsp;    System.out.println(java.util.Arrays.toString(st.tree));</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private static void example2() {
+<b class="nc">&nbsp;    long[] values = new long[] {1, 1, 1, 1, 1, 1};</b>
+<b class="nc">&nbsp;    CompactSegmentTree st = new CompactSegmentTree(values);</b>
+<b class="nc">&nbsp;    System.out.println(java.util.Arrays.toString(st.tree));</b>
+&nbsp;
+<b class="nc">&nbsp;    System.out.println(st.query(0, 6)); // 6</b>
+<b class="nc">&nbsp;    System.out.println(st.query(1, 5)); // 4</b>
+<b class="nc">&nbsp;    System.out.println(st.query(0, 2)); // 2</b>
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

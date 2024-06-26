@@ -1,0 +1,218 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > AnagramSet</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.datastructures.bloomfilter</a>
+</div>
+
+<h1>Coverage Summary for Class: AnagramSet (com.williamfiset.algorithms.datastructures.bloomfilter)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AnagramSet</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/30)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * NOTE: The code in this file is incomplete and still under development.
+&nbsp; *
+&nbsp; * @author William Fiset, william.alexandre.fiset@gmail.com
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.datastructures.bloomfilter;
+&nbsp;
+&nbsp;public class AnagramSet {
+&nbsp;
+&nbsp;  private final int N_HASHES;
+&nbsp;  private final int[] MODS;
+&nbsp;  private final long[] rollingHashes;
+&nbsp;  private final int[][] MOD_INVERSES;
+&nbsp;  private final BloomFilter bloomFilter;
+&nbsp;
+&nbsp;  // Alphabet table lookup
+<b class="nc">&nbsp;  private static final int[] ALPHABET = new int[127];</b>
+&nbsp;
+&nbsp;  // There are only 95 printable ASCII characters, hence we only
+&nbsp;  // need the first 95 prime numbers to uniquely represent every string
+<b class="nc">&nbsp;  private static final int[] PRIMES = {</b>
+&nbsp;    2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97,
+&nbsp;    101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193,
+&nbsp;    197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307,
+&nbsp;    311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397, 401, 409, 419, 421,
+&nbsp;    431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499
+&nbsp;  };
+&nbsp;
+&nbsp;  // More primes: 1009, 1013, 1019, 10007, 10009, 10037, 100003, 100019, 100043, 1000003, 1000033,
+&nbsp;  // 1000037,
+&nbsp;  // 10000019, 10000079, 10000103, 100000007, 100000009, 100000023, 1000000007, 1000000009,
+&nbsp;  // 1000000021, 1000000033
+<b class="nc">&nbsp;  private static final int[] DEFAULT_MODS = {10_000_019, 10_000_079, 10_000_103};</b>
+&nbsp;
+&nbsp;  static {
+<b class="nc">&nbsp;    for (int i = 32, j = 0; i &lt; ALPHABET.length; i++, j++) {</b>
+<b class="nc">&nbsp;      ALPHABET[i] = PRIMES[j];</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  public AnagramSet() {
+<b class="nc">&nbsp;    this(DEFAULT_MODS);</b>
+&nbsp;  }
+&nbsp;
+<b class="nc">&nbsp;  public AnagramSet(int[] mods) {</b>
+&nbsp;
+<b class="nc">&nbsp;    MODS = mods.clone();</b>
+<b class="nc">&nbsp;    N_HASHES = mods.length;</b>
+<b class="nc">&nbsp;    MOD_INVERSES = new int[N_HASHES][PRIMES.length];</b>
+&nbsp;
+<b class="nc">&nbsp;    rollingHashes = new long[N_HASHES];</b>
+<b class="nc">&nbsp;    bloomFilter = new BloomFilter(mods);</b>
+&nbsp;
+&nbsp;    // // Assuming all mods are primes each mod value will have a modular inverse
+<b class="nc">&nbsp;    for (int i = 0; i &lt; N_HASHES; i++) {</b>
+<b class="nc">&nbsp;      java.math.BigInteger mod = new java.math.BigInteger(String.valueOf(MODS[i]));</b>
+<b class="nc">&nbsp;      for (int j = 0; j &lt; PRIMES.length; j++) {</b>
+<b class="nc">&nbsp;        java.math.BigInteger prime = new java.math.BigInteger(String.valueOf(PRIMES[j]));</b>
+<b class="nc">&nbsp;        MOD_INVERSES[i][j] = prime.modInverse(mod).intValue();</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  // Compute and return a deep copy of the current rolling hash value.
+&nbsp;  public long[] computeHash(String str) {
+&nbsp;
+<b class="nc">&nbsp;    java.util.Arrays.fill(rollingHashes, 1L);</b>
+&nbsp;
+<b class="nc">&nbsp;    for (int j = 0; j &lt; str.length(); j++) add(rollingHashes, str.charAt(j));</b>
+&nbsp;
+<b class="nc">&nbsp;    return rollingHashes.clone();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Compute and return a shallow copy of the current rolling hash value.
+&nbsp;  // NOTE: Make sure you clone the returned array if you want to cache it.
+&nbsp;  private long[] computeHashShallow(String str) {
+&nbsp;
+<b class="nc">&nbsp;    java.util.Arrays.fill(rollingHashes, 1L);</b>
+&nbsp;
+<b class="nc">&nbsp;    for (int j = 0; j &lt; str.length(); j++) add(rollingHashes, str.charAt(j));</b>
+&nbsp;
+<b class="nc">&nbsp;    return rollingHashes;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Adds this string to the anagram set, O(N_HASHES)
+&nbsp;  public void add(String str) {
+<b class="nc">&nbsp;    bloomFilter.add(computeHashShallow(str));</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Add the character &#39;c&#39; to the anagram rolling hash, O(N_HASHES)
+&nbsp;  public void add(long[] hashes, char c) {
+<b class="nc">&nbsp;    for (int i = 0; i &lt; N_HASHES; i++) {</b>
+<b class="nc">&nbsp;      hashes[i] = (hashes[i] * ALPHABET[c]) % MODS[i];</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  // Removes the character &#39;c&#39; from the rolling anagram hash stored in &#39;hashes&#39;, O(N_HASHES)
+&nbsp;  public void remove(long[] hashes, char c) {
+<b class="nc">&nbsp;    for (int i = 0; i &lt; N_HASHES; i++) {</b>
+<b class="nc">&nbsp;      hashes[i] = (hashes[i] * MOD_INVERSES[i][c - &#39; &#39;]) % MODS[i];</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  // Checks if any anagram of the string &#39;str&#39; exists in the set, O(N_HASHES)
+&nbsp;  public boolean contains(String str) {
+<b class="nc">&nbsp;    return contains(computeHashShallow(str));</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Given the hashes for a string this method checks
+&nbsp;  // if any anagram of the string &#39;str&#39; exists in the set, O(N_HASHES)
+&nbsp;  public boolean contains(long[] hashes) {
+<b class="nc">&nbsp;    return bloomFilter.contains(hashes);</b>
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

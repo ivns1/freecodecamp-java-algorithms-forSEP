@@ -1,0 +1,831 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > LongestCommonSubstring</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.strings</a>
+</div>
+
+<h1>Coverage Summary for Class: LongestCommonSubstring (com.williamfiset.algorithms.strings)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">LongestCommonSubstring</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/17)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">LongestCommonSubstring$CompactMinSegmentTree</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    94,7%
+  </span>
+  <span class="absValue">
+    (18/19)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">LongestCommonSubstring$LcsSolver</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (13/13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    89%
+  </span>
+  <span class="absValue">
+    (81/91)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">LongestCommonSubstring$SlidingWindowMinimum</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/12)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">LongestCommonSubstring$SuffixArray</td>
+<td class="coverageStat">
+  <span class="percent">
+    54,5%
+  </span>
+  <span class="absValue">
+    (6/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    44,1%
+  </span>
+  <span class="absValue">
+    (26/59)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">LongestCommonSubstring$SuffixArray$Color</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/14)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">LongestCommonSubstring$SuffixArrayImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    66,7%
+  </span>
+  <span class="absValue">
+    (2/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    96,8%
+  </span>
+  <span class="absValue">
+    (30/31)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">LongestCommonSubstring$SuffixArrayImpl$SuffixRankTuple</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    63,6%
+  </span>
+  <span class="absValue">
+    (28/44)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    64,4%
+  </span>
+  <span class="absValue">
+    (159/247)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * An implementation of the k Longest Common Substring problem.
+&nbsp; *
+&nbsp; * &lt;p&gt;Video: https://youtu.be/Ic80xQFWevc Time complexity: O(nlog^2(n))
+&nbsp; *
+&nbsp; * &lt;p&gt;Run on command line:
+&nbsp; *
+&nbsp; * &lt;p&gt;Compile: $ javac -d src/main/java
+&nbsp; * src/main/java/com/williamfiset/algorithms/strings/LongestCommonSubstring.java
+&nbsp; *
+&nbsp; * &lt;p&gt;Run: $ java -cp src/main/java com/williamfiset/algorithms/strings/LongestCommonSubstring
+&nbsp; *
+&nbsp; * @author William Fiset, william.alexandre.fiset@gmail.com
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.strings;
+&nbsp;
+&nbsp;import java.util.*;
+&nbsp;
+<b class="nc">&nbsp;public class LongestCommonSubstring {</b>
+&nbsp;
+&nbsp;  public static void main(String[] args) {
+<b class="nc">&nbsp;    String[] strings = new String[] {&quot;abcde&quot;, &quot;habcab&quot;, &quot;ghabcdf&quot;};</b>
+&nbsp;
+&nbsp;    // Display suffix array
+<b class="nc">&nbsp;    List&lt;Integer&gt; sentinelIndexes = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;    String t = addSentinels(strings, sentinelIndexes);</b>
+<b class="nc">&nbsp;    SuffixArray sa = new SuffixArrayImpl(t);</b>
+<b class="nc">&nbsp;    sa.toString(sentinelIndexes);</b>
+&nbsp;
+&nbsp;    // LcsSolver example.
+<b class="nc">&nbsp;    int k = 2;</b>
+<b class="nc">&nbsp;    LcsSolver solver = new LcsSolver(strings);</b>
+<b class="nc">&nbsp;    System.out.println(&quot;Longest common substrings: &quot; + solver.getLongestCommonSubstrings(k));</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Method to add unique sentinels. Works for low number of strings. Only used for debugging.
+&nbsp;  private static String addSentinels(String[] s, List&lt;Integer&gt; sentinelIndexes) {
+<b class="nc">&nbsp;    int token = 35; // starts at &#39;#&#39;</b>
+<b class="nc">&nbsp;    String t = &quot;&quot;;</b>
+<b class="nc">&nbsp;    for (String string : s) {</b>
+<b class="nc">&nbsp;      t += string;</b>
+<b class="nc">&nbsp;      t += (char) token;</b>
+<b class="nc">&nbsp;      token++;</b>
+<b class="nc">&nbsp;      if (sentinelIndexes != null) sentinelIndexes.add(t.length());</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return t;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public abstract static class SuffixArray {
+&nbsp;
+&nbsp;    // Length of the suffix array
+&nbsp;    protected final int N;
+&nbsp;
+&nbsp;    // T is the text
+&nbsp;    protected int[] T;
+&nbsp;
+&nbsp;    // The sorted suffix array values.
+&nbsp;    protected int[] sa;
+&nbsp;
+&nbsp;    // Longest Common Prefix array
+&nbsp;    protected int[] lcp;
+&nbsp;
+<b class="fc">&nbsp;    private boolean constructedSa = false;</b>
+<b class="fc">&nbsp;    private boolean constructedLcpArray = false;</b>
+&nbsp;
+<b class="fc">&nbsp;    public SuffixArray(int[] text) {</b>
+<b class="fc">&nbsp;      if (text == null) throw new IllegalArgumentException(&quot;Text cannot be null.&quot;);</b>
+<b class="fc">&nbsp;      this.T = text;</b>
+<b class="fc">&nbsp;      this.N = text.length;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public int getTextLength() {
+<b class="nc">&nbsp;      return T.length;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Returns the suffix array.
+&nbsp;    public int[] getSa() {
+<b class="fc">&nbsp;      buildSuffixArray();</b>
+<b class="fc">&nbsp;      return sa;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Returns the LCP array.
+&nbsp;    public int[] getLcpArray() {
+<b class="fc">&nbsp;      buildLcpArray();</b>
+<b class="fc">&nbsp;      return lcp;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Builds the suffix array by calling the construct() method.
+&nbsp;    protected void buildSuffixArray() {
+<b class="fc">&nbsp;      if (constructedSa) return;</b>
+<b class="fc">&nbsp;      construct();</b>
+<b class="fc">&nbsp;      constructedSa = true;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Builds the LCP array by first creating the SA and then running the kasai algorithm.
+&nbsp;    protected void buildLcpArray() {
+<b class="fc">&nbsp;      if (constructedLcpArray) return;</b>
+<b class="fc">&nbsp;      buildSuffixArray();</b>
+<b class="fc">&nbsp;      kasai();</b>
+<b class="fc">&nbsp;      constructedLcpArray = true;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    protected static int[] toIntArray(String s) {
+<b class="nc">&nbsp;      if (s == null) return null;</b>
+<b class="nc">&nbsp;      int[] t = new int[s.length()];</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; s.length(); i++) t[i] = s.charAt(i);</b>
+<b class="nc">&nbsp;      return t;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // The suffix array construction algorithm is left undefined
+&nbsp;    // as there are multiple ways to do this.
+&nbsp;    protected abstract void construct();
+&nbsp;
+&nbsp;    // Use Kasai algorithm to build LCP array
+&nbsp;    // http://www.mi.fu-berlin.de/wiki/pub/ABI/RnaSeqP4/suffix-array.pdf
+&nbsp;    private void kasai() {
+<b class="fc">&nbsp;      lcp = new int[N];</b>
+<b class="fc">&nbsp;      int[] inv = new int[N];</b>
+<b class="fc">&nbsp;      for (int i = 0; i &lt; N; i++) inv[sa[i]] = i;</b>
+<b class="fc">&nbsp;      for (int i = 0, len = 0; i &lt; N; i++) {</b>
+<b class="fc">&nbsp;        if (inv[i] &gt; 0) {</b>
+<b class="fc">&nbsp;          int k = sa[inv[i] - 1];</b>
+<b class="fc">&nbsp;          while ((i + len &lt; N) &amp;&amp; (k + len &lt; N) &amp;&amp; T[i + len] == T[k + len]) len++;</b>
+<b class="fc">&nbsp;          lcp[inv[i]] = len;</b>
+<b class="fc">&nbsp;          if (len &gt; 0) len--;</b>
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public String toString() {
+<b class="nc">&nbsp;      StringBuilder sb = new StringBuilder();</b>
+<b class="nc">&nbsp;      sb.append(&quot;------i------SA------LCP--------Suffix\n&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;      for (int i = 0; i &lt; N; i++) {</b>
+<b class="nc">&nbsp;        int suffixLen = N - sa[i];</b>
+<b class="nc">&nbsp;        char[] string = new char[suffixLen];</b>
+<b class="nc">&nbsp;        for (int j = sa[i], k = 0; j &lt; N; j++, k++) string[k] = (char) (T[j]);</b>
+<b class="nc">&nbsp;        String suffix = new String(string);</b>
+<b class="nc">&nbsp;        String formattedStr = String.format(&quot;% 7d % 7d % 7d %s\n&quot;, i, sa[i], lcp[i], suffix);</b>
+<b class="nc">&nbsp;        sb.append(formattedStr);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      return sb.toString();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Lazy way of finding color of suffix is by comparing against all sentinel positions
+&nbsp;    private static Color findColorFromPos(int pos, List&lt;Integer&gt; sentinelIndexes) {
+<b class="nc">&nbsp;      Color[] colors = {</b>
+&nbsp;        Color.GREEN,
+&nbsp;        Color.RED,
+&nbsp;        Color.BLUE,
+&nbsp;        Color.YELLOW,
+&nbsp;        Color.MAGENTA,
+&nbsp;        Color.CYAN,
+&nbsp;        Color.WHITE,
+&nbsp;        Color.BLACK_BACKGROUND_BRIGHT
+&nbsp;      };
+<b class="nc">&nbsp;      int colorIndex = 0;</b>
+<b class="nc">&nbsp;      for (int tokenIndex : sentinelIndexes) {</b>
+<b class="nc">&nbsp;        if (tokenIndex &lt;= pos) colorIndex++;</b>
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      if (colorIndex &gt;= colors.length) {</b>
+<b class="nc">&nbsp;        throw new IllegalStateException(&quot;Too many strings, not enough terminal colors :/&quot;);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      return colors[colorIndex];</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Display an augmented colored SA for debugging LCS problem.
+&nbsp;    public void toString(List&lt;Integer&gt; sentinelIndexes) {
+<b class="nc">&nbsp;      System.out.println(&quot;------i------SA------LCP--------Suffix&quot;);</b>
+<b class="nc">&nbsp;      buildLcpArray();</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; N; i++) {</b>
+<b class="nc">&nbsp;        int suffixLen = N - sa[i];</b>
+<b class="nc">&nbsp;        char[] string = new char[suffixLen];</b>
+<b class="nc">&nbsp;        for (int j = sa[i], k = 0; j &lt; N; j++, k++) string[k] = (char) (T[j]);</b>
+<b class="nc">&nbsp;        String suffix = new String(string);</b>
+&nbsp;
+<b class="nc">&nbsp;        System.out.print(findColorFromPos(sa[i], sentinelIndexes));</b>
+<b class="nc">&nbsp;        String formattedStr = String.format(&quot;% 7d % 7d % 7d %s&quot;, i, sa[i], lcp[i], suffix);</b>
+<b class="nc">&nbsp;        System.out.println(formattedStr + Color.RESET);</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+&nbsp;    // https://stackoverflow.com/questions/5762491/how-to-print-color-in-console-using-system-out-println
+&nbsp;    //
+&nbsp;    // Usage:
+&nbsp;    // System.out.println(Color.CYAN + &quot;Hello World&quot; + Color.RESET);
+<b class="nc">&nbsp;    private enum Color {</b>
+<b class="nc">&nbsp;      RESET(&quot;\033[0m&quot;),</b>
+&nbsp;
+<b class="nc">&nbsp;      BLACK(&quot;\033[0;30m&quot;),</b>
+<b class="nc">&nbsp;      RED(&quot;\033[0;31m&quot;),</b>
+<b class="nc">&nbsp;      GREEN(&quot;\033[0;32m&quot;),</b>
+<b class="nc">&nbsp;      YELLOW(&quot;\033[0;33m&quot;),</b>
+<b class="nc">&nbsp;      BLUE(&quot;\033[0;34m&quot;),</b>
+<b class="nc">&nbsp;      MAGENTA(&quot;\033[0;35m&quot;),</b>
+<b class="nc">&nbsp;      CYAN(&quot;\033[0;36m&quot;),</b>
+<b class="nc">&nbsp;      WHITE(&quot;\033[0;37m&quot;),</b>
+<b class="nc">&nbsp;      BLACK_BACKGROUND_BRIGHT(&quot;\033[0;100m&quot;);</b>
+&nbsp;
+&nbsp;      private final String code;
+&nbsp;
+<b class="nc">&nbsp;      Color(String code) {</b>
+<b class="nc">&nbsp;        this.code = code;</b>
+&nbsp;      }
+&nbsp;
+&nbsp;      @Override
+&nbsp;      public String toString() {
+<b class="nc">&nbsp;        return code;</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  static class SuffixArrayImpl extends SuffixArray {
+&nbsp;
+&nbsp;    // Wrapper class to help sort suffix ranks
+<b class="fc">&nbsp;    static class SuffixRankTuple implements Comparable&lt;SuffixRankTuple&gt; {</b>
+&nbsp;      int firstHalf, secondHalf, originalIndex;
+&nbsp;
+&nbsp;      // Sort Suffix ranks first on the first half then the second half
+&nbsp;      @Override
+&nbsp;      public int compareTo(SuffixRankTuple other) {
+<b class="fc">&nbsp;        int cmp = Integer.compare(firstHalf, other.firstHalf);</b>
+<b class="fc">&nbsp;        if (cmp == 0) return Integer.compare(secondHalf, other.secondHalf);</b>
+<b class="fc">&nbsp;        return cmp;</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+&nbsp;    public SuffixArrayImpl(String text) {
+<b class="nc">&nbsp;      super(toIntArray(text));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public SuffixArrayImpl(int[] text) {
+<b class="fc">&nbsp;      super(text);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Construct a suffix array in O(nlog^2(n))
+&nbsp;    @Override
+&nbsp;    protected void construct() {
+<b class="fc">&nbsp;      sa = new int[N];</b>
+&nbsp;
+&nbsp;      // Maintain suffix ranks in both a matrix with two rows containing the
+&nbsp;      // current and last rank information as well as some sortable rank objects
+<b class="fc">&nbsp;      int[][] suffixRanks = new int[2][N];</b>
+<b class="fc">&nbsp;      SuffixRankTuple[] ranks = new SuffixRankTuple[N];</b>
+&nbsp;
+&nbsp;      // Assign a numerical value to each character in the text
+<b class="fc">&nbsp;      for (int i = 0; i &lt; N; i++) {</b>
+<b class="fc">&nbsp;        suffixRanks[0][i] = T[i];</b>
+<b class="fc">&nbsp;        ranks[i] = new SuffixRankTuple();</b>
+&nbsp;      }
+&nbsp;
+&nbsp;      // O(log(n))
+<b class="fc">&nbsp;      for (int pos = 1; pos &lt; N; pos *= 2) {</b>
+<b class="fc">&nbsp;        for (int i = 0; i &lt; N; i++) {</b>
+<b class="fc">&nbsp;          SuffixRankTuple suffixRank = ranks[i];</b>
+<b class="fc">&nbsp;          suffixRank.firstHalf = suffixRanks[0][i];</b>
+<b class="fc">&nbsp;          suffixRank.secondHalf = i + pos &lt; N ? suffixRanks[0][i + pos] : -1;</b>
+<b class="fc">&nbsp;          suffixRank.originalIndex = i;</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // O(nlog(n))
+<b class="fc">&nbsp;        java.util.Arrays.sort(ranks);</b>
+&nbsp;
+<b class="fc">&nbsp;        int newRank = 0;</b>
+<b class="fc">&nbsp;        suffixRanks[1][ranks[0].originalIndex] = 0;</b>
+&nbsp;
+<b class="fc">&nbsp;        for (int i = 1; i &lt; N; i++) {</b>
+<b class="fc">&nbsp;          SuffixRankTuple lastSuffixRank = ranks[i - 1];</b>
+<b class="fc">&nbsp;          SuffixRankTuple currSuffixRank = ranks[i];</b>
+&nbsp;
+&nbsp;          // If the first half differs from the second half
+<b class="fc">&nbsp;          if (currSuffixRank.firstHalf != lastSuffixRank.firstHalf</b>
+<b class="fc">&nbsp;              || currSuffixRank.secondHalf != lastSuffixRank.secondHalf) newRank++;</b>
+&nbsp;
+<b class="fc">&nbsp;          suffixRanks[1][currSuffixRank.originalIndex] = newRank;</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Place top row (current row) to be the last row
+<b class="fc">&nbsp;        suffixRanks[0] = suffixRanks[1];</b>
+&nbsp;
+&nbsp;        // Optimization to stop early
+<b class="fc">&nbsp;        if (newRank == N - 1) break;</b>
+&nbsp;      }
+&nbsp;
+&nbsp;      // Fill suffix array
+<b class="fc">&nbsp;      for (int i = 0; i &lt; N; i++) {</b>
+<b class="fc">&nbsp;        sa[i] = ranks[i].originalIndex;</b>
+<b class="fc">&nbsp;        ranks[i] = null;</b>
+&nbsp;      }
+&nbsp;
+&nbsp;      // Cleanup
+<b class="fc">&nbsp;      suffixRanks[0] = suffixRanks[1] = null;</b>
+<b class="fc">&nbsp;      suffixRanks = null;</b>
+<b class="fc">&nbsp;      ranks = null;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  public static class LcsSolver {
+&nbsp;
+&nbsp;    // Inputs
+&nbsp;    int k, numSentinels, textLength;
+&nbsp;    String[] strings;
+&nbsp;
+&nbsp;    // Internal
+&nbsp;    int shift, lcsLen;
+&nbsp;    int lowestAsciiValue;
+&nbsp;    int highestAsciiValue;
+&nbsp;    int[] imap, text, sa, lcp;
+&nbsp;
+&nbsp;    // Output
+&nbsp;    TreeSet&lt;String&gt; lcss;
+&nbsp;
+&nbsp;    private static final boolean DEBUG_MODE = false;
+&nbsp;
+&nbsp;    // TODO(williamfiset): support LCS with strings as int arrays for larger alphabet sizes.
+<b class="fc">&nbsp;    public LcsSolver(String[] strings) {</b>
+<b class="fc">&nbsp;      if (strings == null || strings.length &lt;= 1)</b>
+<b class="nc">&nbsp;        throw new IllegalArgumentException(&quot;Invalid strings array provided.&quot;);</b>
+<b class="fc">&nbsp;      this.strings = strings;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void init() {
+<b class="fc">&nbsp;      shift = lcsLen = 0;</b>
+<b class="fc">&nbsp;      lowestAsciiValue = Integer.MAX_VALUE;</b>
+<b class="fc">&nbsp;      highestAsciiValue = Integer.MIN_VALUE;</b>
+<b class="fc">&nbsp;      numSentinels = strings.length;</b>
+<b class="fc">&nbsp;      lcss = new TreeSet&lt;&gt;();</b>
+<b class="fc">&nbsp;      imap = text = sa = lcp = null;</b>
+&nbsp;
+<b class="fc">&nbsp;      computeTextLength(strings);</b>
+<b class="fc">&nbsp;      buildReverseColorMapping();</b>
+<b class="fc">&nbsp;      computeShift();</b>
+<b class="fc">&nbsp;      buildText();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void computeTextLength(String[] strings) {
+<b class="fc">&nbsp;      textLength = 0;</b>
+<b class="fc">&nbsp;      for (String str : strings) textLength += str.length();</b>
+<b class="fc">&nbsp;      textLength += numSentinels;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Builds a reverse color index map. The reverse color map tells you which
+&nbsp;    // color a character is at a given index in the new text.
+&nbsp;    private void buildReverseColorMapping() {
+<b class="fc">&nbsp;      imap = new int[textLength];</b>
+<b class="fc">&nbsp;      for (int i = 0, k = 0; i &lt; strings.length; i++) {</b>
+<b class="fc">&nbsp;        String str = strings[i];</b>
+<b class="fc">&nbsp;        for (int j = 0; j &lt; str.length(); j++) {</b>
+<b class="fc">&nbsp;          int asciiVal = str.charAt(j);</b>
+<b class="fc">&nbsp;          if (asciiVal &lt; lowestAsciiValue) lowestAsciiValue = asciiVal;</b>
+<b class="fc">&nbsp;          if (asciiVal &gt; highestAsciiValue) highestAsciiValue = asciiVal;</b>
+<b class="fc">&nbsp;          imap[k++] = i;</b>
+&nbsp;        }
+&nbsp;        // Record that the sentinel belongs to string i
+<b class="fc">&nbsp;        imap[k++] = i;</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+&nbsp;    private void verifyMinAndMaxAsciiValues() {
+<b class="fc">&nbsp;      if (lowestAsciiValue == Integer.MAX_VALUE || highestAsciiValue == Integer.MIN_VALUE)</b>
+<b class="nc">&nbsp;        throw new IllegalStateException(&quot;Must set min/max ascii values!&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void computeShift() {
+<b class="fc">&nbsp;      verifyMinAndMaxAsciiValues();</b>
+<b class="fc">&nbsp;      shift = numSentinels - lowestAsciiValue;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Build text containing sentinels. Must have computed lowest and highest ascii values
+&nbsp;    // beforehand.
+&nbsp;    // All sentinels values will be in the range [0, numSentinels)
+&nbsp;    // All text values will be in the range [numSentinels, numSentinels + highestAsciiValue -
+&nbsp;    // lowestAsciiValue]
+&nbsp;    private void buildText() {
+<b class="fc">&nbsp;      verifyMinAndMaxAsciiValues();</b>
+<b class="fc">&nbsp;      text = new int[textLength];</b>
+<b class="fc">&nbsp;      int sentinel = 0;</b>
+&nbsp;      // Construct the new text with the shifted values and the sentinels
+<b class="fc">&nbsp;      for (int i = 0, k = 0; i &lt; strings.length; i++) {</b>
+<b class="fc">&nbsp;        String str = strings[i];</b>
+<b class="fc">&nbsp;        for (int j = 0; j &lt; str.length(); j++) {</b>
+<b class="fc">&nbsp;          text[k++] = ((int) str.charAt(j)) + shift;</b>
+<b class="fc">&nbsp;          if (!(numSentinels &lt;= text[k - 1]</b>
+&nbsp;              &amp;&amp; text[k - 1] &lt;= (numSentinels + highestAsciiValue - lowestAsciiValue))) {
+<b class="nc">&nbsp;            throw new IllegalStateException(</b>
+<b class="nc">&nbsp;                String.format(</b>
+&nbsp;                    &quot;Unexpected character range. Was: %d, wanted between [%d, %d]&quot;,
+<b class="nc">&nbsp;                    text[k - 1],</b>
+<b class="nc">&nbsp;                    numSentinels,</b>
+<b class="nc">&nbsp;                    (numSentinels + highestAsciiValue - lowestAsciiValue)));</b>
+&nbsp;          }
+&nbsp;        }
+<b class="fc">&nbsp;        text[k++] = sentinel++;</b>
+<b class="fc">&nbsp;        if (!(0 &lt;= text[k - 1] &amp;&amp; text[k - 1] &lt; numSentinels)) {</b>
+<b class="nc">&nbsp;          throw new IllegalStateException(</b>
+<b class="nc">&nbsp;              String.format(</b>
+&nbsp;                  &quot;Unexpected character range. Was: %d, wanted between [%d, %d)&quot;,
+<b class="nc">&nbsp;                  text[k - 1], 0, numSentinels));</b>
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+&nbsp;    // Counts the number of suffixes of different colors between [lo, hi] and determines
+&nbsp;    // if there is enough variety for a LCS candidate.
+&nbsp;    private boolean enoughUniqueColorsInWindow(int lo, int hi) {
+&nbsp;      // TODO(williamfiset): Avoid initializing a new hash set to count colors every method call.
+<b class="fc">&nbsp;      Set&lt;Integer&gt; set = new HashSet&lt;&gt;();</b>
+<b class="fc">&nbsp;      for (int i = lo; i &lt;= hi; i++) {</b>
+<b class="fc">&nbsp;        set.add(imap[sa[i]]);</b>
+&nbsp;      }
+&nbsp;      // TODO(williamfiset): Investigate if == can become &gt;=
+<b class="fc">&nbsp;      return set.size() == k;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Retrieves a string from the suffix array given a position and a length.
+&nbsp;    private String retrieveString(int i, int len) {
+<b class="fc">&nbsp;      char[] s = new char[len];</b>
+<b class="fc">&nbsp;      for (int j = 0; j &lt; len; j++) s[j] = (char) (text[i + j] - shift);</b>
+<b class="fc">&nbsp;      return new String(s);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void log(String s) {
+&nbsp;      if (DEBUG_MODE) {
+&nbsp;        System.out.println(s);
+&nbsp;      }
+<b class="fc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    private void addLcs(int lo, int hi, int windowLcp) {
+<b class="fc">&nbsp;      if (hi - lo + 1 &lt; k) {</b>
+<b class="fc">&nbsp;        log(</b>
+<b class="fc">&nbsp;            String.format(</b>
+&nbsp;                &quot;lo: %d, hi: %d. Too small range. lo: %d, hi: %d, k: %d, hi - lo + 1 &lt; k&quot;,
+<b class="fc">&nbsp;                lo, hi, lo, hi, k));</b>
+&nbsp;        return;
+&nbsp;      }
+<b class="fc">&nbsp;      if (windowLcp == 0) {</b>
+<b class="fc">&nbsp;        log(&quot;LCP is 0&quot;);</b>
+&nbsp;        return;
+&nbsp;      }
+<b class="fc">&nbsp;      if (!enoughUniqueColorsInWindow(lo, hi)) {</b>
+<b class="fc">&nbsp;        log(</b>
+<b class="fc">&nbsp;            String.format(</b>
+<b class="fc">&nbsp;                &quot;lo: %d, hi: %d. Not enough unique colors in range [%d, %d]&quot;, lo, hi, lo, hi));</b>
+&nbsp;        return;
+&nbsp;      }
+<b class="fc">&nbsp;      if (windowLcp &gt; lcsLen) {</b>
+<b class="fc">&nbsp;        lcsLen = windowLcp;</b>
+<b class="fc">&nbsp;        lcss.clear();</b>
+&nbsp;      }
+<b class="fc">&nbsp;      if (windowLcp == lcsLen) {</b>
+<b class="fc">&nbsp;        lcss.add(retrieveString(sa[lo], windowLcp));</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+&nbsp;    public TreeSet&lt;String&gt; getLongestCommonSubstrings(int k) {
+<b class="fc">&nbsp;      if (k &lt; 2) throw new IllegalArgumentException(&quot;k must be greater than or equal to 2&quot;);</b>
+<b class="fc">&nbsp;      this.k = k;</b>
+<b class="fc">&nbsp;      solve();</b>
+<b class="fc">&nbsp;      return lcss;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void solve() {
+<b class="fc">&nbsp;      init();</b>
+&nbsp;
+<b class="fc">&nbsp;      SuffixArray suffixArray = new SuffixArrayImpl(text);</b>
+<b class="fc">&nbsp;      sa = suffixArray.getSa();</b>
+<b class="fc">&nbsp;      lcp = suffixArray.getLcpArray();</b>
+&nbsp;
+&nbsp;      // TODO(williamfiset): Replace with SlidingWindowMinimum for speed.
+<b class="fc">&nbsp;      CompactMinSegmentTree tree = new CompactMinSegmentTree(lcp);</b>
+&nbsp;
+<b class="fc">&nbsp;      int lo = numSentinels;</b>
+<b class="fc">&nbsp;      int hi = numSentinels;</b>
+&nbsp;
+&nbsp;      while (true) {
+&nbsp;        // Shrink the window (by increasing lo) if the current interval has enough
+&nbsp;        // of the correct suffix colors or hi has reached the end.
+<b class="fc">&nbsp;        boolean shrinkWindow = (hi == textLength - 1) ? true : enoughUniqueColorsInWindow(lo, hi);</b>
+&nbsp;
+<b class="fc">&nbsp;        if (shrinkWindow) {</b>
+<b class="fc">&nbsp;          lo++;</b>
+&nbsp;        } else {
+<b class="fc">&nbsp;          hi++;</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        if (lo == textLength - 1) break;</b>
+&nbsp;
+&nbsp;        // Segment tree queries are right endpoint exclusive: [l, r)
+&nbsp;        // so we must be careful to avoid the empty interval case.
+<b class="fc">&nbsp;        if (lo == hi) continue;</b>
+&nbsp;
+<b class="fc">&nbsp;        int windowLcp = tree.query(lo + 1, hi + 1);</b>
+<b class="fc">&nbsp;        addLcs(lo, hi, windowLcp);</b>
+<b class="fc">&nbsp;      }</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  static class SlidingWindowMinimum {
+&nbsp;    int[] values;
+&nbsp;    int N, lo, hi;
+&nbsp;
+<b class="nc">&nbsp;    Deque&lt;Integer&gt; deque = new ArrayDeque&lt;&gt;();</b>
+&nbsp;
+<b class="nc">&nbsp;    public SlidingWindowMinimum(int[] values) {</b>
+<b class="nc">&nbsp;      if (values == null) throw new IllegalArgumentException();</b>
+<b class="nc">&nbsp;      this.values = values;</b>
+<b class="nc">&nbsp;      N = values.length;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Advances the front of the window by one unit
+&nbsp;    public void advance() {
+&nbsp;      // Remove all the worse values in the back of the deque
+<b class="nc">&nbsp;      while (!deque.isEmpty() &amp;&amp; values[deque.peekLast()] &gt; values[hi]) deque.removeLast();</b>
+&nbsp;
+&nbsp;      // Add the next index to the back of the deque
+<b class="nc">&nbsp;      deque.addLast(hi);</b>
+&nbsp;
+&nbsp;      // Increase the window size
+<b class="nc">&nbsp;      hi++;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Retracks the back of the window by one unit
+&nbsp;    public void shrink() {
+&nbsp;      // Decrease window size by pushing it forward
+<b class="nc">&nbsp;      lo++;</b>
+&nbsp;
+&nbsp;      // Remove elements in the front of the queue whom are no longer
+&nbsp;      // valid in the reduced window.
+<b class="nc">&nbsp;      while (!deque.isEmpty() &amp;&amp; deque.peekFirst() &lt; lo) deque.removeFirst();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Query the current minimum value in the window
+&nbsp;    public int getMin() {
+<b class="nc">&nbsp;      if (lo &gt;= hi) throw new IllegalStateException(&quot;Make sure lo &lt; hi&quot;);</b>
+<b class="nc">&nbsp;      return values[deque.peekFirst()];</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  static class CompactMinSegmentTree {
+&nbsp;    private int n;
+&nbsp;
+&nbsp;    // Let UNIQUE be a value which does NOT and will NOT appear in the segment tree.
+<b class="fc">&nbsp;    private int UNIQUE = 93136074;</b>
+&nbsp;
+&nbsp;    // Segment tree values
+&nbsp;    private int[] tree;
+&nbsp;
+<b class="fc">&nbsp;    public CompactMinSegmentTree(int size) {</b>
+<b class="fc">&nbsp;      tree = new int[2 * (n = size)];</b>
+<b class="fc">&nbsp;      java.util.Arrays.fill(tree, UNIQUE);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public CompactMinSegmentTree(int[] values) {
+<b class="fc">&nbsp;      this(values.length);</b>
+<b class="fc">&nbsp;      for (int i = 0; i &lt; n; i++) modify(i, values[i]);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // The segment tree function used for queries.
+&nbsp;    private int function(int a, int b) {
+<b class="fc">&nbsp;      if (a == UNIQUE) return b;</b>
+<b class="fc">&nbsp;      else if (b == UNIQUE) return a;</b>
+<b class="fc">&nbsp;      return (a &lt; b) ? a : b; // minimum value over a range</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Adjust point i by a value, O(log(n))
+&nbsp;    public void modify(int i, int value) {
+<b class="fc">&nbsp;      tree[i + n] = function(tree[i + n], value);</b>
+<b class="fc">&nbsp;      for (i += n; i &gt; 1; i &gt;&gt;= 1) {</b>
+<b class="fc">&nbsp;        tree[i &gt;&gt; 1] = function(tree[i], tree[i ^ 1]);</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+&nbsp;    // Query interval [l, r), O(log(n))
+&nbsp;    public int query(int l, int r) {
+<b class="fc">&nbsp;      int res = UNIQUE;</b>
+<b class="fc">&nbsp;      for (l += n, r += n; l &lt; r; l &gt;&gt;= 1, r &gt;&gt;= 1) {</b>
+<b class="fc">&nbsp;        if ((l &amp; 1) != 0) res = function(res, tree[l++]);</b>
+<b class="fc">&nbsp;        if ((r &amp; 1) != 0) res = function(res, tree[--r]);</b>
+&nbsp;      }
+<b class="fc">&nbsp;      if (res == UNIQUE) {</b>
+<b class="nc">&nbsp;        throw new IllegalStateException(&quot;UNIQUE should not be the return value.&quot;);</b>
+&nbsp;      }
+<b class="fc">&nbsp;      return res;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

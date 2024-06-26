@@ -1,0 +1,454 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > RangeQueryPointUpdateSegmentTree</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.datastructures.segmenttree</a>
+</div>
+
+<h1>Coverage Summary for Class: RangeQueryPointUpdateSegmentTree (com.williamfiset.algorithms.datastructures.segmenttree)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RangeQueryPointUpdateSegmentTree</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/87)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">RangeQueryPointUpdateSegmentTree$RangeUpdateFn</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">RangeQueryPointUpdateSegmentTree$SegmentCombinationFn</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/94)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * Simple segment tree implementation that supports a few range query operations (sum, min and max)
+&nbsp; * along with point updates on individual elements.
+&nbsp; *
+&nbsp; * &lt;p&gt;Run with: ./gradlew run
+&nbsp; * -Palgorithm=datastructures.segmenttree.RangeQueryPointUpdateSegmentTree
+&nbsp; *
+&nbsp; * &lt;p&gt;Several thanks to cp-algorithms for their great article on segment trees:
+&nbsp; * https://cp-algorithms.com/data_structures/segment_tree.html
+&nbsp; *
+&nbsp; * @author William Fiset, william.alexandre.fiset@gmail.com
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.datastructures.segmenttree;
+&nbsp;
+&nbsp;import java.util.Arrays;
+&nbsp;import java.util.function.BinaryOperator;
+&nbsp;
+&nbsp;public class RangeQueryPointUpdateSegmentTree {
+&nbsp;
+&nbsp;  // The type of segment combination function to use
+<b class="nc">&nbsp;  public static enum SegmentCombinationFn {</b>
+<b class="nc">&nbsp;    SUM,</b>
+<b class="nc">&nbsp;    MIN,</b>
+<b class="nc">&nbsp;    MAX</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // When updating the value of a specific index position, or a range of values,
+&nbsp;  // modify the affected values using the following function:
+<b class="nc">&nbsp;  public static enum RangeUpdateFn {</b>
+&nbsp;    // When a range update is issued, add a value of `x` to all the elements in the range [l, r]
+<b class="nc">&nbsp;    ADDITION,</b>
+&nbsp;    // When a range update is issued, multiply all elements in the range [l, r] by a value of `x`
+<b class="nc">&nbsp;    MULTIPLICATION</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // The number of elements in the original input values array.
+&nbsp;  private int n;
+&nbsp;
+&nbsp;  // The segment tree represented as a binary tree of ranges where t[0] is the
+&nbsp;  // root node and the left and right children of node i are i*2+1 and i*2+2.
+&nbsp;  private long[] t;
+&nbsp;
+&nbsp;  // The delta values associates with each segment. Used for lazy propagation
+&nbsp;  // when doing range updates.
+&nbsp;  private long[] lazy;
+&nbsp;
+&nbsp;  private SegmentCombinationFn segmentCombinationFn;
+&nbsp;
+&nbsp;  // The chosen range combination function
+&nbsp;  private BinaryOperator&lt;Long&gt; combinationFn;
+&nbsp;
+&nbsp;  // The chosen range update function
+&nbsp;  private BinaryOperator&lt;Long&gt; rangeUpdateFn;
+&nbsp;
+<b class="nc">&nbsp;  private BinaryOperator&lt;Long&gt; sumFn = (a, b) -&gt; a + b;</b>
+<b class="nc">&nbsp;  private BinaryOperator&lt;Long&gt; mulFn = (a, b) -&gt; a * b;</b>
+<b class="nc">&nbsp;  private BinaryOperator&lt;Long&gt; minFn = (a, b) -&gt; Math.min(a, b);</b>
+<b class="nc">&nbsp;  private BinaryOperator&lt;Long&gt; maxFn = (a, b) -&gt; Math.max(a, b);</b>
+&nbsp;
+&nbsp;  public RangeQueryPointUpdateSegmentTree(
+&nbsp;      long[] values, SegmentCombinationFn segmentCombinationFunction) {
+&nbsp;    // By default, specify ADDITION as the range update function.
+<b class="nc">&nbsp;    this(values, segmentCombinationFunction, RangeUpdateFn.ADDITION);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public RangeQueryPointUpdateSegmentTree(
+&nbsp;      long[] values,
+&nbsp;      SegmentCombinationFn segmentCombinationFunction,
+<b class="nc">&nbsp;      RangeUpdateFn rangeUpdateFunction) {</b>
+<b class="nc">&nbsp;    if (values == null) {</b>
+<b class="nc">&nbsp;      throw new IllegalArgumentException(&quot;Segment tree values cannot be null.&quot;);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (segmentCombinationFunction == null) {</b>
+<b class="nc">&nbsp;      throw new IllegalArgumentException(&quot;Please specify a valid segment combination function.&quot;);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (rangeUpdateFunction == null) {</b>
+<b class="nc">&nbsp;      throw new IllegalArgumentException(&quot;Please specify a valid range update function.&quot;);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    n = values.length;</b>
+<b class="nc">&nbsp;    this.segmentCombinationFn = segmentCombinationFunction;</b>
+&nbsp;
+&nbsp;    // The size of the segment tree `t`
+&nbsp;    //
+&nbsp;    // TODO(william): Investigate to reduce this space. There are only 2n-1 segments, so we should
+&nbsp;    // be able to reduce the space, but may need to reorganize the tree/queries. One idea is to use
+&nbsp;    // the Eulerian tour structure of the tree to densely pack the segments.
+<b class="nc">&nbsp;    int N = 4 * n;</b>
+&nbsp;
+<b class="nc">&nbsp;    t = new long[N];</b>
+<b class="nc">&nbsp;    lazy = new long[N];</b>
+&nbsp;
+&nbsp;    // Select the specified combination function
+<b class="nc">&nbsp;    if (segmentCombinationFunction == SegmentCombinationFn.SUM) {</b>
+<b class="nc">&nbsp;      combinationFn = sumFn;</b>
+<b class="nc">&nbsp;    } else if (segmentCombinationFunction == SegmentCombinationFn.MIN) {</b>
+<b class="nc">&nbsp;      Arrays.fill(t, Long.MAX_VALUE);</b>
+<b class="nc">&nbsp;      combinationFn = minFn;</b>
+<b class="nc">&nbsp;    } else if (segmentCombinationFunction == SegmentCombinationFn.MAX) {</b>
+<b class="nc">&nbsp;      Arrays.fill(t, Long.MIN_VALUE);</b>
+<b class="nc">&nbsp;      combinationFn = maxFn;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Select the specified range update function
+<b class="nc">&nbsp;    if (rangeUpdateFunction == RangeUpdateFn.ADDITION) {</b>
+<b class="nc">&nbsp;      rangeUpdateFn = sumFn;</b>
+<b class="nc">&nbsp;    } else if (rangeUpdateFunction == RangeUpdateFn.MULTIPLICATION) {</b>
+<b class="nc">&nbsp;      rangeUpdateFn = mulFn;</b>
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    buildSegmentTree(0, 0, n - 1, values);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Builds a segment tree by starting with the leaf nodes and combining segment values on callback.
+&nbsp;   *
+&nbsp;   * @param i the index of the segment in the segment tree
+&nbsp;   * @param tl the left index (inclusive) of the segment range
+&nbsp;   * @param tr the right index (inclusive) of the segment range
+&nbsp;   * @param values the initial values array
+&nbsp;   */
+&nbsp;  private void buildSegmentTree(int i, int tl, int tr, long[] values) {
+<b class="nc">&nbsp;    if (tl == tr) {</b>
+<b class="nc">&nbsp;      t[i] = values[tl];</b>
+&nbsp;      return;
+&nbsp;    }
+<b class="nc">&nbsp;    int tm = (tl + tr) / 2;</b>
+<b class="nc">&nbsp;    buildSegmentTree(2 * i + 1, tl, tm, values);</b>
+<b class="nc">&nbsp;    buildSegmentTree(2 * i + 2, tm + 1, tr, values);</b>
+&nbsp;
+<b class="nc">&nbsp;    t[i] = combinationFn.apply(t[2 * i + 1], t[2 * i + 2]);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Returns the query of the range [l, r] on the original `values` array (+ any updates made to it)
+&nbsp;   *
+&nbsp;   * @param l the left endpoint of the range query (inclusive)
+&nbsp;   * @param r the right endpoint of the range query (inclusive)
+&nbsp;   */
+&nbsp;  public long rangeQuery(int l, int r) {
+<b class="nc">&nbsp;    return rangeQuery(0, 0, n - 1, l, r);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Returns the query of the range [l, r] on the original `values` array (+ any updates made to it)
+&nbsp;   *
+&nbsp;   * @param l the left endpoint of the range query (inclusive)
+&nbsp;   * @param r the right endpoint of the range query (inclusive)
+&nbsp;   */
+&nbsp;  public long rangeQuery2(int l, int r) {
+<b class="nc">&nbsp;    return rangeQuery2(0, 0, n - 1, l, r);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Returns the range query value of the range [l, r]
+&nbsp;   *
+&nbsp;   * @param i the index of the current segment in the tree
+&nbsp;   * @param tl the left endpoint (inclusive) of the current segment
+&nbsp;   * @param tr the right endpoint (inclusive) of the current segment
+&nbsp;   * @param l the target left endpoint (inclusive) for the range query
+&nbsp;   * @param r the target right endpoint (inclusive) for the range query
+&nbsp;   */
+&nbsp;  private long rangeQuery(int i, int tl, int tr, int l, int r) {
+<b class="nc">&nbsp;    if (l &gt; r) {</b>
+&nbsp;      // Different segment tree types have different base cases:
+<b class="nc">&nbsp;      if (segmentCombinationFn == SegmentCombinationFn.SUM) {</b>
+<b class="nc">&nbsp;        return 0;</b>
+<b class="nc">&nbsp;      } else if (segmentCombinationFn == SegmentCombinationFn.MIN) {</b>
+<b class="nc">&nbsp;        return Long.MAX_VALUE;</b>
+<b class="nc">&nbsp;      } else if (segmentCombinationFn == SegmentCombinationFn.MAX) {</b>
+<b class="nc">&nbsp;        return Long.MIN_VALUE;</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    if (tl == l &amp;&amp; tr == r) {</b>
+<b class="nc">&nbsp;      return t[i];</b>
+&nbsp;    }
+<b class="nc">&nbsp;    int tm = (tl + tr) / 2;</b>
+&nbsp;    // Instead of checking if [tl, tm] overlaps [l, r] and [tm+1, tr] overlaps
+&nbsp;    // [l, r], simply recurse on both segments and let the base case return the
+&nbsp;    // default value for invalid intervals.
+<b class="nc">&nbsp;    return combinationFn.apply(</b>
+<b class="nc">&nbsp;        rangeQuery(2 * i + 1, tl, tm, l, Math.min(tm, r)),</b>
+<b class="nc">&nbsp;        rangeQuery(2 * i + 2, tm + 1, tr, Math.max(l, tm + 1), r));</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Returns the range query value of the range [l, r]
+&nbsp;   *
+&nbsp;   * &lt;p&gt;An alternative implementation of the range query function that intelligently only digs into
+&nbsp;   * the branches of the segment tree which overlap with the query [l, r].
+&nbsp;   *
+&nbsp;   * &lt;p&gt;This version of the range query implementation has the advantage that it doesn&#39;t need to
+&nbsp;   * know the explicit base case value for each range query type.
+&nbsp;   *
+&nbsp;   * @param i the index of the current segment in the tree
+&nbsp;   * @param tl the left endpoint (inclusive) of the current segment
+&nbsp;   * @param tr the right endpoint (inclusive) of the current segment
+&nbsp;   * @param l the target left endpoint (inclusive) for the range query
+&nbsp;   * @param r the target right endpoint (inclusive) for the range query
+&nbsp;   */
+&nbsp;  private long rangeQuery2(int i, int tl, int tr, int l, int r) {
+<b class="nc">&nbsp;    if (tl == l &amp;&amp; tr == r) {</b>
+<b class="nc">&nbsp;      return t[i];</b>
+&nbsp;    }
+<b class="nc">&nbsp;    int tm = (tl + tr) / 2;</b>
+&nbsp;    // Test how the left and right segments of the interval [tl, tr] overlap with the query [l, r]
+<b class="nc">&nbsp;    boolean overlapsLeftSegment = (l &lt;= tm);</b>
+<b class="nc">&nbsp;    boolean overlapsRightSegment = (r &gt; tm);</b>
+<b class="nc">&nbsp;    if (overlapsLeftSegment &amp;&amp; overlapsRightSegment) {</b>
+<b class="nc">&nbsp;      return combinationFn.apply(</b>
+<b class="nc">&nbsp;          rangeQuery2(2 * i + 1, tl, tm, l, Math.min(tm, r)),</b>
+<b class="nc">&nbsp;          rangeQuery2(2 * i + 2, tm + 1, tr, Math.max(l, tm + 1), r));</b>
+<b class="nc">&nbsp;    } else if (overlapsLeftSegment) {</b>
+<b class="nc">&nbsp;      return rangeQuery2(2 * i + 1, tl, tm, l, Math.min(tm, r));</b>
+&nbsp;    } else {
+<b class="nc">&nbsp;      return rangeQuery2(2 * i + 2, tm + 1, tr, Math.max(l, tm + 1), r);</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  // Updates the value at index `i` in the original `values` array to be `newValue`.
+&nbsp;  public void pointUpdate(int i, long newValue) {
+<b class="nc">&nbsp;    pointUpdate(0, i, 0, n - 1, newValue);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Update a point value to a new value and update all affected segments, O(log(n))
+&nbsp;   *
+&nbsp;   * &lt;p&gt;Do this by performing a binary search to find the interval containing the point, then update
+&nbsp;   * the leaf segment with the new value, and re-compute all affected segment values on the
+&nbsp;   * callback.
+&nbsp;   *
+&nbsp;   * @param i the index of the current segment in the tree
+&nbsp;   * @param pos the target position to update
+&nbsp;   * @param tl the left segment endpoint (inclusive)
+&nbsp;   * @param tr the right segment endpoint (inclusive)
+&nbsp;   * @param newValue the new value to update
+&nbsp;   */
+&nbsp;  private void pointUpdate(int i, int pos, int tl, int tr, long newValue) {
+<b class="nc">&nbsp;    if (tl == tr) { // `tl == pos &amp;&amp; tr == pos` might be clearer</b>
+<b class="nc">&nbsp;      t[i] = newValue;</b>
+&nbsp;      return;
+&nbsp;    }
+<b class="nc">&nbsp;    int tm = (tl + tr) / 2;</b>
+<b class="nc">&nbsp;    if (pos &lt;= tm) {</b>
+&nbsp;      // The point index `pos` is contained within the left segment [tl, tm]
+<b class="nc">&nbsp;      pointUpdate(2 * i + 1, pos, tl, tm, newValue);</b>
+&nbsp;    } else {
+&nbsp;      // The point index `pos` is contained within the right segment [tm+1, tr]
+<b class="nc">&nbsp;      pointUpdate(2 * i + 2, pos, tm + 1, tr, newValue);</b>
+&nbsp;    }
+&nbsp;    // Re-compute the segment value of the current segment on the callback
+<b class="nc">&nbsp;    t[i] = combinationFn.apply(t[2 * i + 1], t[2 * i + 2]);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Updates the range of values between [l, r] the segment tree with `x` based
+&nbsp;  // on what RangeUpdateFn was chosen.
+&nbsp;  public void rangeUpdate(int l, int r, long x) {
+<b class="nc">&nbsp;    throw new UnsupportedOperationException(&quot;rangeUpdate is not yet implemented&quot;);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  ////////////////////////////////////////////////////
+&nbsp;  //              Example usage:                    //
+&nbsp;  ////////////////////////////////////////////////////
+&nbsp;
+&nbsp;  public static void main(String[] args) {
+<b class="nc">&nbsp;    rangeSumQueryExample();</b>
+<b class="nc">&nbsp;    rangeMinQueryExample();</b>
+<b class="nc">&nbsp;    rangeMaxQueryExample();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private static void rangeSumQueryExample() {
+&nbsp;    //               0  1  2  3
+<b class="nc">&nbsp;    long[] values = {1, 2, 3, 2};</b>
+<b class="nc">&nbsp;    RangeQueryPointUpdateSegmentTree st =</b>
+&nbsp;        new RangeQueryPointUpdateSegmentTree(values, SegmentCombinationFn.SUM);
+&nbsp;
+<b class="nc">&nbsp;    int l = 0, r = 3;</b>
+<b class="nc">&nbsp;    System.out.printf(&quot;The sum between indeces [%d, %d] is: %d\n&quot;, l, r, st.rangeQuery(l, r));</b>
+&nbsp;    // Prints:
+&nbsp;    // The sum between indeces [0, 3] is: 8
+&nbsp;  }
+&nbsp;
+&nbsp;  private static void rangeMinQueryExample() {
+&nbsp;    //               0  1  2  3
+<b class="nc">&nbsp;    long[] values = {1, 2, 3, 2};</b>
+<b class="nc">&nbsp;    RangeQueryPointUpdateSegmentTree st =</b>
+&nbsp;        new RangeQueryPointUpdateSegmentTree(values, SegmentCombinationFn.MIN);
+&nbsp;
+<b class="nc">&nbsp;    int l = 0, r = 3;</b>
+<b class="nc">&nbsp;    System.out.printf(&quot;The sum between indeces [%d, %d] is: %d\n&quot;, l, r, st.rangeQuery(l, r));</b>
+&nbsp;    // Prints:
+&nbsp;    // The sum between indeces [0, 3] is: 1
+&nbsp;  }
+&nbsp;
+&nbsp;  private static void rangeMaxQueryExample() {
+&nbsp;    //               0  1  2  3
+<b class="nc">&nbsp;    long[] values = {1, 2, 3, 2};</b>
+<b class="nc">&nbsp;    RangeQueryPointUpdateSegmentTree st =</b>
+&nbsp;        new RangeQueryPointUpdateSegmentTree(values, SegmentCombinationFn.MAX);
+&nbsp;
+<b class="nc">&nbsp;    int l = 0, r = 3;</b>
+<b class="nc">&nbsp;    System.out.printf(&quot;The sum between indeces [%d, %d] is: %d\n&quot;, l, r, st.rangeQuery(l, r));</b>
+&nbsp;    // Prints:
+&nbsp;    // The sum between indeces [0, 3] is: 3
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,456 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > SplayTree</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.datastructures.binarysearchtree</a>
+</div>
+
+<h1>Coverage Summary for Class: SplayTree (com.williamfiset.algorithms.datastructures.binarysearchtree)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">SplayTree</td>
+<td class="coverageStat">
+  <span class="percent">
+    72,2%
+  </span>
+  <span class="absValue">
+    (13/18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    83%
+  </span>
+  <span class="absValue">
+    (78/94)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">SplayTree$BinaryTree</td>
+<td class="coverageStat">
+  <span class="percent">
+    66,7%
+  </span>
+  <span class="absValue">
+    (6/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    40%
+  </span>
+  <span class="absValue">
+    (8/20)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    70,4%
+  </span>
+  <span class="absValue">
+    (19/27)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    75,4%
+  </span>
+  <span class="absValue">
+    (86/114)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;// javac -d classes -sourcepath src/main/java
+&nbsp;// src/main/java/com/williamfiset/algorithms/datastructures/binarysearchtree/SplayTree.java
+&nbsp;// java -cp classes com.williamfiset.algorithms.datastructures.binarysearchtree.SplayTreeRun
+&nbsp;
+&nbsp;package com.williamfiset.algorithms.datastructures.binarysearchtree;
+&nbsp;
+&nbsp;import com.williamfiset.algorithms.datastructures.utils.TreePrinter;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.Scanner;
+&nbsp;
+&nbsp;/**
+&nbsp; * Standard Splay Tree Implementation, supports generic data(must implement Comparable)
+&nbsp; *
+&nbsp; * &lt;p&gt;The Basic Concept of SplayTree is to keep frequently used nodes close to the root of the tree
+&nbsp; * It performs basic operations such as insertion,search,delete,findMin,findMax in O(log n)
+&nbsp; * amortized time Having frequently-used nodes near to the root can be useful in implementing many
+&nbsp; * algorithms. e.g: Implementing caches, garbage collection algorithms etc Primary disadvantage of
+&nbsp; * the splay tree can be the fact that its height can go linear. This causes the worst case running
+&nbsp; * times to go O(n) However, the amortized costs of this worst case situation is logarithmic, O(log
+&nbsp; * n)
+&nbsp; *
+&nbsp; * @author Ashiqur Rahman,https://github.com/ashiqursuperfly
+&nbsp; */
+&nbsp;public class SplayTree&lt;T extends Comparable&lt;T&gt;&gt; {
+&nbsp;
+&nbsp;  private BinaryTree&lt;T&gt; root;
+&nbsp;
+&nbsp;  public static class BinaryTree&lt;T extends Comparable&lt;T&gt;&gt; implements TreePrinter.PrintableNode {
+&nbsp;    private T data;
+&nbsp;    private BinaryTree&lt;T&gt; leftChild, rightChild;
+&nbsp;
+<b class="fc">&nbsp;    public BinaryTree(T data) {</b>
+<b class="fc">&nbsp;      if (data == null) {</b>
+&nbsp;        try {
+<b class="nc">&nbsp;          throw new Exception(&quot;Null data not allowed into tree&quot;);</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;          e.printStackTrace();</b>
+<b class="nc">&nbsp;        }</b>
+<b class="fc">&nbsp;      } else this.data = data;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public BinaryTree&lt;T&gt; getLeft() {
+<b class="fc">&nbsp;      return leftChild;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setLeft(BinaryTree&lt;T&gt; leftChild) {
+<b class="fc">&nbsp;      this.leftChild = leftChild;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public BinaryTree&lt;T&gt; getRight() {
+<b class="fc">&nbsp;      return rightChild;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setRight(BinaryTree&lt;T&gt; rightChild) {
+<b class="fc">&nbsp;      this.rightChild = rightChild;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public String getText() {
+<b class="nc">&nbsp;      return data.toString();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public T getData() {
+<b class="fc">&nbsp;      return data;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setData(T data) {
+<b class="nc">&nbsp;      if (data == null) {</b>
+&nbsp;        try {
+<b class="nc">&nbsp;          throw new Exception(&quot;Null data not allowed into tree&quot;);</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;          e.printStackTrace();</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;      } else this.data = data;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public String toString() {
+&nbsp;
+<b class="nc">&nbsp;      return TreePrinter.getTreeDisplay(this);</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  /** Public Methods * */
+<b class="fc">&nbsp;  public SplayTree() {</b>
+<b class="fc">&nbsp;    this.root = null;</b>
+&nbsp;  }
+&nbsp;
+<b class="nc">&nbsp;  public SplayTree(BinaryTree&lt;T&gt; root) {</b>
+<b class="nc">&nbsp;    this.root = root;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public BinaryTree&lt;T&gt; getRoot() {
+<b class="fc">&nbsp;    return root;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /** Searches a node and splays it on top,returns the new root * */
+&nbsp;  public BinaryTree&lt;T&gt; search(T node) {
+<b class="fc">&nbsp;    if (root == null) return null;</b>
+&nbsp;
+<b class="fc">&nbsp;    this.root = splayUtil(root, node);</b>
+&nbsp;
+<b class="fc">&nbsp;    return this.root.getData().compareTo(node) == 0 ? this.root : null;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /** Inserts a node into the tree and splays it on top, returns the new root* */
+&nbsp;  public BinaryTree&lt;T&gt; insert(T node) {
+<b class="fc">&nbsp;    if (root == null) {</b>
+<b class="fc">&nbsp;      root = new BinaryTree&lt;&gt;(node);</b>
+<b class="fc">&nbsp;      return root;</b>
+&nbsp;    }
+<b class="fc">&nbsp;    splay(node);</b>
+&nbsp;
+<b class="fc">&nbsp;    ArrayList&lt;BinaryTree&lt;T&gt;&gt; l_r = split(node);</b>
+&nbsp;
+<b class="fc">&nbsp;    BinaryTree&lt;T&gt; left = l_r.get(0);</b>
+<b class="fc">&nbsp;    BinaryTree&lt;T&gt; right = l_r.get(1);</b>
+&nbsp;
+<b class="fc">&nbsp;    root = new BinaryTree&lt;&gt;(node);</b>
+<b class="fc">&nbsp;    root.setLeft(left);</b>
+<b class="fc">&nbsp;    root.setRight(right);</b>
+&nbsp;
+<b class="fc">&nbsp;    return root;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /** Deletes a node,returns the new root * */
+&nbsp;  public BinaryTree&lt;T&gt; delete(T node) {
+<b class="fc">&nbsp;    if (root == null) return null;</b>
+&nbsp;
+<b class="fc">&nbsp;    BinaryTree&lt;T&gt; searchResult = splay(node);</b>
+&nbsp;
+<b class="fc">&nbsp;    if (searchResult.getData().compareTo(node) != 0) return null;</b>
+&nbsp;
+<b class="fc">&nbsp;    BinaryTree&lt;T&gt; leftSubtree = root.getLeft();</b>
+<b class="fc">&nbsp;    BinaryTree&lt;T&gt; rightSubtree = root.getRight();</b>
+&nbsp;
+&nbsp;    // Set the &#39;to be deleted&#39; key ready for garbage collection
+<b class="fc">&nbsp;    root.setLeft(null);</b>
+<b class="fc">&nbsp;    root.setRight(null);</b>
+&nbsp;
+<b class="fc">&nbsp;    root = join(leftSubtree, rightSubtree);</b>
+&nbsp;
+<b class="fc">&nbsp;    return root;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /** To FindMax Of Entire Tree * */
+&nbsp;  public T findMax() {
+<b class="fc">&nbsp;    BinaryTree&lt;T&gt; temp = root;</b>
+<b class="fc">&nbsp;    while (temp.getRight() != null) temp = temp.getRight();</b>
+<b class="fc">&nbsp;    return temp.getData();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /** To FindMin Of Entire Tree * */
+&nbsp;  public T findMin() {
+<b class="nc">&nbsp;    BinaryTree&lt;T&gt; temp = root;</b>
+<b class="nc">&nbsp;    while (temp.getLeft() != null) temp = temp.getLeft();</b>
+<b class="nc">&nbsp;    return temp.getData();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /** * To FindMax Of Tree with specified root * */
+&nbsp;  public T findMax(BinaryTree&lt;T&gt; root) {
+<b class="fc">&nbsp;    BinaryTree&lt;T&gt; temp = root;</b>
+<b class="fc">&nbsp;    while (temp.getRight() != null) temp = temp.getRight();</b>
+<b class="fc">&nbsp;    return temp.getData();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /** * To FindMin Of Tree with specified root * */
+&nbsp;  public T findMin(BinaryTree&lt;T&gt; root) {
+<b class="nc">&nbsp;    BinaryTree&lt;T&gt; temp = root;</b>
+<b class="nc">&nbsp;    while (temp.getLeft() != null) temp = temp.getLeft();</b>
+<b class="nc">&nbsp;    return temp.getData();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public String toString() {
+&nbsp;
+<b class="nc">&nbsp;    System.out.println(&quot;Elements:&quot; + inorder(root, new ArrayList&lt;&gt;()));</b>
+<b class="nc">&nbsp;    return (root != null) ? root.toString() : null;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /** Private Methods * */
+&nbsp;  private BinaryTree&lt;T&gt; rightRotate(BinaryTree&lt;T&gt; node) {
+<b class="fc">&nbsp;    BinaryTree&lt;T&gt; p = node.getLeft();</b>
+<b class="fc">&nbsp;    node.setLeft(p.getRight());</b>
+<b class="fc">&nbsp;    p.setRight(node);</b>
+<b class="fc">&nbsp;    return p;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private BinaryTree&lt;T&gt; leftRotate(BinaryTree&lt;T&gt; node) {
+<b class="fc">&nbsp;    BinaryTree&lt;T&gt; p = node.getRight();</b>
+<b class="fc">&nbsp;    node.setRight(p.getLeft());</b>
+<b class="fc">&nbsp;    p.setLeft(node);</b>
+<b class="fc">&nbsp;    return p;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private BinaryTree&lt;T&gt; splayUtil(BinaryTree&lt;T&gt; root, T key) {
+<b class="fc">&nbsp;    if (root == null || root.getData() == key) return root;</b>
+&nbsp;
+<b class="fc">&nbsp;    if (root.getData().compareTo(key) &gt; 0) {</b>
+<b class="fc">&nbsp;      if (root.getLeft() == null) return root;</b>
+&nbsp;
+<b class="fc">&nbsp;      if (root.getLeft().getData().compareTo(key) &gt; 0) {</b>
+&nbsp;
+<b class="fc">&nbsp;        root.getLeft().setLeft(splayUtil(root.getLeft().getLeft(), key));</b>
+&nbsp;
+<b class="fc">&nbsp;        root = rightRotate(root);</b>
+<b class="fc">&nbsp;      } else if (root.getLeft().getData().compareTo(key) &lt; 0) {</b>
+&nbsp;
+<b class="fc">&nbsp;        root.getLeft().setRight(splayUtil(root.getLeft().getRight(), key));</b>
+&nbsp;
+<b class="fc">&nbsp;        if (root.getLeft().getRight() != null) root.setLeft(leftRotate(root.getLeft()));</b>
+&nbsp;      }
+<b class="fc">&nbsp;      return (root.getLeft() == null) ? root : rightRotate(root);</b>
+&nbsp;    } else {
+<b class="fc">&nbsp;      if (root.getRight() == null) return root;</b>
+&nbsp;
+<b class="fc">&nbsp;      if (root.getRight().getData().compareTo(key) &gt; 0) {</b>
+<b class="fc">&nbsp;        root.getRight().setLeft(splayUtil(root.getRight().getLeft(), key));</b>
+<b class="fc">&nbsp;        if (root.getRight().getLeft() != null) root.setRight(rightRotate(root.getRight()));</b>
+<b class="fc">&nbsp;      } else if (root.getRight().getData().compareTo(key) &lt; 0) // Zag-Zag (Right Right)</b>
+&nbsp;      {
+<b class="fc">&nbsp;        root.getRight().setRight(splayUtil(root.getRight().getRight(), key));</b>
+<b class="fc">&nbsp;        root = leftRotate(root);</b>
+&nbsp;      }
+&nbsp;
+<b class="fc">&nbsp;      return (root.getRight() == null) ? root : leftRotate(root);</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  private BinaryTree&lt;T&gt; splay(T node) {
+<b class="fc">&nbsp;    if (root == null) return null;</b>
+&nbsp;
+<b class="fc">&nbsp;    this.root = splayUtil(root, node);</b>
+&nbsp;
+<b class="fc">&nbsp;    return this.root;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private ArrayList&lt;BinaryTree&lt;T&gt;&gt; split(T node) {
+&nbsp;    BinaryTree&lt;T&gt; right;
+&nbsp;    BinaryTree&lt;T&gt; left;
+&nbsp;
+<b class="fc">&nbsp;    if (node.compareTo(root.getData()) &gt; 0) {</b>
+<b class="fc">&nbsp;      right = root.getRight();</b>
+<b class="fc">&nbsp;      left = root;</b>
+<b class="fc">&nbsp;      left.setRight(null);</b>
+&nbsp;    } else {
+<b class="fc">&nbsp;      left = root.getLeft();</b>
+<b class="fc">&nbsp;      right = root;</b>
+<b class="fc">&nbsp;      right.setLeft(null);</b>
+&nbsp;    }
+<b class="fc">&nbsp;    ArrayList&lt;BinaryTree&lt;T&gt;&gt; l_r = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;    l_r.add(left);</b>
+<b class="fc">&nbsp;    l_r.add(right);</b>
+&nbsp;
+<b class="fc">&nbsp;    return l_r;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private BinaryTree&lt;T&gt; join(BinaryTree&lt;T&gt; L, BinaryTree&lt;T&gt; R) {
+&nbsp;
+<b class="fc">&nbsp;    if (L == null) {</b>
+<b class="fc">&nbsp;      root = R;</b>
+<b class="fc">&nbsp;      return R;</b>
+&nbsp;    }
+<b class="fc">&nbsp;    root = splayUtil(L, findMax(L));</b>
+<b class="fc">&nbsp;    root.setRight(R);</b>
+<b class="fc">&nbsp;    return root;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private ArrayList&lt;T&gt; inorder(BinaryTree&lt;T&gt; root, ArrayList&lt;T&gt; sorted) {
+&nbsp;
+<b class="nc">&nbsp;    if (root == null) {</b>
+<b class="nc">&nbsp;      return sorted;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    inorder(root.getLeft(), sorted);</b>
+<b class="nc">&nbsp;    sorted.add(root.getData());</b>
+<b class="nc">&nbsp;    inorder(root.getRight(), sorted);</b>
+<b class="nc">&nbsp;    return sorted;</b>
+&nbsp;  }
+&nbsp;}
+&nbsp;
+&nbsp;class SplayTreeRun {
+&nbsp;
+&nbsp;  public static void main(String[] args) {
+&nbsp;
+&nbsp;    SplayTree&lt;Integer&gt; splayTree = new SplayTree&lt;&gt;();
+&nbsp;    Scanner sc = new Scanner(System.in);
+&nbsp;    int[] data = {2, 29, 26, -1, 10, 0, 2, 11};
+&nbsp;    int c = 0;
+&nbsp;    for (int i : data) {
+&nbsp;      splayTree.insert(i);
+&nbsp;    }
+&nbsp;
+&nbsp;    while (c != 7) {
+&nbsp;      System.out.println(&quot;1. Insert 2. Delete 3. Search 4.FindMin 5.FindMax 6. PrintTree 7. Exit&quot;);
+&nbsp;      c = sc.nextInt();
+&nbsp;      switch (c) {
+&nbsp;        case 1:
+&nbsp;          System.out.println(&quot;Enter Data :&quot;);
+&nbsp;          splayTree.insert(sc.nextInt());
+&nbsp;          break;
+&nbsp;        case 2:
+&nbsp;          System.out.println(&quot;Enter Element to be Deleted:&quot;);
+&nbsp;          splayTree.delete(sc.nextInt());
+&nbsp;          break;
+&nbsp;        case 3:
+&nbsp;          System.out.println(&quot;Enter Element to be Searched and Splayed:&quot;);
+&nbsp;          splayTree.search(sc.nextInt());
+&nbsp;          break;
+&nbsp;        case 4:
+&nbsp;          System.out.println(&quot;Min: &quot; + splayTree.findMin());
+&nbsp;          break;
+&nbsp;        case 5:
+&nbsp;          System.out.println(&quot;Max: &quot; + splayTree.findMax());
+&nbsp;          break;
+&nbsp;        case 6:
+&nbsp;          System.out.println(splayTree);
+&nbsp;          break;
+&nbsp;        case 7:
+&nbsp;          sc.close();
+&nbsp;          break;
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

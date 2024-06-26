@@ -1,0 +1,308 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > NetworkFlowSolverBase</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.graphtheory.networkflow</a>
+</div>
+
+<h1>Coverage Summary for Class: NetworkFlowSolverBase (com.williamfiset.algorithms.graphtheory.networkflow)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">NetworkFlowSolverBase</td>
+<td class="coverageStat">
+  <span class="percent">
+    91,7%
+  </span>
+  <span class="absValue">
+    (11/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    94,6%
+  </span>
+  <span class="absValue">
+    (35/37)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">NetworkFlowSolverBase$Edge</td>
+<td class="coverageStat">
+  <span class="percent">
+    66,7%
+  </span>
+  <span class="absValue">
+    (4/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    64,3%
+  </span>
+  <span class="absValue">
+    (9/14)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    83,3%
+  </span>
+  <span class="absValue">
+    (15/18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    86,3%
+  </span>
+  <span class="absValue">
+    (44/51)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/** @author William Fiset, william.alexandre.fiset@gmail.com */
+&nbsp;package com.williamfiset.algorithms.graphtheory.networkflow;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;public abstract class NetworkFlowSolverBase {
+&nbsp;
+&nbsp;  // To avoid overflow, set infinity to a value less than Long.MAX_VALUE;
+&nbsp;  protected static final long INF = Long.MAX_VALUE / 2;
+&nbsp;
+&nbsp;  public static class Edge {
+&nbsp;    public int from, to;
+&nbsp;    public Edge residual;
+&nbsp;    public long flow, cost;
+&nbsp;    public final long capacity, originalCost;
+&nbsp;
+&nbsp;    public Edge(int from, int to, long capacity) {
+<b class="fc">&nbsp;      this(from, to, capacity, 0 /* unused */);</b>
+&nbsp;    }
+&nbsp;
+<b class="fc">&nbsp;    public Edge(int from, int to, long capacity, long cost) {</b>
+<b class="fc">&nbsp;      this.from = from;</b>
+<b class="fc">&nbsp;      this.to = to;</b>
+<b class="fc">&nbsp;      this.capacity = capacity;</b>
+<b class="fc">&nbsp;      this.originalCost = this.cost = cost;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean isResidual() {
+<b class="nc">&nbsp;      return capacity == 0;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public long remainingCapacity() {
+<b class="fc">&nbsp;      return capacity - flow;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void augment(long bottleNeck) {
+<b class="fc">&nbsp;      flow += bottleNeck;</b>
+<b class="fc">&nbsp;      residual.flow -= bottleNeck;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String toString(int s, int t) {
+<b class="nc">&nbsp;      String u = (from == s) ? &quot;s&quot; : ((from == t) ? &quot;t&quot; : String.valueOf(from));</b>
+<b class="nc">&nbsp;      String v = (to == s) ? &quot;s&quot; : ((to == t) ? &quot;t&quot; : String.valueOf(to));</b>
+<b class="nc">&nbsp;      return String.format(</b>
+&nbsp;          &quot;Edge %s -&gt; %s | flow = %d | capacity = %d | is residual: %s&quot;,
+<b class="nc">&nbsp;          u, v, flow, capacity, isResidual());</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  // Inputs: n = number of nodes, s = source, t = sink
+&nbsp;  protected final int n, s, t;
+&nbsp;
+&nbsp;  protected long maxFlow;
+&nbsp;  protected long minCost;
+&nbsp;
+&nbsp;  protected boolean[] minCut;
+&nbsp;  protected List&lt;Edge&gt;[] graph;
+&nbsp;
+&nbsp;  // &#39;visited&#39; and &#39;visitedToken&#39; are variables used for graph sub-routines to
+&nbsp;  // track whether a node has been visited or not. In particular, node &#39;i&#39; was
+&nbsp;  // recently visited if visited[i] == visitedToken is true. This is handy
+&nbsp;  // because to mark all nodes as unvisited simply increment the visitedToken.
+<b class="fc">&nbsp;  private int visitedToken = 1;</b>
+&nbsp;  private int[] visited;
+&nbsp;
+&nbsp;  // Indicates whether the network flow algorithm has ran. We should not need to
+&nbsp;  // run the solver multiple times, because it always yields the same result.
+&nbsp;  private boolean solved;
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Creates an instance of a flow network solver. Use the {@link #addEdge} method to add edges to
+&nbsp;   * the graph.
+&nbsp;   *
+&nbsp;   * @param n - The number of nodes in the graph including source and sink nodes.
+&nbsp;   * @param s - The index of the source node, 0 &lt;= s &lt; n
+&nbsp;   * @param t - The index of the sink node, 0 &lt;= t &lt; n, t != s
+&nbsp;   */
+<b class="fc">&nbsp;  public NetworkFlowSolverBase(int n, int s, int t) {</b>
+<b class="fc">&nbsp;    this.n = n;</b>
+<b class="fc">&nbsp;    this.s = s;</b>
+<b class="fc">&nbsp;    this.t = t;</b>
+<b class="fc">&nbsp;    initializeGraph();</b>
+<b class="fc">&nbsp;    minCut = new boolean[n];</b>
+<b class="fc">&nbsp;    visited = new int[n];</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Construct an empty graph with n nodes including the source and sink nodes.
+&nbsp;  @SuppressWarnings(&quot;unchecked&quot;)
+&nbsp;  private void initializeGraph() {
+<b class="fc">&nbsp;    graph = new List[n];</b>
+<b class="fc">&nbsp;    for (int i = 0; i &lt; n; i++) graph[i] = new ArrayList&lt;Edge&gt;();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Adds a directed edge (and residual edge) to the flow graph.
+&nbsp;   *
+&nbsp;   * @param from - The index of the node the directed edge starts at.
+&nbsp;   * @param to - The index of the node the directed edge ends at.
+&nbsp;   * @param capacity - The capacity of the edge.
+&nbsp;   */
+&nbsp;  public void addEdge(int from, int to, long capacity) {
+<b class="fc">&nbsp;    if (capacity &lt; 0) throw new IllegalArgumentException(&quot;Capacity &lt; 0&quot;);</b>
+<b class="fc">&nbsp;    Edge e1 = new Edge(from, to, capacity);</b>
+<b class="fc">&nbsp;    Edge e2 = new Edge(to, from, 0);</b>
+<b class="fc">&nbsp;    e1.residual = e2;</b>
+<b class="fc">&nbsp;    e2.residual = e1;</b>
+<b class="fc">&nbsp;    graph[from].add(e1);</b>
+<b class="fc">&nbsp;    graph[to].add(e2);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /** Cost variant of {@link #addEdge(int, int, int)} for min-cost max-flow */
+&nbsp;  public void addEdge(int from, int to, long capacity, long cost) {
+<b class="fc">&nbsp;    Edge e1 = new Edge(from, to, capacity, cost);</b>
+<b class="fc">&nbsp;    Edge e2 = new Edge(to, from, 0, -cost);</b>
+<b class="fc">&nbsp;    e1.residual = e2;</b>
+<b class="fc">&nbsp;    e2.residual = e1;</b>
+<b class="fc">&nbsp;    graph[from].add(e1);</b>
+<b class="fc">&nbsp;    graph[to].add(e2);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Marks node &#39;i&#39; as visited.
+&nbsp;  public void visit(int i) {
+<b class="fc">&nbsp;    visited[i] = visitedToken;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Returns whether or not node &#39;i&#39; has been visited.
+&nbsp;  public boolean visited(int i) {
+<b class="fc">&nbsp;    return visited[i] == visitedToken;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Resets all nodes as unvisited. This is especially useful to do
+&nbsp;  // between iterations of finding augmenting paths, O(1)
+&nbsp;  public void markAllNodesAsUnvisited() {
+<b class="fc">&nbsp;    visitedToken++;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Returns the graph after the solver has been executed. This allow you to inspect the {@link
+&nbsp;   * Edge#flow} compared to the {@link Edge#capacity} in each edge. This is useful if you want to
+&nbsp;   * figure out which edges were used during the max flow.
+&nbsp;   */
+&nbsp;  public List&lt;Edge&gt;[] getGraph() {
+<b class="fc">&nbsp;    execute();</b>
+<b class="fc">&nbsp;    return graph;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Returns the maximum flow from the source to the sink.
+&nbsp;  public long getMaxFlow() {
+<b class="fc">&nbsp;    execute();</b>
+<b class="fc">&nbsp;    return maxFlow;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Returns the min cost from the source to the sink.
+&nbsp;  // NOTE: This method only applies to min-cost max-flow algorithms.
+&nbsp;  public long getMinCost() {
+<b class="fc">&nbsp;    execute();</b>
+<b class="fc">&nbsp;    return minCost;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Returns the min-cut of this flow network in which the nodes on the &quot;left side&quot;
+&nbsp;  // of the cut with the source are marked as true and those on the &quot;right side&quot;
+&nbsp;  // of the cut with the sink are marked as false.
+&nbsp;  public boolean[] getMinCut() {
+<b class="nc">&nbsp;    execute();</b>
+<b class="nc">&nbsp;    return minCut;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Wrapper method that ensures we only call solve() once
+&nbsp;  private void execute() {
+<b class="fc">&nbsp;    if (solved) return;</b>
+<b class="fc">&nbsp;    solved = true;</b>
+<b class="fc">&nbsp;    solve();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Method to implement which solves the network flow problem.
+&nbsp;  public abstract void solve();
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

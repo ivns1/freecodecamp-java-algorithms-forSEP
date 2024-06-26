@@ -27,9 +27,19 @@ public class TernarySearch {
     while (true) {
       double mid1 = (2 * low + high) / 3, mid2 = (low + 2 * high) / 3;
       double res1 = function.apply(mid1), res2 = function.apply(mid2);
-      if (res1 > res2) low = mid1;
-      else high = mid2;
-      if (best != null && Math.abs(best - mid1) < EPS) break;
+
+
+      if (res1 > res2) {
+        TernarySearchCoverageTool.trackBranch101Hit(); // Track branch 1 hit
+        low = mid1;
+      } else {
+        TernarySearchCoverageTool.trackBranch102Hit(); // Track branch 2 hit
+        high = mid2;
+      }
+      if (best != null && Math.abs(best - mid1) < EPS) {
+        TernarySearchCoverageTool.trackBranch103Hit(); // Track loop break hit
+        break;
+      }
       best = mid1;
     }
     return best;

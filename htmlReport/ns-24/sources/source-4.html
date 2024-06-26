@@ -1,0 +1,175 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > EulerTotientFunctionWithSieve</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.math</a>
+</div>
+
+<h1>Coverage Summary for Class: EulerTotientFunctionWithSieve (com.williamfiset.algorithms.math)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">EulerTotientFunctionWithSieve</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/27)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * Computes Euler&#39;s totient function
+&nbsp; *
+&nbsp; * @author Steven &amp; Felix Halim
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.math;
+&nbsp;
+<b class="nc">&nbsp;public class EulerTotientFunctionWithSieve {</b>
+&nbsp;
+&nbsp;  // TODO(williamfiset): Refactor this class to accept a max value in the constructor.
+&nbsp;
+&nbsp;  // Set MAX to be the largest value you
+&nbsp;  // wish to compute the totient for.
+<b class="nc">&nbsp;  private static int MAX = 1000000;</b>
+<b class="nc">&nbsp;  private static int[] PRIMES = sieve(MAX);</b>
+&nbsp;
+&nbsp;  // Returns the value of Euler&#39;s totient/phi function
+&nbsp;  // which computes how many numbers are relativity
+&nbsp;  // prime to n less than or equal to n
+&nbsp;  public static int totient(int n) {
+&nbsp;
+<b class="nc">&nbsp;    if (n &gt;= MAX - 1) throw new IllegalStateException(&quot;MAX not large enough!&quot;);</b>
+<b class="nc">&nbsp;    int ans = n;</b>
+&nbsp;
+<b class="nc">&nbsp;    for (int i = 1, p = PRIMES[0]; p * p &lt;= n; i++) {</b>
+&nbsp;
+<b class="nc">&nbsp;      if (n % p == 0) ans -= ans / p;</b>
+<b class="nc">&nbsp;      while (n % p == 0) n /= p;</b>
+<b class="nc">&nbsp;      p = PRIMES[i];</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Last factor
+<b class="nc">&nbsp;    if (n != 1) ans -= ans / n;</b>
+<b class="nc">&nbsp;    return ans;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  // Gets all primes up to, but NOT including limit (returned as a list of primes)
+&nbsp;  private static int[] sieve(int limit) {
+&nbsp;
+<b class="nc">&nbsp;    if (limit &lt;= 2) return new int[0];</b>
+&nbsp;
+&nbsp;    // Find an upper bound on the number of primes below our limit.
+&nbsp;    // https://en.wikipedia.org/wiki/Prime-counting_function#Inequalities
+<b class="nc">&nbsp;    final int numPrimes = (int) (1.25506 * limit / Math.log((double) limit));</b>
+<b class="nc">&nbsp;    int[] primes = new int[numPrimes];</b>
+<b class="nc">&nbsp;    int index = 0;</b>
+&nbsp;
+<b class="nc">&nbsp;    boolean[] isComposite = new boolean[limit];</b>
+<b class="nc">&nbsp;    final int sqrtLimit = (int) Math.sqrt(limit);</b>
+<b class="nc">&nbsp;    for (int i = 2; i &lt;= sqrtLimit; i++) {</b>
+<b class="nc">&nbsp;      if (!isComposite[i]) {</b>
+<b class="nc">&nbsp;        primes[index++] = i;</b>
+<b class="nc">&nbsp;        for (int j = i * i; j &lt; limit; j += i) isComposite[j] = true;</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    for (int i = sqrtLimit + 1; i &lt; limit; i++) if (!isComposite[i]) primes[index++] = i;</b>
+<b class="nc">&nbsp;    return java.util.Arrays.copyOf(primes, index);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public static void main(String[] args) {
+&nbsp;    // Prints 8 because 1,2,4,7,8,11,13,14 are all
+&nbsp;    // less than 15 and relatively prime with 15
+<b class="nc">&nbsp;    System.out.printf(&quot;phi(15) = %d\n&quot;, totient(15));</b>
+&nbsp;
+<b class="nc">&nbsp;    System.out.println();</b>
+&nbsp;
+<b class="nc">&nbsp;    for (int x = 1; x &lt;= 11; x++) {</b>
+<b class="nc">&nbsp;      System.out.printf(&quot;phi(%d) = %d\n&quot;, x, totient(x));</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

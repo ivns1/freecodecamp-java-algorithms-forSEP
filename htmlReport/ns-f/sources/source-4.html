@@ -1,0 +1,604 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > GenericSegmentTree3</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.datastructures.segmenttree</a>
+</div>
+
+<h1>Coverage Summary for Class: GenericSegmentTree3 (com.williamfiset.algorithms.datastructures.segmenttree)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">GenericSegmentTree3</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * A generic segment tree implementation that supports several range update and aggregation
+&nbsp; * functions.
+&nbsp; *
+&nbsp; * &lt;p&gt;Run with: ./gradlew run -Palgorithm=datastructures.segmenttree.GenericSegmentTree3
+&nbsp; *
+&nbsp; * &lt;p&gt;Several thanks to cp-algorithms for their great article on segment trees:
+&nbsp; * https://cp-algorithms.com/data_structures/segment_tree.html
+&nbsp; *
+&nbsp; * &lt;p&gt;NOTE: This file is still a WIP
+&nbsp; *
+&nbsp; * @author William Fiset, william.alexandre.fiset@gmail.com
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.datastructures.segmenttree;
+&nbsp;
+<b class="nc">&nbsp;public class GenericSegmentTree3 {</b>
+&nbsp;
+&nbsp;  // // The type of segment combination function to use
+&nbsp;  // public static enum SegmentCombinationFn {
+&nbsp;  //   SUM,
+&nbsp;  //   MIN,
+&nbsp;  //   MAX
+&nbsp;  // }
+&nbsp;
+&nbsp;  // // When updating the value of a specific index position, or a range of values,
+&nbsp;  // // modify the affected values using the following function:
+&nbsp;  // public static enum RangeUpdateFn {
+&nbsp;  //   // When a range update is issued, assign all the values in the range [l, r] to be `x`
+&nbsp;  //   ASSIGN,
+&nbsp;  //   // When a range update is issued, add a value of `x` to all the elements in the range [l, r]
+&nbsp;  //   ADDITION,
+&nbsp;  //   // When a range update is issued, multiply all elements in the range [l, r] by a value of `x`
+&nbsp;  //   MULTIPLICATION
+&nbsp;  // }
+&nbsp;
+&nbsp;  // // TODO(william): Make this class static if possible to avoid sharing members with parent ST
+&nbsp;  // class
+&nbsp;  // private class SegmentNode implements PrintableNode {
+&nbsp;  //   // TODO(william): investigate if we really need this, it&#39;s unlikely that we do since it
+&nbsp;  // should
+&nbsp;  //   // be able to implicitly determine the index.
+&nbsp;  //   int i;
+&nbsp;
+&nbsp;  //   Long value;
+&nbsp;  //   Long lazy;
+&nbsp;
+&nbsp;  //   // Used only for Min/Max mul queries. Used in an attempt to resolve:
+&nbsp;  //   // https://github.com/williamfiset/Algorithms/issues/208
+&nbsp;  //   Long min;
+&nbsp;  //   Long max;
+&nbsp;
+&nbsp;  //   // The range of the segment [l, r]
+&nbsp;  //   int l;
+&nbsp;  //   int r;
+&nbsp;
+&nbsp;  //   // The two child segments of this segment (null otherwise).
+&nbsp;  //   // Left segment is [l, m) and right segment is [m, r] where m = (l+r)/2
+&nbsp;  //   SegmentNode left;
+&nbsp;  //   SegmentNode right;
+&nbsp;
+&nbsp;  //   public SegmentNode(int i, Long value, Long min, Long max, int l, int r) {
+&nbsp;  //     this.i = i;
+&nbsp;  //     this.value = value;
+&nbsp;  //     this.min = min;
+&nbsp;  //     this.max = max;
+&nbsp;  //     this.l = l;
+&nbsp;  //     this.r = r;
+&nbsp;  //   }
+&nbsp;
+&nbsp;  //   public Long rangeQuery1(int ll, int rr) {
+&nbsp;  //     // Different segment tree types have different base cases
+&nbsp;  //     if (ll &gt; rr) {
+&nbsp;  //       return null;
+&nbsp;  //     }
+&nbsp;  //     propagate1();
+&nbsp;  //     if (exactOverlap(l, r)) {
+&nbsp;  //       return value;
+&nbsp;  //     }
+&nbsp;  //     int m = (l + r) / 2;
+&nbsp;  //     // Instead of checking if [ll, m] overlaps [l, r] and [m+1, rr] overlaps
+&nbsp;  //     // [l, r], simply recurse on both segments and let the base case return the
+&nbsp;  //     // default value for invalid intervals.
+&nbsp;  //     return combinationFn.apply(
+&nbsp;  //         rangeQuery1(left, l, Math.min(m, rr)),
+&nbsp;  //         rangeQuery1(right, Math.max(ll, m + 1), rr));
+&nbsp;  //   }
+&nbsp;
+&nbsp;  //   // Apply the delta value to the current node and push it to the child segments
+&nbsp;  //   public void propagate1() {
+&nbsp;  //     if (lazy != null) {
+&nbsp;  //       // Only used for min/max mul queries
+&nbsp;  //       min = min * lazy;
+&nbsp;  //       max = max * lazy;
+&nbsp;
+&nbsp;  //       // Apply the delta to the current segment.
+&nbsp;  //       value = ruf.apply(node, lazy);
+&nbsp;  //       // Push the delta to left/right segments for non-leaf nodes
+&nbsp;  //       propagateLazy1(lazy);
+&nbsp;  //       lazy = null;
+&nbsp;  //     }
+&nbsp;  //   }
+&nbsp;
+&nbsp;  //   public void propagateLazy1(long delta) {
+&nbsp;  //     // Ignore leaf segments since they don&#39;t have children.
+&nbsp;  //     if (isLeaf()) {
+&nbsp;  //       return;
+&nbsp;  //     }
+&nbsp;  //     left.lazy = lruf.apply(left, delta);
+&nbsp;  //     right.lazy = lruf.apply(right, delta);
+&nbsp;  //   }
+&nbsp;
+&nbsp;  //   public boolean exactOverlap(int ll, int rr) {
+&nbsp;  //     return l == ll &amp;&amp; r = rr;
+&nbsp;  //   }
+&nbsp;
+&nbsp;  //   public boolean isLeaf() {
+&nbsp;  //     return l == r;
+&nbsp;  //   }
+&nbsp;
+&nbsp;  //   @Override
+&nbsp;  //   public PrintableNode getLeft() {
+&nbsp;  //     return left;
+&nbsp;  //   }
+&nbsp;
+&nbsp;  //   @Override
+&nbsp;  //   public PrintableNode getRight() {
+&nbsp;  //     return right;
+&nbsp;  //   }
+&nbsp;
+&nbsp;  //   @Override
+&nbsp;  //   public String getText() {
+&nbsp;  //     return value.toString();
+&nbsp;  //   }
+&nbsp;
+&nbsp;  //   @Override
+&nbsp;  //   public String toString() {
+&nbsp;  //     return String.format(&quot;[%d, %d], value = %d, lazy = %d&quot;, tl, tr, value, lazy);
+&nbsp;  //   }
+&nbsp;  // }
+&nbsp;
+&nbsp;  // // The number of elements in the original input values array.
+&nbsp;  // private int n;
+&nbsp;
+&nbsp;  // private SegmentNode root;
+&nbsp;
+&nbsp;  // // The chosen range combination function
+&nbsp;  // private BinaryOperator&lt;Long&gt; combinationFn;
+&nbsp;
+&nbsp;  // private interface Ruf {
+&nbsp;  //   Long apply(SegmentNode segment, Long delta);
+&nbsp;  // }
+&nbsp;
+&nbsp;  // // The Range Update Function (RUF) that chooses how a lazy delta value is
+&nbsp;  // // applied to a segment.
+&nbsp;  // private Ruf ruf;
+&nbsp;
+&nbsp;  // // The Lazy Range Update Function (LRUF) associated with the RUF. How you
+&nbsp;  // // propagate the lazy delta values is sometimes different than how you apply
+&nbsp;  // // them to the current segment (but most of the time the RUF = LRUF).
+&nbsp;  // private Ruf lruf;
+&nbsp;
+&nbsp;  // private long safeSum(Long a, Long b) {
+&nbsp;  //   if (a == null) a = 0L;
+&nbsp;  //   if (b == null) b = 0L;
+&nbsp;  //   return a + b;
+&nbsp;  // }
+&nbsp;
+&nbsp;  // private Long safeMul(Long a, Long b) {
+&nbsp;  //   if (a == null) a = 1L;
+&nbsp;  //   if (b == null) b = 1L;
+&nbsp;  //   return a * b;
+&nbsp;  // }
+&nbsp;
+&nbsp;  // private Long safeMin(Long a, Long b) {
+&nbsp;  //   if (a == null) return b;
+&nbsp;  //   if (b == null) return a;
+&nbsp;  //   return Math.min(a, b);
+&nbsp;  // }
+&nbsp;
+&nbsp;  // private Long safeMax(Long a, Long b) {
+&nbsp;  //   if (a == null) return b;
+&nbsp;  //   if (b == null) return a;
+&nbsp;  //   return Math.max(a, b);
+&nbsp;  // }
+&nbsp;
+&nbsp;  // private BinaryOperator&lt;Long&gt; sumCombinationFn = (a, b) -&gt; safeSum(a, b);
+&nbsp;  // private BinaryOperator&lt;Long&gt; minCombinationFn = (a, b) -&gt; safeMin(a, b);
+&nbsp;  // private BinaryOperator&lt;Long&gt; maxCombinationFn = (a, b) -&gt; safeMax(a, b);
+&nbsp;
+&nbsp;  // // TODO(william): Document the justification for each function below
+&nbsp;
+&nbsp;  // // Range update functions
+&nbsp;  // private Ruf minQuerySumUpdate = (s, x) -&gt; safeSum(s.value, x);
+&nbsp;  // private Ruf lminQuerySumUpdate = (s, x) -&gt; safeSum(s.lazy, x);
+&nbsp;
+&nbsp;  // // // TODO(issue/208): support this multiplication update
+&nbsp;  // private Ruf minQueryMulUpdate =
+&nbsp;  //     (s, x) -&gt; {
+&nbsp;  //       if (x == 0) {
+&nbsp;  //         return 0L;
+&nbsp;  //       } else if (x &lt; 0) {
+&nbsp;  //         // s.min was already calculated
+&nbsp;  //         if (safeMul(s.value, x) == s.min) {
+&nbsp;  //           return s.max;
+&nbsp;  //         } else {
+&nbsp;  //           return s.min;
+&nbsp;  //         }
+&nbsp;  //       } else {
+&nbsp;  //         return safeMul(s.value, x);
+&nbsp;  //       }
+&nbsp;  //     };
+&nbsp;  // private Ruf lminQueryMulUpdate = (s, x) -&gt; safeMul(s.lazy, x);
+&nbsp;
+&nbsp;  // private Ruf minQueryAssignUpdate = (s, x) -&gt; x;
+&nbsp;  // private Ruf lminQueryAssignUpdate = (s, x) -&gt; x;
+&nbsp;
+&nbsp;  // private Ruf maxQuerySumUpdate = (s, x) -&gt; safeSum(s.value, x);
+&nbsp;  // private Ruf lmaxQuerySumUpdate = (s, x) -&gt; safeSum(s.lazy, x);
+&nbsp;
+&nbsp;  // // TODO(issue/208): support this multiplication update
+&nbsp;  // private Ruf maxQueryMulUpdate =
+&nbsp;  //     (s, x) -&gt; {
+&nbsp;  //       if (x == 0) {
+&nbsp;  //         return 0L;
+&nbsp;  //       } else if (x &lt; 0) {
+&nbsp;  //         if (safeMul(s.value, x) == s.min) {
+&nbsp;  //           return s.max;
+&nbsp;  //         } else {
+&nbsp;  //           return s.min;
+&nbsp;  //         }
+&nbsp;  //       } else {
+&nbsp;  //         return safeMul(s.value, x);
+&nbsp;  //       }
+&nbsp;  //     };
+&nbsp;  // private Ruf lmaxQueryMulUpdate = (s, x) -&gt; safeMul(s.lazy, x);
+&nbsp;
+&nbsp;  // private Ruf maxQueryAssignUpdate = (s, x) -&gt; x;
+&nbsp;  // private Ruf lmaxQueryAssignUpdate = (s, x) -&gt; x;
+&nbsp;
+&nbsp;  // private Ruf sumQuerySumUpdate = (s, x) -&gt; s.value + (s.tr - s.tl + 1) * x;
+&nbsp;  // private Ruf lsumQuerySumUpdate = (s, x) -&gt; safeSum(s.lazy, x);
+&nbsp;
+&nbsp;  // private Ruf sumQueryMulUpdate = (s, x) -&gt; safeMul(s.value, x);
+&nbsp;  // private Ruf lsumQueryMulUpdate = (s, x) -&gt; safeMul(s.lazy, x);
+&nbsp;
+&nbsp;  // private Ruf sumQueryAssignUpdate = (s, x) -&gt; (s.tr - s.tl + 1) * x;
+&nbsp;  // private Ruf lsumQueryAssignUpdate = (s, x) -&gt; x;
+&nbsp;
+&nbsp;  // public GenericSegmentTree3(
+&nbsp;  //     long[] values,
+&nbsp;  //     SegmentCombinationFn segmentCombinationFunction,
+&nbsp;  //     RangeUpdateFn rangeUpdateFunction) {
+&nbsp;  //   if (values == null) {
+&nbsp;  //     throw new IllegalArgumentException(&quot;Segment tree values cannot be null.&quot;);
+&nbsp;  //   }
+&nbsp;  //   if (segmentCombinationFunction == null) {
+&nbsp;  //     throw new IllegalArgumentException(&quot;Please specify a valid segment combination function.&quot;);
+&nbsp;  //   }
+&nbsp;  //   if (rangeUpdateFunction == null) {
+&nbsp;  //     throw new IllegalArgumentException(&quot;Please specify a valid range update function.&quot;);
+&nbsp;  //   }
+&nbsp;  //   n = values.length;
+&nbsp;
+&nbsp;  //   // The size of the segment tree `t`
+&nbsp;  //   //
+&nbsp;  //   // TODO(william): Investigate to reduce this space. There are only 2n-1 segments, so we
+&nbsp;  // should
+&nbsp;  //   // be able to reduce the space, but may need to reorganize the tree/queries. One idea is to
+&nbsp;  // use
+&nbsp;  //   // the Eulerian tour structure of the tree to densely pack the segments.
+&nbsp;  //   int N = 4 * n;
+&nbsp;
+&nbsp;  //   // Select the specified combination function
+&nbsp;  //   if (segmentCombinationFunction == SegmentCombinationFn.SUM) {
+&nbsp;  //     combinationFn = sumCombinationFn;
+&nbsp;  //     if (rangeUpdateFunction == RangeUpdateFn.ADDITION) {
+&nbsp;  //       ruf = sumQuerySumUpdate;
+&nbsp;  //       lruf = lsumQuerySumUpdate;
+&nbsp;  //     } else if (rangeUpdateFunction == RangeUpdateFn.ASSIGN) {
+&nbsp;  //       ruf = sumQueryAssignUpdate;
+&nbsp;  //       lruf = lsumQueryAssignUpdate;
+&nbsp;  //     } else if (rangeUpdateFunction == RangeUpdateFn.MULTIPLICATION) {
+&nbsp;  //       ruf = sumQueryMulUpdate;
+&nbsp;  //       lruf = lsumQueryMulUpdate;
+&nbsp;  //     }
+&nbsp;  //   } else if (segmentCombinationFunction == SegmentCombinationFn.MIN) {
+&nbsp;  //     combinationFn = minCombinationFn;
+&nbsp;  //     if (rangeUpdateFunction == RangeUpdateFn.ADDITION) {
+&nbsp;  //       ruf = minQuerySumUpdate;
+&nbsp;  //       lruf = lminQuerySumUpdate;
+&nbsp;  //     } else if (rangeUpdateFunction == RangeUpdateFn.ASSIGN) {
+&nbsp;  //       ruf = minQueryAssignUpdate;
+&nbsp;  //       lruf = lminQueryAssignUpdate;
+&nbsp;  //     } else if (rangeUpdateFunction == RangeUpdateFn.MULTIPLICATION) {
+&nbsp;  //       ruf = minQueryMulUpdate;
+&nbsp;  //       lruf = lminQueryMulUpdate;
+&nbsp;  //     }
+&nbsp;  //   } else if (segmentCombinationFunction == SegmentCombinationFn.MAX) {
+&nbsp;  //     combinationFn = maxCombinationFn;
+&nbsp;  //     if (rangeUpdateFunction == RangeUpdateFn.ADDITION) {
+&nbsp;  //       ruf = maxQuerySumUpdate;
+&nbsp;  //       lruf = lmaxQuerySumUpdate;
+&nbsp;  //     } else if (rangeUpdateFunction == RangeUpdateFn.ASSIGN) {
+&nbsp;  //       ruf = maxQueryAssignUpdate;
+&nbsp;  //       lruf = lmaxQueryAssignUpdate;
+&nbsp;  //     } else if (rangeUpdateFunction == RangeUpdateFn.MULTIPLICATION) {
+&nbsp;  //       ruf = maxQueryMulUpdate;
+&nbsp;  //       lruf = lmaxQueryMulUpdate;
+&nbsp;  //     }
+&nbsp;  //   } else {
+&nbsp;  //     throw new UnsupportedOperationException(
+&nbsp;  //         &quot;Combination function not supported: &quot; + segmentCombinationFunction);
+&nbsp;  //   }
+&nbsp;
+&nbsp;  //   root = buildSegmentTree(0, 0, n - 1, values);
+&nbsp;  // }
+&nbsp;
+&nbsp;  // /**
+&nbsp;  //  * Builds a segment tree by starting with the leaf nodes and combining segment values on
+&nbsp;  // callback.
+&nbsp;  //  *
+&nbsp;  //  * @param i the index of the segment in the segment tree
+&nbsp;  //  * @param l the left index (inclusive) of the segment range
+&nbsp;  //  * @param r the right index (inclusive) of the segment range
+&nbsp;  //  * @param values the initial values array
+&nbsp;  //  */
+&nbsp;  // private SegmentNode buildSegmentTree(int i, int l, int r, long[] values) {
+&nbsp;  //   if (l == r) {
+&nbsp;  //     return new SegmentNode(i, values[l], values[l], values[l], l, r);
+&nbsp;  //   }
+&nbsp;  //   int tm = (l + r) / 2;
+&nbsp;  //   SegmentNode left = buildSegmentTree(2 * i + 1, l, tm, values);
+&nbsp;  //   SegmentNode right = buildSegmentTree(2 * i + 2, tm + 1, r, values);
+&nbsp;
+&nbsp;  //   Long segmentValue = combinationFn.apply(left.value, right.value);
+&nbsp;  //   Long minValue = Math.min(left.min, right.min);
+&nbsp;  //   Long maxValue = Math.max(left.max, right.max);
+&nbsp;
+&nbsp;  //   // TODO(william): move assigning children to the constructor?
+&nbsp;  //   Segment segment = new Segment(i, segmentValue, minValue, maxValue, l, r);
+&nbsp;  //   segment.left = left;
+&nbsp;  //   segment.right = right;
+&nbsp;
+&nbsp;  //   return segment;
+&nbsp;  // }
+&nbsp;
+&nbsp;  // /**
+&nbsp;  //  * Returns the query of the range [l, r] on the original `values` array (+ any updates made to
+&nbsp;  // it)
+&nbsp;  //  *
+&nbsp;  //  * @param l the left endpoint of the range query (inclusive)
+&nbsp;  //  * @param r the right endpoint of the range query (inclusive)
+&nbsp;  //  */
+&nbsp;  // public Long rangeQuery1(int l, int r) {
+&nbsp;  //   return root.rangeQuery1(l, r);
+&nbsp;  // }
+&nbsp;
+&nbsp;  // public void rangeUpdate1(int l, int r, long x) {
+&nbsp;  //   rangeUpdate1(node, l, r, x);
+&nbsp;  // }
+&nbsp;
+&nbsp;  // private void rangeUpdate1(SegmentNode node, int l, int r, long x) {
+&nbsp;  //   node.propagate1();
+&nbsp;  //   if (l &gt; r) {
+&nbsp;  //     return;
+&nbsp;  //   }
+&nbsp;
+&nbsp;  //   if (node.exactOverlap(l, r)) {
+&nbsp;  //     // Only used for min/max mul queries
+&nbsp;  //     node.min = node.min * x;
+&nbsp;  //     node.max = node.max * x;
+&nbsp;
+&nbsp;  //     node.value = ruf.apply(node, x);
+&nbsp;  //     node.propagateLazy1(x);
+&nbsp;  //   } else {
+&nbsp;  //     int m = (l + r) / 2;
+&nbsp;  //     // Instead of checking if [tl, m] overlaps [l, r] and [m+1, tr] overlaps
+&nbsp;  //     // [l, r], simply recurse on both segments and let the base case disregard
+&nbsp;  //     // invalid intervals.
+&nbsp;  //     rangeUpdate1(node.left, l, Math.min(m, r), x);
+&nbsp;  //     rangeUpdate1(node.right, Math.max(l, m + 1), r, x);
+&nbsp;
+&nbsp;  //     node.value = combinationFn.apply(node.left.value, node.right.value);
+&nbsp;  //     node.max = Math.max(node.left.max, node.right.max);
+&nbsp;  //     node.min = Math.min(node.left.min, node.right.min);
+&nbsp;  //   }
+&nbsp;  // }
+&nbsp;
+&nbsp;  // // // Updates the value at index `i` in the original `values` array to be `newValue`.
+&nbsp;  // // public void pointUpdate(int i, long newValue) {
+&nbsp;  // //   pointUpdate(0, i, 0, n - 1, newValue);
+&nbsp;  // // }
+&nbsp;
+&nbsp;  // // /**
+&nbsp;  // //  * Update a point value to a new value and update all affected segments, O(log(n))
+&nbsp;  // //  *
+&nbsp;  // //  * &lt;p&gt;Do this by performing a binary search to find the interval containing the point, then
+&nbsp;  // // update
+&nbsp;  // //  * the leaf segment with the new value, and re-compute all affected segment values on the
+&nbsp;  // //  * callback.
+&nbsp;  // //  *
+&nbsp;  // //  * @param i the index of the current segment in the tree
+&nbsp;  // //  * @param pos the target position to update
+&nbsp;  // //  * @param tl the left segment endpoint (inclusive)
+&nbsp;  // //  * @param tr the right segment endpoint (inclusive)
+&nbsp;  // //  * @param newValue the new value to update
+&nbsp;  // //  */
+&nbsp;  // // private void pointUpdate(int i, int pos, int tl, int tr, long newValue) {
+&nbsp;  // //   if (tl == tr) { // `tl == pos &amp;&amp; tr == pos` might be clearer
+&nbsp;  // //     t[i] = newValue;
+&nbsp;  // //     return;
+&nbsp;  // //   }
+&nbsp;  // //   int tm = (tl + tr) / 2;
+&nbsp;  // //   if (pos &lt;= tm) {
+&nbsp;  // //     // The point index `pos` is contained within the left segment [tl, tm]
+&nbsp;  // //     pointUpdate(2 * i + 1, pos, tl, tm, newValue);
+&nbsp;  // //   } else {
+&nbsp;  // //     // The point index `pos` is contained within the right segment [tm+1, tr]
+&nbsp;  // //     pointUpdate(2 * i + 2, pos, tm + 1, tr, newValue);
+&nbsp;  // //   }
+&nbsp;  // //   // Re-compute the segment value of the current segment on the callback
+&nbsp;  // //   // t[i] = rangeUpdateFn.apply(t[2 * i + 1], t[2 * i + 2]);
+&nbsp;  // //   t[i] = combinationFn.apply(t[2 * i + 1], t[2 * i + 2]);
+&nbsp;  // // }
+&nbsp;
+&nbsp;  // public void printDebugInfo() {
+&nbsp;  //   printDebugInfo(0);
+&nbsp;  //   System.out.println();
+&nbsp;  // }
+&nbsp;
+&nbsp;  // private void printDebugInfo(int i) {
+&nbsp;  //   // System.out.println(st[i]);
+&nbsp;  //   // if (st[i].tl == st[i].tr) {
+&nbsp;  //   //   return;
+&nbsp;  //   // }
+&nbsp;  //   // printDebugInfo(2 * i + 1);
+&nbsp;  //   // printDebugInfo(2 * i + 2);
+&nbsp;  // }
+&nbsp;
+&nbsp;  // ////////////////////////////////////////////////////
+&nbsp;  // //              Example usage:                    //
+&nbsp;  // ////////////////////////////////////////////////////
+&nbsp;
+&nbsp;  // public static void main(String[] args) {
+&nbsp;  //   minQuerySumUpdate();
+&nbsp;  //   sumQuerySumUpdateExample();
+&nbsp;  //   minQueryAssignUpdateExample();
+&nbsp;  // }
+&nbsp;
+&nbsp;  // private static void minQuerySumUpdate() {
+&nbsp;  //   //          0, 1, 2, 3,  4
+&nbsp;  //   long[] v = {2, 1, 3, 4, -1};
+&nbsp;  //   GenericSegmentTree3 st =
+&nbsp;  //       new GenericSegmentTree3(v, SegmentCombinationFn.MIN, RangeUpdateFn.ADDITION);
+&nbsp;
+&nbsp;  //   int l = 1;
+&nbsp;  //   int r = 3;
+&nbsp;  //   long q = st.rangeQuery1(l, r);
+&nbsp;  //   if (q != 1) System.out.println(&quot;Error&quot;);
+&nbsp;  //   System.out.printf(&quot;The min between indeces [%d, %d] is: %d\n&quot;, l, r, q);
+&nbsp;
+&nbsp;  //   st.printDebugInfo();
+&nbsp;  // }
+&nbsp;
+&nbsp;  // private static void sumQuerySumUpdateExample() {
+&nbsp;  //   //          0, 1, 2, 3,  4
+&nbsp;  //   long[] v = {2, 1, 3, 4, -1};
+&nbsp;  //   GenericSegmentTree3 st =
+&nbsp;  //       new GenericSegmentTree3(v, SegmentCombinationFn.SUM, RangeUpdateFn.ADDITION);
+&nbsp;
+&nbsp;  //   int l = 1;
+&nbsp;  //   int r = 3;
+&nbsp;  //   long q = st.rangeQuery1(l, r);
+&nbsp;  //   if (q != 8) System.out.println(&quot;Error&quot;);
+&nbsp;  //   System.out.printf(&quot;The sum between indeces [%d, %d] is: %d\n&quot;, l, r, q);
+&nbsp;  //   st.rangeUpdate1(1, 3, 3);
+&nbsp;  //   q = st.rangeQuery1(l, r);
+&nbsp;  //   if (q != 17) System.out.println(&quot;Error&quot;);
+&nbsp;  //   System.out.printf(&quot;The sum between indeces [%d, %d] is: %d\n&quot;, l, r, st.rangeQuery1(l, r));
+&nbsp;  // }
+&nbsp;
+&nbsp;  // private static void minQueryAssignUpdateExample() {
+&nbsp;  //   //          0, 1, 2, 3,  4
+&nbsp;  //   long[] v = {2, 1, 3, 4, -1};
+&nbsp;  //   GenericSegmentTree3 st =
+&nbsp;  //       new GenericSegmentTree3(v, SegmentCombinationFn.MIN, RangeUpdateFn.ASSIGN);
+&nbsp;
+&nbsp;  //   int l = 1;
+&nbsp;  //   int r = 3;
+&nbsp;  //   long q = st.rangeQuery1(l, r);
+&nbsp;  //   if (q != 1) System.out.println(&quot;Error&quot;);
+&nbsp;  //   System.out.printf(&quot;The min between indeces [%d, %d] is: %d\n&quot;, l, r, q);
+&nbsp;  //   st.rangeUpdate1(1, 3, 3);
+&nbsp;  //   l = 0;
+&nbsp;  //   r = 1;
+&nbsp;  //   q = st.rangeQuery1(l, r);
+&nbsp;  //   if (q != 2) System.out.println(&quot;Error&quot;);
+&nbsp;  //   System.out.printf(&quot;The min between indeces [%d, %d] is: %d\n&quot;, l, r, st.rangeQuery1(l, r));
+&nbsp;  // }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>

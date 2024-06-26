@@ -1,0 +1,201 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > DoubleHashingTestObject</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.williamfiset.algorithms.datastructures.hashtable</a>
+</div>
+
+<h1>Coverage Summary for Class: DoubleHashingTestObject (com.williamfiset.algorithms.datastructures.hashtable)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">DoubleHashingTestObject</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    63,6%
+  </span>
+  <span class="absValue">
+    (7/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    47,7%
+  </span>
+  <span class="absValue">
+    (21/44)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/**
+&nbsp; * The DoubleHashingTestObject is an object to test the functionality of the hash-table implemented
+&nbsp; * with double hashing.
+&nbsp; *
+&nbsp; * @author William Fiset, william.alexandre.fiset@gmail.com
+&nbsp; */
+&nbsp;package com.williamfiset.algorithms.datastructures.hashtable;
+&nbsp;
+&nbsp;import java.util.Random;
+&nbsp;
+&nbsp;public class DoubleHashingTestObject implements SecondaryHash {
+&nbsp;
+&nbsp;  private int hash, hash2;
+<b class="fc">&nbsp;  Integer intData = null;</b>
+<b class="fc">&nbsp;  int[] vectorData = null;</b>
+<b class="fc">&nbsp;  String stringData = null;</b>
+&nbsp;
+&nbsp;  static long[] randomVector;
+<b class="fc">&nbsp;  static Random R = new Random();</b>
+<b class="fc">&nbsp;  static int MAX_VECTOR_SIZE = 10000;</b>
+&nbsp;
+&nbsp;  static {
+<b class="fc">&nbsp;    randomVector = new long[MAX_VECTOR_SIZE];</b>
+<b class="fc">&nbsp;    for (int i = 0; i &lt; MAX_VECTOR_SIZE; i++) {</b>
+<b class="fc">&nbsp;      long val = R.nextLong();</b>
+<b class="fc">&nbsp;      while (val % 2 == 0) val = R.nextLong();</b>
+<b class="fc">&nbsp;      randomVector[i] = val;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+<b class="fc">&nbsp;  public DoubleHashingTestObject(int data) {</b>
+<b class="fc">&nbsp;    intData = data;</b>
+<b class="fc">&nbsp;    intHash();</b>
+<b class="fc">&nbsp;    computeHash();</b>
+&nbsp;  }
+&nbsp;
+<b class="nc">&nbsp;  public DoubleHashingTestObject(int[] data) {</b>
+<b class="nc">&nbsp;    if (data == null) throw new IllegalArgumentException(&quot;Cannot be null&quot;);</b>
+<b class="nc">&nbsp;    vectorData = data;</b>
+<b class="nc">&nbsp;    vectorHash();</b>
+<b class="nc">&nbsp;    computeHash();</b>
+&nbsp;  }
+&nbsp;
+<b class="nc">&nbsp;  public DoubleHashingTestObject(String data) {</b>
+<b class="nc">&nbsp;    if (data == null) throw new IllegalArgumentException(&quot;Cannot be null&quot;);</b>
+<b class="nc">&nbsp;    stringData = data;</b>
+<b class="nc">&nbsp;    stringHash();</b>
+<b class="nc">&nbsp;    computeHash();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private void intHash() {
+<b class="fc">&nbsp;    hash2 = intData;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private void vectorHash() {
+<b class="nc">&nbsp;    for (int i = 0; i &lt; vectorData.length; i++) hash2 += randomVector[i] * vectorData[i];</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private void stringHash() {
+&nbsp;
+&nbsp;    // Multipicative hash function:
+<b class="nc">&nbsp;    final int INITIAL_VALUE = 0;</b>
+<b class="nc">&nbsp;    int prime = 17;</b>
+<b class="nc">&nbsp;    int power = 1;</b>
+<b class="nc">&nbsp;    hash = INITIAL_VALUE;</b>
+<b class="nc">&nbsp;    for (int i = 0; i &lt; stringData.length(); i++) {</b>
+<b class="nc">&nbsp;      int ch = stringData.charAt(i);</b>
+<b class="nc">&nbsp;      hash2 += power * ch;</b>
+<b class="nc">&nbsp;      power *= prime;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  private void computeHash() {
+<b class="fc">&nbsp;    if (intData != null) hash = intData.hashCode();</b>
+<b class="nc">&nbsp;    else if (stringData != null) hash = stringData.hashCode();</b>
+<b class="nc">&nbsp;    else hash = java.util.Arrays.hashCode(vectorData);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public int hashCode() {
+<b class="fc">&nbsp;    return hash;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public int hashCode2() {
+<b class="fc">&nbsp;    return hash2;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public boolean equals(Object o) {
+<b class="fc">&nbsp;    DoubleHashingTestObject obj = (DoubleHashingTestObject) o;</b>
+<b class="fc">&nbsp;    if (hash != obj.hash) return false;</b>
+<b class="fc">&nbsp;    if (intData != null) return intData.equals(obj.intData);</b>
+<b class="nc">&nbsp;    if (vectorData != null) return java.util.Arrays.equals(vectorData, obj.vectorData);</b>
+<b class="nc">&nbsp;    return stringData.equals(obj.stringData);</b>
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-22 16:41</div>
+</div>
+</body>
+</html>
