@@ -7,6 +7,9 @@ package com.williamfiset.algorithms.dp;
 
 public class MaximumSubarray {
 
+  public static BranchCoverageMaximumSubarray branchCoverage = new BranchCoverageMaximumSubarray();
+
+
   public static void main(String[] args) {
     System.out.println(maximumSubarrayValue(new int[] {-5}));
     System.out.println(maximumSubarrayValue(new int[] {-5, -4, -10, -3, -1, -12, -6}));
@@ -20,16 +23,30 @@ public class MaximumSubarray {
     int n = ar.length, maxValue, sum;
 
     maxValue = sum = ar[0];
+    branchCoverage.markAsCovered(201);
+
 
     for (int i = 1; i < n; i++) {
+      branchCoverage.markAsCovered(202); // For loop entry branch
 
       // At each step consider continuing the current subarray
       // or starting a new one because adding the next element
       // doesn't acutally make the subarray sum any better.
-      if (ar[i] > sum + ar[i]) sum = ar[i];
-      else sum = sum + ar[i];
+      if (ar[i] > sum + ar[i]) {
+        sum = ar[i];
+        branchCoverage.markAsCovered(203);
+      }
 
-      if (sum > maxValue) maxValue = sum;
+      else {
+        sum = sum + ar[i];
+        branchCoverage.markAsCovered(204);
+      }
+
+
+      if (sum > maxValue) {
+        branchCoverage.markAsCovered(205);
+        maxValue = sum;
+      }
     }
 
     return maxValue;
