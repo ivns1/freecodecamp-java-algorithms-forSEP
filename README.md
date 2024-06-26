@@ -4,7 +4,7 @@
 
 Name: freecodecamp-java-algortithms
 
-URL: [Project URL](https://github.com//freecodecamp-java-algorithms)(https://github.com/MaheshB77/freecodecamp-java-algorithms)
+[Project URL](https://github.com//freecodecamp-java-algorithms)(https://github.com/MaheshB77/freecodecamp-java-algorithms)
 
 Number of lines of code and the tool used to count it: 
 The tool used to count the number of lines of code is cloc (Count Lines of Code) in the WSL terminal, which yields the following result:
