@@ -21,7 +21,7 @@ public class ModInverseTest {
         int x = 4;
         int y = 18;
         assertThat(ModularInverse.modInv(x, y)).isEqualTo(null);
-        System.out.println("\n\nmodInv_exception: \n");
+        System.out.println("\n\nmodInv_Null: \n");
         ModularInverse.branchCoverage.printCoverage();
     }
 
@@ -30,7 +30,7 @@ public class ModInverseTest {
         int x = 1;
         int y = 5;
         assertThat(ModularInverse.modInv(x, y)).isEqualTo(1);
-        System.out.println("\n\nmodInv_exception: \n");
+        System.out.println("\n\nmodInv_1_5__1: \n");
         ModularInverse.branchCoverage.printCoverage();
     }
 
