@@ -56,6 +56,8 @@ Miguel
 
 Since i choose 2 functions inside the same class, i have made in comments which IDs belong to which function:
 
+![](misc/images/code_coverage.png)
+
 insert(Node node, T value)
 
 [URL for commit of coverage](https://github.com/MaheshB77/freecodecamp-java-algorithms/commit/c5554b6c28fd1cac9febdcdeac1dcdb74a550633)
