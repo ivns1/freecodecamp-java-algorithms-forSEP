@@ -70,9 +70,9 @@ balance(Node node)
 
 [URL for commit of coverage](https://github.com/MaheshB77/freecodecamp-java-algorithms/commit/c5554b6c28fd1cac9febdcdeac1dcdb74a550633)
 
-![](misc/images/test_right.png)
+![](misc/images/tests_right.png)
 
-![](misc/images/test_left.png)
+![](misc/images/tests_left.png)
 
 So all branches from 407 to 412 are covered by the new tests. We can see that we also have some coverage on the insert(Node node, T value) function since all tests involve firstly inserting numbers on the Tree.
 
