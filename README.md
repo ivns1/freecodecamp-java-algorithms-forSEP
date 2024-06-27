@@ -56,7 +56,7 @@ Miguel
 
 Since i choose 2 functions inside the same class, i have made in comments which IDs belong to which function:
 
-![](misc/images/code_coverage.png)
+![](misc/images/code coverage.png)
 
 insert(Node node, T value)
 
