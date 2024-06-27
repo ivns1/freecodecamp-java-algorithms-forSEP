@@ -96,8 +96,9 @@ To enhance the functionality of this function, the BranchCoverageMaximumSubarray
 function: lis(int[ ] ar)
 
 [URL for the commit of coverage](https://github.com/ivns1/freecodecamp-java-algorithms-forSEP/commit/e18a6a732b2594cc6bbbf63f7079d2868658912e)
-(IMAGE HERE)
 ![](misc/images/liscoverage.PNG)
+
+
 To enhance the functionality of this function, the BranchCoverageLIS class was integrated into the LongestIncreasingSubsequence class. This integration was specifically designed to support branch coverage testing, ensuring a comprehensive evaluation of the algorithm's execution paths. Subsequently, the updated function was rigorously tested using a custom test file named LongestIncreasingSubsequenceTest, which validates the function’s correctness and coverage.
 
 
