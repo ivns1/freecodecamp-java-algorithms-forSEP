@@ -105,10 +105,13 @@ isPrimeTest
 [URL for commit of tests](https://github.com/ivns1/freecodecamp-java-algorithms-forSEP/commit/ba778da7c881cb5c4f37f9d9b0f801718f89f2bf)
 
 Old coverage results:
+
+![](misc/images/image25.png)
 ![](misc/images/image7.png)
 ![](misc/images/image31.png)
 
 New coverage results:
+
 ![](misc/images/image28.png)
 ![](misc/images/image6.png)
 ![](misc/images/image2.png)
@@ -190,6 +193,8 @@ The coverage for the function lis has improved from 0% to 100%, as it had initia
 ### Overall
 
 Before modifications:
+
+
 ![](misc/images/image25.png)
 
 After modifications:
