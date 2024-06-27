@@ -56,18 +56,24 @@ Miguel
 
 Since i choose 2 functions inside the same class, i have made in comments which IDs belong to which function:
 
-![](misc/images/code coverage.png)
+![](misc/images/code_coverage_Miguel.png)
 
 insert(Node node, T value)
 
 [URL for commit of coverage](https://github.com/MaheshB77/freecodecamp-java-algorithms/commit/c5554b6c28fd1cac9febdcdeac1dcdb74a550633)
-(IMAGE HERE)
+
+![](misc/images/test_insert.png)
+
 So all branches from 401 to 406 are covered by the new test InsertTest(). Passing the function from 0% coverage to 100% coverage. 
 
 balance(Node node)
 
 [URL for commit of coverage](https://github.com/MaheshB77/freecodecamp-java-algorithms/commit/c5554b6c28fd1cac9febdcdeac1dcdb74a550633)
-(IMAGE HERE)
+
+![](misc/images/test_right.png)
+
+![](misc/images/test_left.png)
+
 So all branches from 407 to 412 are covered by the new tests. We can see that we also have some coverage on the insert(Node node, T value) function since all tests involve firstly inserting numbers on the Tree.
 
 Mitra 
@@ -151,9 +157,11 @@ Since both functions I chose are in the same class, I decided to commit both fun
 insertTest() and (testBalanceLeftLeftCase(), testBalanceLeftRightCase(), testBalanceRightLeftCase(), testBalanceRightRightCase())
 
 [URL for commit of test](https://github.com/ivns1/freecodecamp-java-algorithms-forSEP/commit/8d8e16e21fb3d230eaba652ce4b39c1d02e60bc0)
-(IMAGE HERE)
-![](misc/images/image9.png)
-![](misc/images/image23.png)
+![](misc/images/coverage_before.png)
+
+![](misc/images/coverage_after.png)
+
+![](misc/images/coverage_lines_Miguel.png)
 
 Coverage has improved since there were previously no tests for the AVLTreeRecursiveOptimized. With the implementation of five tests - one specifically for the insert(Node node, T value) function and four for the balance(Node node) function - we now observe that both methods achieve 100% coverage. Additionally, overall coverage of the AVLTreeRecursiveOptimized has increased, with 13 out of 27 methods now being tested. The coverage for the two functions specifically went from 0% to 100%. 
 
