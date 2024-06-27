@@ -4,7 +4,11 @@
 
 Name: freecodecamp-java-algortithms
 
+original project:
 [Project URL](https://github.com/MaheshB77/freecodecamp-java-algorithms)
+
+our repository:
+[Project URL](https://github.com/ivns1/freecodecamp-java-algorithms-forSEP)
 
 Number of lines of code and the tool used to count it: 
 The tool used to count the number of lines of code is cloc (Count Lines of Code) in the WSL terminal, which yields the following result:
@@ -120,8 +124,17 @@ New coverage results:
 The coverage improvement is 0.5% in class coverage, 0.2& in method coverage and 0.2% in line coverage. But thhe increase in coverage for the math package is more significant.
 This happened firstly because the coverage improvement Class, Method and Line all increased after implementing tests for “ïsPrime” because prior to implementation there were no tests for this function. As we can see in the screenshots,
 
+Old coverage result:
 
-<Test 2>
+![](misc/images/coveragemodinvbefore.png)
+
+
+New coverage results:
+
+![](misc/images/coverageAftermodInvOverall.png)
+![](misc/images/coverageaftermodinvmath.png)
+![](misc/images/coverageaftermodinvmodinv.png)
+
 
 <Provide the same kind of information provided for Test 1>
 
