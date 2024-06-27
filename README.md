@@ -211,7 +211,9 @@ Before modifications:
 ![](misc/images/image25.png)
 
 After modifications:
-<Provide a screenshot of the new coverage results by running the existing tool using all test modifications made by the group>
+
+
+![](misc/images/NewOverall.png)
 
 ## Statement of individual contributions
 
