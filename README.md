@@ -9,7 +9,7 @@ Name: freecodecamp-java-algortithms
 Number of lines of code and the tool used to count it: 
 The tool used to count the number of lines of code is cloc (Count Lines of Code) in the WSL terminal, which yields the following result:
 
-![cloc results](misc/images/image1)
+![cloc results](misc/images/image1.png)
 
 So, because the chosen programming language is Java, the number of lines of code in the programming language chosen by the group is 29699. Which is ~29.7 KLOC
 
