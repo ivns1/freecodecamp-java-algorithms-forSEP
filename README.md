@@ -88,7 +88,7 @@ Safia
 MaximumSubarrayValue(int[ ] ar)
 
 [URL for commit of coverage](https://github.com/ivns1/freecodecamp-java-algorithms-forSEP/commit/2a376d9095dc6b3575061f9fa31f7cce825ab670)
-(IMAGE HERE)
+
 ![](misc/images/maxsubarraycov.PNG)
 
 To enhance the functionality of this function, the BranchCoverageMaximumSubarray class was integrated into the MaximumSubarray class. This integration was specifically designed to support branch coverage testing, ensuring a comprehensive evaluation of the algorithm's execution paths. Subsequently, the updated function was rigorously tested using a custom test file named MaximumSubarrayTest, which validates the function’s correctness and coverage.
@@ -96,8 +96,8 @@ To enhance the functionality of this function, the BranchCoverageMaximumSubarray
 function: lis(int[ ] ar)
 
 [URL for the commit of coverage](https://github.com/ivns1/freecodecamp-java-algorithms-forSEP/commit/e18a6a732b2594cc6bbbf63f7079d2868658912e)
+ 
 ![](misc/images/liscoverage.PNG)
-
 
 To enhance the functionality of this function, the BranchCoverageLIS class was integrated into the LongestIncreasingSubsequence class. This integration was specifically designed to support branch coverage testing, ensuring a comprehensive evaluation of the algorithm's execution paths. Subsequently, the updated function was rigorously tested using a custom test file named LongestIncreasingSubsequenceTest, which validates the function’s correctness and coverage.
 
@@ -180,11 +180,12 @@ Safia
 MaxSubarrayTest
 
 [URL for commit of tests](https://github.com/ivns1/freecodecamp-java-algorithms-forSEP/commit/7fcf1a49a551f687a05d4277b644b25671f59f66)
-
+old: ![](misc/images/image15.png)
 This testing for the maxSubarrayValue function was developed from scratch as there was no such in the original codebase. The goal was to validate the function's correctness and performance across the different input scenarios. By creating specific test cases—from single-element arrays to complex mixed-value arrays—the tests aimed to ensure that the maxSubarray function operates reliably and efficiently. 
 
-![](misc/images/image15.png)
-
+new: 
+![](misc/images/maxafter1.png)
+![](misc/images/maxafter2.png)
 The coverage for the function MaxSubarray has improved from 0% to 100%, as it had initially not been tested at all. After thorough testing, we achieved complete coverage for this function. While the main method was also covered, my primary focus was ensuring comprehensive testing of the MaxSubarray function, as it can be seen in the image below.
 
 ![](misc/images/image32.png)
