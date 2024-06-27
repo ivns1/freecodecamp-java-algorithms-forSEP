@@ -31,6 +31,7 @@ The existing coverage tool used is the coverage tool native to IntelliJ. It is u
 And the coverage breakdown:
 
 ![](misc/images/image8.png)
+
 ![](misc/images/image29.png)
 
 ### Your own coverage tool
@@ -81,13 +82,17 @@ Mitra
 tenarySearch
 
 [URL for commit of coverage](https://github.com/ivns1/freecodecamp-java-algorithms-forSEP/commit/1fba2e149eb55d961d954022017220ab6f7a6b35)
-(IMAGE HERE)
+
+![](misc/images/three_branches.png)
+
 The function has three branches and the coverage tool shows that all of them are hit by the test that has been made. 
 
 ternarySearchDiscrete
 
 [URL for commit of coverage](https://github.com/ivns1/freecodecamp-java-algorithms-forSEP/commit/ec5f1179ed24b773a27e8c0582167bf27580e14d#diff-ab8d40c0b875f4c28dc7127eb1b0c0f0f04b20e5ddca656d70a1dbca98248970)
-(IMAGE HERE)
+
+![](misc/images/seven_branches.png)
+
 The coverage tool file that I have made implements both functions. In this commit the file has been extended in order to print the coverage for the ternarySearchDiscrete file. 
 For this function, I have implemented the coverage tool in the same test file as the first function. However, this time, I integrated the coverage tool before finalizing the test file. Therefore, the coverage output indicates that none of the branches have been hit yet, meaning the coverage is currently at 0 percent.
 
@@ -123,13 +128,17 @@ isPrimeTest
 Old coverage results:
 
 ![](misc/images/image25.png)
+
 ![](misc/images/image7.png)
+
 ![](misc/images/image31.png)
 
 New coverage results:
 
 ![](misc/images/image28.png)
+
 ![](misc/images/image6.png)
+
 ![](misc/images/image2.png)
 
 
@@ -144,11 +153,10 @@ Old coverage result:
 New coverage results:
 
 ![](misc/images/coverageAftermodInvOverall.png)
+
 ![](misc/images/coverageaftermodinvmath.png)
+
 ![](misc/images/coverageaftermodinvmodinv.png)
-
-
-<Provide the same kind of information provided for Test 1>
 
 Miguel 
 
@@ -157,6 +165,7 @@ Since both functions I chose are in the same class, I decided to commit both fun
 insertTest() and (testBalanceLeftLeftCase(), testBalanceLeftRightCase(), testBalanceRightLeftCase(), testBalanceRightRightCase())
 
 [URL for commit of test](https://github.com/ivns1/freecodecamp-java-algorithms-forSEP/commit/8d8e16e21fb3d230eaba652ce4b39c1d02e60bc0)
+
 ![](misc/images/coverage_before.png)
 
 ![](misc/images/coverage_after.png)
@@ -171,8 +180,18 @@ TernarySearchTest
 
 [URL for commit of tests](https://github.com/ivns1/freecodecamp-java-algorithms-forSEP/commit/1fba2e149eb55d961d954022017220ab6f7a6b35)
 
-![](misc/images/image4.png)
-(IMAGE HERE)
+These are the old test case results before the test case:
+
+![](misc/images/oldcoverage1.png)
+
+![](misc/images/oldcoverage2.png)
+
+These are the new coverage results after implementing the new test case for it:
+
+![](misc/images/newcoverage3.png)
+
+![](misc/images/newcoverage4.png)
+
 
 Initially, none of the three methods were covered. Now, one out of three methods is covered, increasing the overall method coverage to 33.3%. Additionally, the covered method has 100% branch coverage.
 
@@ -180,8 +199,17 @@ ternarySearchDiscrete
 
 [URL for commit of tests](https://github.com/ivns1/freecodecamp-java-algorithms-forSEP/commit/b2fbc3613fff016ffd39e52f827b6559ac32b07a)
 
-(IMAGE HERE)
-(IMAGE HERE)
+These are the old test case results before the test case:
+
+![](misc/images/oldcoverage5.png)
+
+![](misc/images/oldcoverage6.png)
+
+These are the new coverage results after implementing the new test case for it:
+
+![](misc/images/newcoverage7.png)
+
+![](misc/images/newcoverage8.png)
 
 Initially, none of the five methods were covered. Now, three out of five methods are covered, raising the overall method coverage to 60%. Additionally, the covered methods have 85.7% branch coverage, as the test hits 6 out of 7 branches.
 
@@ -190,11 +218,15 @@ Safia
 MaxSubarrayTest
 
 [URL for commit of tests](https://github.com/ivns1/freecodecamp-java-algorithms-forSEP/commit/7fcf1a49a551f687a05d4277b644b25671f59f66)
+
 old: ![](misc/images/image15.png)
+
 This testing for the maxSubarrayValue function was developed from scratch as there was no such in the original codebase. The goal was to validate the function's correctness and performance across the different input scenarios. By creating specific test cases—from single-element arrays to complex mixed-value arrays—the tests aimed to ensure that the maxSubarray function operates reliably and efficiently. 
 
 new: 
+
 ![](misc/images/maxafter1.png)
+
 ![](misc/images/maxafter2.png)
 The coverage for the function MaxSubarray has improved from 0% to 100%, as it had initially not been tested at all. After thorough testing, we achieved complete coverage for this function. While the main method was also covered, my primary focus was ensuring comprehensive testing of the MaxSubarray function, as it can be seen in the image below.
 
@@ -203,11 +235,13 @@ The coverage for the function MaxSubarray has improved from 0% to 100%, as it ha
 LongestIncreasingSubsequenceTest
 
 [URL for commit of tests](https://github.com/ivns1/freecodecamp-java-algorithms-forSEP/commit/5292976d4a48667be359ed0b99a21b316060bb6c)
+
 old:
 ![](misc/images/image13.png)
 
 new:
 ![](misc/images/image34.png)
+
 ![](misc/images/image10.png)
 
 This testing for the LongestIncreasingSubsequence function was developed from scratch as there was no such in the original codebase. The goal was to validate the function's correctness and performance across the different input scenarios. By creating specific test cases—from empty arrays to complex mixed-value arrays—the tests aimed to ensure that the LongestIncreasingSubsequence function operates reliably and efficiently. 
@@ -217,16 +251,13 @@ The coverage for the function lis has improved from 0% to 100%, as it had initia
 ![](misc/images/image22.png)
 
 
-
 ### Overall
 
 Before modifications:
 
-
 ![](misc/images/image25.png)
 
 After modifications:
-
 
 ![](misc/images/NewOverall.png)
 
@@ -236,6 +267,6 @@ Isaac: I contributed by creating tests and implementing a branch coverage tool f
 
 Miguel: contributed to finding project, create a coverage tool, create tests for 2 functions, reviewing the coverage, cleaning up the report, merging all branches, update of README file
 
-Mitra: contributed to find the project
+Mitra: contributed to find the project, create a coverage tool, create tests for 2 functions, reviewing the coverage, merging branches, updating the README.md file, organizing the team
 
-Safia: contributed to find the project
+Safia: contributed to find the project, coverage tool creation, 2 functions improved, participating in meetings, update the README.md file, reviewing coverage
